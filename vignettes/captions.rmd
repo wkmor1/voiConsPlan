@@ -1,0 +1,74 @@
+```{r caption_evwoi_bin_example}
+caption_evwoi_bin_example <-
+  "How to calculate EVWOI. First calculate the expected value of choosing to protect each property separately. The expected value of protecting a property is the values (the grey bars) that are possible, multiplied by their respective probabilities (the height of the grey bars) and then added together. EVWOI is the greatest (maximum) of the expected values. In this case, the EVWOI is the expected value of protecting property 2 is **0.6**."
+```
+
+```{r caption_evwpi_bin_example}
+caption_evwpi_bin_example <-
+  "How to calculate EVWPI. First work out the scenarios that are possible. Then choose the property to protect in each possible scenario. When the properties have equal value it doesn't matter which one is selected (e.g., in scenarios 3 &amp; 4). Next calculate the probability that the scenario occurs by multiplying the probabilities of the property habitat suitabilities (e.g., for scenario 1, the probability is $0.5 \\times 0.6 = 0.3$, see the rightmost arrows). Next multiply the scenario probabilties by the value of the properties selected in each scenario. Finally, sum the weighted scenario values (rightmost values). In this case the EVWPI is **0.8**."
+```
+
+```{r caption_predictors}
+caption_predictors <- 
+  "Climate, soil and topographic maps of the Hunter region. These variables were used to model the distribution of the study species used to formulate the spatial conservation plan."
+```
+
+```{r caption_k}
+caption_k <- ""
+```
+
+```{r caption_occurrences}
+caption_occurrences <-
+  "Occurrence data for the species used to formulate the spatial conservation plan for the Hunter. Yellow circles are locations where each species has been seen since 19XX, according to the Atlas of Living Australia. These occurrence points were used to estimate the distribution of these species with Maxent."
+```
+
+```{r caption_background}
+caption_background <-
+  "Random background points chosen for each species for use in Maxent models. For each species 10,000 points were chosen at random. The points were restricted to IBRA regions were the taxa occurs and represented occurrences of other species in the same broad taxonomic group (birds, mammals or plants)."
+```
+
+```{r caption_evwoi_cont_example}
+caption_evwoi_cont_example <-
+    "How to calculate EVWOI with continuous uncertainty. The EVWOI in this case is even simpler than for the discrete case (Figure 2). Simply take the expected value of each properties' distribution of value, the maximum of which, is the EVWOI (note that for property 2, which has an asymmetrical distribution, the expected value, its mean, is a little lower than its most probable value, the mode)."
+```
+
+```{r caption_evwpi_cont_example}
+caption_evwpi_cont_example <-
+  "How to calculate EVWPI with Monte Carlo sampling. For continuous uncertainty, unlike discrete uncertainty the number of possible outcomes/scenarios are infinite. Any combination of values between 0 and 1 for each property (though some values are more likely than others). One solution is to use Monte Carlo sampling. For example we can estimate the  EVWPI by selecting random pairs from the distribution of property values (numbers at the end of arrows above), selecting the maximum in each case (numbers in black text) and averaging by dividing by the number of samples. By selecting each pair in proportion to the probability distribution functions (PDFs) as we take more Monte Carlo samples the estimate of EVWPI approaches its true value. With the five samples above we estimate an EVWPI of .72 (which is close to the true value of .69, which we would get it if used a large number of samples."
+```
+
+```{r caption_models}
+caption_models <- 
+  "Distribution of study species in the Hunter region. Maps show the relative carrying capacity (logistic output) of each species estimated by fitting Maxent models to the occurrence data in Figure 4 using the predictor set in Figure 1 and background data in Figure 5."
+```
+
+```{r caption_simple_zonation}
+caption_simple_zonation <-
+    "How to calculate the value of information for a conservation plan for 2 species, 25 cells and a budget large enough to purchase 1 cell, using zonation. First calculate the EVWOI (top row). With original information we rank each cell using the maps of expected carrying capacity (top left quadrant). For the highest rank cell (greyed out cell, top right quandrant) take the average proportion of carrying capacity remaining with all other unprotected cells are removed (top equation. Next calculate EVWPI. For each set of bootstrapped species carrying capacity maps $k_1$ and $k_2$ rank each cell and calcualte the average proportion of carrying capacity remaining. The EVWPI is the average of the average proportion of carrying capacity remaining for each bootstrap sample $k_1$ and $k_2$ (middle equation). Finally we calculate EVPI which is the difference between the EVWOI and EVWPI (bottom equation)"
+```
+
+```{r caption_plan}
+caption_plan <-
+  "Priority map for the Hunter region. Pixels have been ranked from lowest priority (blue) to highest priority (yellow) using the Zonation greedy algorithm. The additive benefit function was used to iteratively remove cells with the lowest marginal benefit. In calculating marginal benefit each species was weighted equally. The map can be used to calculate the expected value with original information for a fixed budget (number of cells protected) with value measured as the average proportion of species total carrying capacity remaining if all unprotected cells were removed."
+```
+
+```{r caption_sd_stack}
+caption_sd_stack <-
+  "Uncertainty of species distributions in the Hunter region. Each panel show a map of the standard deviation of bootstrap predictions for each species. Regions in blue are areas with low uncertainty while areas in yellow have high uncertainty."
+```
+
+```{r caption_widest_point}
+caption_widest_point <-
+  "Cross-section through the widest point of the bootstrapped model predictions of carrying capacity of each study species."
+```
+
+```{r caption_sd_plan}
+ caption_sd_plan <-
+    "Uncertainty in pixel ranks. Map shows the standard deviation of logit pixel ranks. Regions in blue are areas with low uncertainty while areas in yellow have high uncertainty."
+```
+
+```{r caption_gg_widest_point_plan}
+caption_gg_widest_point_plan <- 
+  "Cross-section through the widest point of the bootstrapped spatial plan."
+```
+

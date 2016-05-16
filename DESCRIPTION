@@ -1,0 +1,27 @@
+Package: voiConsPlan
+Title: Value of information for conservation planning
+Version: 0.0.0.9059
+Authors@R: person(c("William", "Keith"), "Morris", email = "wkmor1@gmail.com", role = c("aut", "cre"))
+Description: What is the value of information when doing spatial conservation
+    planning? The inputs of a spatial conservation plan can be uncertain. There
+    are many types of uncertainty in a spatial conservation plan. To create a
+    conservation plan with a greater expected outcome it may be worth reducing the
+    uncertainty of inputs before prioritizing. But which uncertainties should be
+    addressed and by how much? The concept of 'value of information' can guide how
+    to address uncertainty in a decision problem. Here we introduce the application
+    of an expected value of information analysis for spatial conservation planning
+    for the first time.
+Depends:
+    R (>= 3.2.1)
+License: MIT + file LICENSE
+LazyData: true
+Imports:
+    data.table,
+    ggplot2,
+    methods,
+    raster,
+    utils,
+Suggests:
+    knitr
+VignetteBuilder: knitr
+RoxygenNote: 5.0.1

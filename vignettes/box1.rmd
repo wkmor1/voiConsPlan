@@ -1,0 +1,67 @@
+***
+
+Box 1: A simple example: value of information for a plan to protect one species at two properties
+-------------------------------------------------------------------------------------------------
+
+A conservation planner can afford to protect one piece of land to help save an endangered species from extinction. Two properties are available.
+
+The planner's aim is to maximise the area of habitat protected for the endangered species. The planner is uncertain about each property's __habitat suitability__. A property's habitat suitability can be either one (suitable) or zero (unsuitable). The first property has a 50% chance of being suitable (a 50% chance that habitat suitability is one, and a 50% chance that it is zero). But the planner knows that the second property has a slightly better chance (60%) of being suitable (i.e., a 40% chance it's unsuitable). The properties are identical in all other ways. A property can be protected __with original information__ (i.e., choosing a property while still ignorant of the habitat suitabilities) or __with perfect information__ (i.e., knowing the actual habitat suitabilities of each property in advance). The __value__ of protecting a property is the same as its habitat suitability (i.e., the value can be zero or one) Regardless of they habitat suitability, an unprotected property has no value to the planner. The conservation planner must decide which property to protect.
+
+### Expected value
+
+The __expected value__ (EV) is the value the planner expects (but not necessarily what they get), given the outcome of their decision is uncertain. An __expected value__ is a value weighted (multiplied) by a probability. Before they make a decision, the planner can work out the __expected value with original information__ (EVWOI) or the __expected value with perfect information__ (EVWPI). The __expected value of perfect information__ (EVPI) is the difference between the EVWPI and the EVWOI. If the EVPI is positive, it means it is worth (up to a point) learning before making a decision. For this example, if the EVPI is large enough, it is worth the planner working out what the habitat suitabilities of the two properties are, before they decide which one to protect. But if the EVPI is too low (when there is little difference between EVWOI and EVWPI) they should just decide which one to protect straightaway. 
+
+### Expected value with original information
+
+The EVWOI is the highest value the planner expects they could get, on average (the __maximum expected value__), by protecting a property when they don't know the habitat suitabilities. To work out the expected value of protecting a property, the planner weights (i.e., multiplies) the values that are possible by their probabilities and adds them together. 
+
+In this case, protecting the first property has a $1 - 0.5 = 0.5$ probability of having a value of $0$, and a $0.5$ probability of having a value of $1$. So, the expected value is: $$1 \times 0.5 + 0 \times (1 - 0.5) = 0.5.$$ The calculation for the second property is: $$1 \times 0.6 + 0 \times (1 - 0.6) = 0.6,$$ meaning the maximium expected value, EVWOI, is also $\mathbf{0.6}$. Formally, using mathematical notation, the calculation can be expressed as:
+
+\begin{equation}
+\mathrm{EVWOI}=\max_{a}\mathbb{E}_s{[U(a,s)]}.\label{eq:evwoi}
+\end{equation}
+
+Where $a$ represents the __action__ taken by the conservation planner, $s$ represents a __state__ (or scenario) (i.e., in this case it decscribes the information the planner has on the properties' habitat suitabilities), $U$ represents the __utility__ (or the value to the planner) of taking action $a$, and $\mathbb{E}$ is the mathematical symbol for __expectation__.
+
+#### Expected value with perfect information
+
+The EVWPI is the value the planner expects if they knew the properties' habitat suitabilities before deciding which one to protect.
+
+In this case, there are four possible scenarios:
+
+1. both properties are suitable,
+2. the first is suitable while the second is not,
+3. the second is suitable while the first is not, and
+4. neither is suitable. 
+
+Because the planner is only protecting one property, the value the planner gets from any one of these scenarios is the highest of the values of the two properties for that scenario (i.e., the value for scenarios 1, 2 and 3 is one, since there is at least one suitable property, while the value for scenario 4 is zero, since neither property is suitable). To work out the EVWPI, the planner takes the four maximum values (one for each scenario), and sums them, weighted by the scenarios' respective probabilities. The probability of a given scenario is the probability that the first property has the suitability stated in the scenario, multiplied by the probability that the second property has the suitability stated in the scenario. For scenarios 1 and 3, where the second property is suitable, the probability of the scenario is $0.5 \times 0.6 = 0.3$, irrespective of whether the first property is suitable or not. This is because the probability of the first property being suitable is the same as the probability that it is unsuitable (i.e., $0.5$). Similarly, for scenarios 2 and 4, where the second property is unsuitable, the probability is $0.5 \times 0.4 = 0.2$. So, the weighted values for scenarios 1 to 4, respectively, are: 
+
+\begin{equation}
+\begin{aligned}
+&1 \times (0.5 \times 0.6) = 1 \times 0.3 = 0.3,\\ 
+&1 \times (0.5 \times 0.4) = 1 \times 0.2 = 0.2,\\  
+&1 \times (0.5 \times 0.6) = 1 \times 0.3 = 0.3,\ \mathrm{and}\\ 
+&0 \times (0.5 \times 0.4) = 0 \times 0.2 = 0.
+\end{aligned}
+\end{equation}
+
+The EVWPI is the sum of these weighted values, $0.3 + 0.2 + 0.3 + 0 = \mathbf{0.8}.$ In mathematical notation this can be expressed as:
+
+\begin{equation}
+\mathrm{EVWPI}=\mathbb{E}_s{[\max_aU(a,s)}].\label{eq:evwpi}
+\end{equation}
+
+Here the symbols have the same meaning as in equation $\ref{eq:evwoi}$. But notice that instead of calculating the __action that maximises the expected value__ as in EVWOI, EVWPI is the __expected maximum value of action__. In other words, the order of maximisation and expectation has been reversed.
+
+#### Expected value of perfect information
+
+As noted above, the expected value of perfect information (EVPI) is the difference between the EVWPI and the EVWOI. Combining equations $\ref{eq:evwoi}$ and $\ref{eq:evwpi}$, the EVPI can be expressed as:
+
+\begin{equation}
+\mathrm{EVPI}=\mathbb{E}_s{[\max_aU(a,s)]}-\max_a\mathbb{E}_s{[U(a,s)]}.\label{eq:evpi}
+\end{equation}
+
+In the conservation planner's case, EVPI is $0.8 - 0.6 = \mathbf{0.2}$, meaning that if they could express habitat value as money, they should be willing to spend up to 20% of the price of a property, on learning about habitat suitabilty, before they decide what to protect.
+
+***
+

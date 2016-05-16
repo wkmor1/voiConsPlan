@@ -1,0 +1,46 @@
+---
+title: "The value of information for spatial conservation planning"
+author: "William K. Morris, Heini Kujala & Peter A. Vesk"
+date: "`r Sys.Date()`"
+output:
+  pdf_document:
+    fig_caption: yes
+    citation_package: natbib
+    keep_tex: true
+header-includes:
+- \linespread{2}\selectfont
+- \usepackage{setspace}
+- \usepackage[labelsep = none, textformat = empty]{caption}
+- \usepackage[nomarkers]{endfloat}
+- \AtBeginDelayedFloats{\linespread{2}}
+- \usepackage{lineno}
+- \linenumbers
+bibliography: voiConsPlan.bib
+biblio-style: apalike
+---
+
+```{r analyses, child = "analyses.rmd"}
+```
+\newpage
+
+```{r abstract, child = "abstract.rmd"}
+```
+\newpage
+
+```{r introduction, child = "introduction.rmd"}
+```
+\newpage
+
+```{r main_body, child = "main_body.rmd"}
+```
+\newpage
+
+```{r captions, child = "captions.rmd"}
+```
+
+```{r figures, child = "figures.rmd"}
+```
+
+References
+==========
+

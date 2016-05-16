@@ -1,0 +1,71 @@
+Case study: a spatial conservation plan for the Hunter region, NSW, Australia
+=============================================================================
+
+To demonstrate how to incorporate the value of information in a systematic spatial conservation plan, we now turn to a case study on priortizing the Hunter region for the conservation of threatened plants and animals. For the case study we make the simplifying assumptions that the entire region is an original position where no area is protected but the entire region is available for protection in a conservation plan. While this is entirely unrealistic, it would be unneccessary to complicate the demonstration with a more realistic scenario as the complications would only serve to distract the reader from the key components of the method we outline here.
+
+Study area
+----------
+
+The Hunter is a biodiverse region of north-eastern New South Wales, Australia. The region is home to many threatened species of plants and animals. There are multiple threats to biodiversity in the region. The Hunter is under is under active development and the area's land users utilize it's resources for mining, agricultrue, transport, urban infrastructure and conservation. For the the analyses we present here we consider the Hunter region to include the local government areas of Cessnock, Dungog, Gloucester, Gosford, Greater Taree, Great Lakes, Lake Macquarie, Maitland, Musselbrook, Newcastle, Port Macquarie-Hastings, Port Stephens, Singleton, Upper Hunter and Wyong.
+
+Study species
+-------------
+
+Short descriptions of the study species.
+  
+* Biology
+* Why threatened?
+
+#### Approximate maximum carrying capacity of the Hunter region
+
+1 pixel is 900 hectare.
+
+Powerful Owl home range is [1e4 to 5e4 hectares](http://www.publish.csiro.au/paper/MU06055.htm)
+Maximum Carrying capacity is probably something > .001 birds per hectare, or about .9 birds per pixel.
+
+Tiger Quoll home range is [5e3 to 4e4 hectares](http://onlinelibrary.wiley.com/doi/10.1017/S0952836903004631/abstract). Maximum Carrying capacity is probably something > .002 quolls per hectare, or about 1.8 quolls per pixel.
+
+Squirrel Glider maximum carrying capacity is [1.5 gliders per hectare](http://www.alburyconservationco.org.au/wp-content/uploads/2012/10/Population-Viability-Analysis-for-Squirrel-Gliders-in-Thurgoona-NSW_20091.pdf), or at about 1350 gliders per pixel 
+
+Regent honeyeater: according to [this](http://www.publish.csiro.au/paper/PC990224.htm)
+0.12 (+-.72) birds per hectare (not normally distributed though). So a rough guess may be 2 birds per hectare or 1800 birds per pixel.
+
+Angophora inopina: according to [this](http://www.publish.csiro.au/paper/BT03058.htm) 1100 trees where found in 6.2 hectare. So approx 180 plants per hectare and 162000 plants per pixel.
+
+Acacia bynoeana
+[1600 plants](https://www.environment.gov.au/cgi-bin/sprat/public/publicspecies.pl?taxon_id=8575) / [650ha](http://www.environment.nsw.gov.au/resources/parks/PoMLakeMacquarieSCAPulbahIslandNRMoonIslandNR.pdf)
+So approx plants per 2.5 plants per hectare and 2250 plants per pixel.
+
+Input data for the conservation plan
+------------------------------------
+
+### Predictors of species distributions
+
+We summarise the environment of the Hunter region with six data layers: annual mean solar radiation, annual mean temperature, annual precipitation, precipitation seasonality (coefficient of variation), inherent soil fertility, and topographic wetness index (Figure 3). Each layer is a 104 by 114 grid of 3km by 3km cells. We chose this set of variables as they are publically available, are biologically plausible drivers of the distribution of many taxa, have previously been shown to predict the distributions of the study species in the region and are relatively are uncorrelated with one another (maximum pearson correlaton coefficient = `r `).
+
+### Species occurence data
+
+### Background geographic data
+
+```{r box2, child = "box2.rmd"}
+```
+
+Modelling species distributions using Maxent
+--------------------------------------------
+
+### Calculating the expected value with original informaion
+
+EVWOI = `r fmt(evwoi * 100)`%
+
+```{r box3, child = "box3.rmd"}
+```
+
+### Expected value with perfect information
+
+EVWPI = `r fmt(evwpi * 100)`%
+
+### Expected value of perfect information
+
+EVPI = `r fmt((evwpi - evwoi) * 100)`%
+
+

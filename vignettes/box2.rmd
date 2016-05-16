@@ -1,0 +1,9 @@
+***
+
+Box 2: A slightly less simple example: value of information for a plan to protect one species at two properties with continuous uncertainty
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+In Box 1 we demonstrated how to calculate the value of information when the uncertainty in value was discrete (value of property could be zero or one). In the following example we increase complexity slighlty and demonstrate how to calculate EVPI when uncertainty is continuous.
+
+***
+
