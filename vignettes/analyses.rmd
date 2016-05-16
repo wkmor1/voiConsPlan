@@ -8,6 +8,7 @@ knitr::opts_chunk$set(
 library(ALA4R)
 library(doSNOW)
 library(dplyr)
+library(dismo)
 library(dynatopmodel)
 library(foreach)
 library(httr)
@@ -88,11 +89,6 @@ filters <- c("decimalLatLongConversionFailed", "habitatMismatch",
              "inferredDuplicateRecord")
 
 zonation_settings <- list("removal rule" = 2, "warp factor" = 10)
-```
-
-```{r cluster, cache = FALSE}
-cl <- makeCluster(n_cl_nodes)
-registerDoSNOW(cl)
 ```
 
 ```{r functions, cache = FALSE}
@@ -299,15 +295,11 @@ cl <- makeCluster(n_cl_nodes)
 registerDoSNOW(cl)
 
 models_boot <-
-  foreach(
-    bs_sample = bs_samples,
-    .packages = c("dplyr", "voiConsPlan")
-  ) %dopar% {
-    lapply(
-      spp_of_interest, fit_maxent_model, bs_sample, background, predictors
-    ) %>%
-    lapply(project_maxent, predictors) %>%
-    brick
+  foreach(bs_sample = bs_samples,
+          .packages = c("dismo", "dplyr", "voiConsPlan")) %dopar% {
+    lapply(spp_of_interest, fit_maxent_model, bs_sample, background,
+           predictors) %>%
+    lapply(project_maxent, predictors) %>% brick
   }
 
 stopCluster(cl)
@@ -331,14 +323,15 @@ evwoi <- ave_prop_rem(models, get_rank(plan), prop_loss)
 ```
 
 ```{r plan_boot}
+cl <- makeCluster(n_cl_nodes)
+registerDoSNOW(cl)
+
 plans_boot <-
-  foreach(
-    models = models_boot,
-    .packages = c("dplyr", "rzonation")
-  ) %dopar% {
-    zonation(models, settings = zonation_settings) %>%
-    get_rank
+  foreach(models = models_boot, .packages = c("dplyr", "rzonation")) %dopar% {
+    zonation(models, settings = zonation_settings) %>% get_rank
   }
+
+stopCluster(cl)
 ```
 
 ```{r evwpi}

@@ -126,9 +126,9 @@ project_maxent <- function(lambdas, newdata, mask) {
     lapply(
       setdiff(names(newdata), is_cat),
       function(x) {
-        x <- c(x) := pmax(pmin(get(x), clamp_limits[feature == x, max]),
-                          clamp_limits[feature == x, min])
-        newdata[, x]
+        newdata[, c(x) := pmax(pmin(get(x), clamp_limits[feature == x, max]),
+                               clamp_limits[feature == x, min])]
+
       }
     )
   )
