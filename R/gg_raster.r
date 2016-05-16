@@ -6,7 +6,7 @@
 #' @param labels Character vector. Facet labels.
 #' @param nrow Integer. Number of rows for facets of rasters.
 #'
-#' @importFrom ggplot2 aes_string facet_wrap geom_raster ggplot theme_bw
+#' @importFrom ggplot2 aes_string coord_equal facet_wrap geom_raster ggplot theme_bw
 #' @importFrom methods setGeneric setMethod
 #' @importFrom raster getValues ncell xyFromCell
 #' @importFrom utils stack
@@ -26,7 +26,7 @@ gg_raster_ <-
     levels(data[, "variable"]) <- sort(labels)
     data[, "variable"] <- factor(data[, "variable"], levels = labels)
 
-    ggplot(data, aes_string("x", "y")) + theme_bw() +
+    ggplot(data, aes_string("x", "y")) + theme_bw() + coord_equal() +
     geom_raster(aes_string(fill = "value"), na.rm = TRUE)
   }
 
