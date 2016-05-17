@@ -1,10 +1,10 @@
-```{r knitr_setup, echo = FALSE, message = FALSE, warning = FALSE, results = "hide"}
+```{r setup, echo = FALSE}
 knitr::opts_chunk$set(
   cache = TRUE, echo = FALSE, message = FALSE, warning = FALSE, results = "hide"
 )
 ```
 
-```{r analyses_setup, cache = FALSE}
+```{r package_setup}
 library(ALA4R)
 library(doSNOW)
 library(dplyr)
@@ -27,7 +27,7 @@ library(voiConsPlan)
 ala_config(cache_directory = ".")
 ```
 
-```{r variables, cache = FALSE}
+```{r variables}
 resolution <- 1e3L
 
 agg_factor <- 3L
@@ -91,7 +91,7 @@ filters <- c("decimalLatLongConversionFailed", "habitatMismatch",
 zonation_settings <- list("removal rule" = 2, "warp factor" = 10)
 ```
 
-```{r functions, cache = FALSE}
+```{r functions}
 fmt <- function(x, digits = 0) {
   format(round(x, digits), nsmall = digits, big.mark = ",", scientific = FALSE)
 }

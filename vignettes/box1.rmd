@@ -5,7 +5,7 @@ Box 1: A simple example: value of information for a plan to protect one species 
 
 A conservation planner can afford to protect one piece of land to help save an endangered species from extinction. Two properties are available.
 
-The planner's aim is to maximise the area of habitat protected for the endangered species. The planner is uncertain about each property's __habitat suitability__. A property's habitat suitability can be either one (suitable) or zero (unsuitable). The first property has a 50% chance of being suitable (a 50% chance that habitat suitability is one, and a 50% chance that it is zero). But the planner knows that the second property has a slightly better chance (60%) of being suitable (i.e., a 40% chance it's unsuitable). The properties are identical in all other ways. A property can be protected __with original information__ (i.e., choosing a property while still ignorant of the habitat suitabilities) or __with perfect information__ (i.e., knowing the actual habitat suitabilities of each property in advance). The __value__ of protecting a property is the same as its habitat suitability (i.e., the value can be zero or one) Regardless of they habitat suitability, an unprotected property has no value to the planner. The conservation planner must decide which property to protect.
+The planner's aim is to maximise the area of habitat protected for the endangered species. The planner is uncertain about each property's __habitat suitability__. A property's habitat suitability can be either one (suitable) or zero (unsuitable). The first property has a 50% chance of being suitable (a 50% chance that habitat suitability is one, and a 50% chance that it is zero). But the planner knows that the second property has a slightly better chance (60%) of being suitable (i.e., a 40% chance it's unsuitable). The properties are identical in all other ways. A property can be protected __with original information__ (i.e., choosing a property while still ignorant of the habitat suitabilities) or __with perfect information__ (i.e., knowing the actual habitat suitabilities of each property in advance). The __value__ of protecting a property is the same as its habitat suitability (i.e., the value can be zero or one). Regardless of they habitat suitability, an unprotected property has no value to the planner. The conservation planner must decide which property to protect.
 
 ### Expected value
 
@@ -13,9 +13,9 @@ The __expected value__ (EV) is the value the planner expects (but not necessaril
 
 ### Expected value with original information
 
-The EVWOI is the highest value the planner expects they could get, on average (the __maximum expected value__), by protecting a property when they don't know the habitat suitabilities. To work out the expected value of protecting a property, the planner weights (i.e., multiplies) the values that are possible by their probabilities and adds them together. 
+The EVWOI is the highest value the planner expects they could get, on average (the __maximum expected value__), by protecting a property with only the information they have on habitat suitability at hand. To work out the expected value of protecting a property, the planner weights (i.e., multiplies) the values that are possible by their probabilities and adds them together. 
 
-In this case, protecting the first property has a $1 - 0.5 = 0.5$ probability of having a value of $0$, and a $0.5$ probability of having a value of $1$. So, the expected value is: $$1 \times 0.5 + 0 \times (1 - 0.5) = 0.5.$$ The calculation for the second property is: $$1 \times 0.6 + 0 \times (1 - 0.6) = 0.6,$$ meaning the maximium expected value, EVWOI, is also $\mathbf{0.6}$. Formally, using mathematical notation, the calculation can be expressed as:
+In this case, protecting the first property has a $0.5$ probability of having a value of $1$, and a $1 - 0.5 = 0.5$ probability of having a value of $0$. So, the expected value is: $$1 \times 0.5 + 0 \times (1 - 0.5) = 0.5.$$ The calculation for the second property is: $$1 \times 0.6 + 0 \times (1 - 0.6) = 0.6,$$ meaning the maximium expected value, EVWOI, is also $\mathbf{0.6}$. Formally, using mathematical notation, the calculation can be expressed as:
 
 \begin{equation}
 \mathrm{EVWOI}=\max_{a}\mathbb{E}_s{[U(a,s)]}.\label{eq:evwoi}
@@ -61,7 +61,7 @@ As noted above, the expected value of perfect information (EVPI) is the differen
 \mathrm{EVPI}=\mathbb{E}_s{[\max_aU(a,s)]}-\max_a\mathbb{E}_s{[U(a,s)]}.\label{eq:evpi}
 \end{equation}
 
-In the conservation planner's case, EVPI is $0.8 - 0.6 = \mathbf{0.2}$, meaning that if they could express habitat value as money, they should be willing to spend up to 20% of the price of a property, on learning about habitat suitabilty, before they decide what to protect.
+In the conservation planner's case, EVPI is $0.8 - 0.6 = \mathbf{0.2}$, meaning that if they could express habitat value as money, they should be willing to spend up to 20% of the price of a property, but no more, on learning about habitat suitabilty, before they decide what to protect, because if the expense of gathering the information is greater than the expected benefit from acting on the accumulated information(new information plus original).
 
 ***
 
