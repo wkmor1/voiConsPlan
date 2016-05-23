@@ -28,9 +28,7 @@ ala_config(cache_directory = ".")
 ```
 
 ```{r variables}
-resolution <- 1e3L
-
-agg_factor <- 3L
+resolution <- 924L
 
 n_bg_points <- 1e4L
 
@@ -225,7 +223,7 @@ hunter_extent <- extent(hunter_poly)
 hunter_alt <-
   getData("alt", country = "AUS") %>%
   crop(hunter_extent, snap = "out") %>% 
-  projectRaster(crs = projection, res = resolution)
+  projectRaster(crs = projection, res = 924L)
 
 predictors <-
   list(
@@ -242,11 +240,11 @@ predictors <-
   setNames(predictor_names) %>%
   brick %>%
   mask(spTransform(hunter_poly, CRS(projection))) %>%
-  aggregate(fact = agg_factor)
+  projectRaster(crs = projection, res = resolution)
 
 hunter_alt <-
   hunter_alt %>%
-  aggregate(fact = agg_factor) %>%
+  projectRaster(crs = projection, res = resolution) %>%
   mask(calc(predictors, sum))
 
 predictors <- mask(predictors, calc(predictors, sum))
@@ -283,7 +281,7 @@ background <-
   sample_n(n_bg_points)
 ```
 
-```{r models_boot}
+```{r models_boot, cache.lazy = FALSE}
 bs_samples <-
   replicate(
     n_bs_samp, 

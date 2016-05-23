@@ -10,9 +10,10 @@ output:
 header-includes:
 - \linespread{2}\selectfont
 - \usepackage{setspace}
-- \usepackage[labelsep = none, textformat = empty]{caption}
-- \usepackage[nomarkers]{endfloat}
-- \AtBeginDelayedFloats{\linespread{2}}
+#- \usepackage[labelsep = none, textformat = empty]{caption}
+- \usepackage{caption}
+#- \usepackage[nomarkers]{endfloat}
+#- \AtBeginDelayedFloats{\linespread{2}}
 - \usepackage{lineno}
 - \linenumbers
 bibliography: voiConsPlan.bib
