@@ -6,7 +6,7 @@ To demonstrate how to incorporate the value of information in a systematic spati
 Study area
 ----------
 
-The Hunter is a biodiverse region of north-eastern New South Wales, Australia. The region is home to many threatened species of plants and animals. There are multiple threats to biodiversity in the region. The Hunter is under is under active development and the area's land users utilize it's resources for mining, agricultrue, transport, urban infrastructure and conservation. For the the analyses we present here we consider the Hunter region to include the local government areas of Cessnock, Dungog, Gloucester, Gosford, Greater Taree, Great Lakes, Lake Macquarie, Maitland, Musselbrook, Newcastle, Port Macquarie-Hastings, Port Stephens, Singleton, Upper Hunter and Wyong.
+The Hunter is a biodiverse region of north-eastern New South Wales, Australia. The region is home to many threatened species of plants and animals. There are multiple threats to biodiversity in the region. The Hunter is under is under active development and the area's land users utilize it's resources for mining, agricultrue, transport, urban infrastructure and conservation. For the the analyses we present here, we consider the Hunter region to include the local government areas of Cessnock, Dungog, Gloucester, Gosford, Greater Taree, Great Lakes, Lake Macquarie, Maitland, Musselbrook, Newcastle, Port Macquarie-Hastings, Port Stephens, Singleton, Upper Hunter and Wyong, an are of `r # fmt(cellStats(!is.na(hunter_alt), sum))` km$^2$.
 
 Study species
 -------------
@@ -15,14 +15,14 @@ The Hunter is home to many species of national conservation significance. Here w
 
 | Common Name          | Scientific Name         |   $\bar{K}^\mathrm{max}$ | TSC | EPBC | IUCN |
 |----------------------|-------------------------|-------------------------:|-----|------|------|
-| Regent Honeyeater    | _Anthochaera phrygia_   |                    2.000 | CE  | CE   | CE   |
-| Powerful Owl         | _Ninox strenua_         |                    0.001 | V   | -    | LC   |
-| Spotted-tailed Quoll | _Dasyurus maculatus_    |                    0.002 | V   | E    | NT   |
-| Squirrel Glider      | _Petaurus norfolcensis_ |                    1.500 | V   | -    | LC   |
-| Bynoe's Wattle       | _Acacia bynoeana_       |                    2.500 | E   | V    | -    |
-| Charmhaven Apple     | _Angophora inopina_     |                  180.000 | V   | V    | -    |
+| Powerful Owl         | _Ninox strenua_         |                      0.1 | V   | -    | LC   |
+| Spotted-tailed Quoll | _Dasyurus maculatus_    |                      0.2 | V   | E    | NT   |
+| Regent Honeyeater    | _Anthochaera phrygia_   |                      2.0 | CE  | CE   | CE   |
+| Squirrel Glider      | _Petaurus norfolcensis_ |                    150.0 | V   | -    | LC   |
+| Bynoe's Wattle       | _Acacia bynoeana_       |                    250.0 | E   | V    | -    |
+| Charmhaven Apple     | _Angophora inopina_     |                  18000.0 | V   | V    | -    |
 
-Table: Species used in the conservation plan for the Hunter region. LC = Least Concern;  NT = Near Threatened; V = Vulnerable; E = Endangered; CE = Critically Endangered.
+Table: Species used in the conservation plan for the Hunter region. LC = Least Concern;  NT = Near Threatened; V = Vulnerable; E = Endangered; CE = Critically Endangered. $\bar{K}^\mathrm{max}$ = Estimated maximum carrying capacity (no individuals per square kilometer).
 
 <!---
 ## Approximate maximum carrying capacity of the Hunter region
@@ -46,17 +46,21 @@ Input data for the conservation plan
 
 ### Predictors of species distributions
 
-We summarise the environment of the Hunter region with six data layers: annual mean solar radiation, annual mean temperature, annual precipitation, precipitation seasonality (coefficient of variation), inherent soil fertility, and topographic wetness index (Figure 3). Each layer is a 104 by 114 grid of 3km by 3km cells. We chose this set of variables as they are publically available, are biologically plausible drivers of the distribution of many taxa, have previously been shown to predict the distributions of the study species in the region and are relatively are uncorrelated with one another (maximum pearson correlaton coefficient = `r #`).
+We summarise the environment of the Hunter region with six data layers: annual mean solar radiation, annual mean temperature, annual precipitation, precipitation seasonality (coefficient of variation), inherent soil fertility, and topographic wetness index (Figure 3). Each layer is a `r #nrow(predictors)` by `r #ncol(predictors)` grid of 1 km$^2$ cells. We chose this set of variables as they are publically available (see suplement for sources), are biologically plausible drivers of the distribution of many taxa, have previously been shown to predict the distributions of the study species in the region [**cite**] and are relatively uncorrelated with one another (maximum pearson correlaton coefficient = `r #fmt(max(abs(sort(layerStats(predictors, "pearson", na.rm = TRUE)[[1]], TRUE)[-1:-nlayers(predictors)])), 2)`).
 
 ### Species occurence data
 
-### Background geographic data
+We obtained 30 random occurrence records within the boundaries of the Hunter region (as defined above) and within the date range, 1996 to 2016, for each of the six study species from the Atlas of Living Australia database [**cite**]. We chose this relatively low sample-size random subset to ensure that subsequent modelling would have an initial level of uncertainty large enough for us to demonstrate how to calculate the value of information.
 
 ```{r box2, child = "box2.rmd"}
 ```
 
 Modelling species distributions using Maxent
 --------------------------------------------
+
+To create species distribution maps on which to base our conservation plans we used the modeling software MaxEnt [**cite**]. 
+
+### Background geographic data
 
 ### Calculating the expected value with original informaion
 
@@ -72,5 +76,4 @@ EVWPI = `r #fmt(evwpi * 100)`%
 ### Expected value of perfect information
 
 EVPI = `r #fmt((evwpi - evwoi) * 100)`%
-
 
