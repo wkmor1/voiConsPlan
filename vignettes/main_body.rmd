@@ -46,7 +46,7 @@ Input data for the conservation plan
 
 ### Predictors of species distributions
 
-We summarise the environment of the Hunter region with six data layers: annual mean solar radiation, annual mean temperature, annual precipitation, precipitation seasonality (coefficient of variation), inherent soil fertility, and topographic wetness index (Figure 3). Each layer is a `r nrow(predictors)` by `r ncol(predictors)` grid of 1 km$^2$ cells. We chose this set of variables as they are publically available (see suplement for sources), are biologically plausible drivers of the distribution of many taxa, have previously been shown to predict the distributions of the study species in the region [**cite**] and are relatively uncorrelated with one another (maximum pearson correlaton coefficient = `r fmt(max(abs(sort(layerStats(predictors, "pearson", na.rm = TRUE)[[1]], TRUE)[-1:-nlayers(predictors)])), 2)`).
+We summarise the environment of the Hunter region with six data layers: annual mean solar radiation, annual mean temperature, annual precipitation, precipitation seasonality (coefficient of variation), inherent soil fertility, and topographic wetness index (Figure 3). Each layer is a `r nrow(predictors)` by `r ncol(predictors)` grid of 1 km$^2$ cells. We chose this set of variables as they are publically available (see suplement for sources), are biologically plausible drivers of the distribution of many taxa, have previously been shown to predict the distributions of the study species in the region [**cite**] and are relatively uncorrelated with one another (maximum pearson correlaton coefficient = `r  fmt(max(abs(sort(layerStats(predictors, "pearson", na.rm = TRUE)[[1]], TRUE)[-1:-nlayers(predictors)])), 2)`).
 
 ### Species occurence data
 
@@ -58,7 +58,7 @@ We obtained 30 random occurrence records within the boundaries of the Hunter reg
 Modelling species distributions using Maxent
 --------------------------------------------
 
-To create species distribution maps on which to base our conservation plans we used the modeling software MaxEnt [**cite**]. 
+We used the modeling software MaxEnt [**cite**] to create species distribution maps on which to base the conservation plan. MaxEnt can be used to describe the potential distribution of species with occurrence records alone. The algorithm does this by comparing the distribution of occurrence records in covariate space to the distribution of covariate space as a whole, also known as the background (see below). We fit MaxEnt models to each species 
 
 ```{r plot_models, fig.cap = "Distribution of study species in the Hunter region. Maps show the relative carrying capacity (logistic output) of each species estimated by fitting Maxent models to the occurrence data in Figure 4 using the predictor set in Figure 1 and background data in Figure 5."}
 gg_raster(models, spp_of_interest, 2) +
@@ -73,20 +73,8 @@ theme(
 
 ### Background geographic data
 
-### Calculating the expected value with original informaion
-
-EVWOI = `r fmt(evwoi * 100)`%
-
 ```{r box3, child = "../box3.rmd"}
 ```
-
-### Expected value with perfect information
-
-EVWPI = `r fmt(evwpi * 100)`%
-
-### Expected value of perfect information
-
-EVPI = `r fmt((evwpi - evwoi) * 100)`%
 
 ```{r plot_plan, fig.cap = "Priority map for the Hunter region. Pixels have been ranked from lowest priority (blue) to highest priority (yellow) using the Zonation greedy algorithm. The additive benefit function was used to iteratively remove cells with the lowest marginal benefit. In calculating marginal benefit each species was weighted equally. The map can be used to calculate the expected value with original information for a fixed budget (number of cells protected) with value measured as the average proportion of species total carrying capacity remaining if all unprotected cells were removed."}
 gg_raster(plan$rasters$rank) +
@@ -114,3 +102,12 @@ theme(
   axis.text.x = element_blank()
 )
 ```
+
+| Expected value | Average proportion of \\ carrying capacity remaining |
+|----------------|------------------------------------------------------|
+| EVWOI          | `r fmt(evwoi * 100)`                                 |
+| EVWPI          | `r fmt(evwpi * 100)`                                 |
+| EVPI           | `r fmt((evwpi - evwoi) * 100)`                       |
+
+Table: Something
+
