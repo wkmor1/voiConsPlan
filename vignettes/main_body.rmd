@@ -6,7 +6,7 @@ To demonstrate how to incorporate the value of information in a systematic spati
 Study area
 ----------
 
-The Hunter is a biodiverse region of north-eastern New South Wales, Australia. The region is home to many threatened species of plants and animals. There are multiple threats to biodiversity in the region. The Hunter is under is under active development and the area's land users utilize it's resources for mining, agricultrue, transport, urban infrastructure and conservation. For the the analyses we present here, we consider the Hunter region to include the local government areas of Cessnock, Dungog, Gloucester, Gosford, Greater Taree, Great Lakes, Lake Macquarie, Maitland, Musselbrook, Newcastle, Port Macquarie-Hastings, Port Stephens, Singleton, Upper Hunter and Wyong, an are of `r # fmt(cellStats(!is.na(hunter_alt), sum))` km$^2$.
+The Hunter is a biodiverse region of north-eastern New South Wales, Australia. The region is home to many threatened species of plants and animals. There are multiple threats to biodiversity in the region. The Hunter is under is under active development and the area's land users utilize it's resources for mining, agricultrue, transport, urban infrastructure and conservation. For the the analyses we present here, we consider the Hunter region to include the local government areas of Cessnock, Dungog, Gloucester, Gosford, Greater Taree, Great Lakes, Lake Macquarie, Maitland, Musselbrook, Newcastle, Port Macquarie-Hastings, Port Stephens, Singleton, Upper Hunter and Wyong, an are of `r fmt(cellStats(!is.na(hunter_alt), sum))` km$^2$.
 
 Study species
 -------------
@@ -46,7 +46,7 @@ Input data for the conservation plan
 
 ### Predictors of species distributions
 
-We summarise the environment of the Hunter region with six data layers: annual mean solar radiation, annual mean temperature, annual precipitation, precipitation seasonality (coefficient of variation), inherent soil fertility, and topographic wetness index (Figure 3). Each layer is a `r #nrow(predictors)` by `r #ncol(predictors)` grid of 1 km$^2$ cells. We chose this set of variables as they are publically available (see suplement for sources), are biologically plausible drivers of the distribution of many taxa, have previously been shown to predict the distributions of the study species in the region [**cite**] and are relatively uncorrelated with one another (maximum pearson correlaton coefficient = `r #fmt(max(abs(sort(layerStats(predictors, "pearson", na.rm = TRUE)[[1]], TRUE)[-1:-nlayers(predictors)])), 2)`).
+We summarise the environment of the Hunter region with six data layers: annual mean solar radiation, annual mean temperature, annual precipitation, precipitation seasonality (coefficient of variation), inherent soil fertility, and topographic wetness index (Figure 3). Each layer is a `r nrow(predictors)` by `r ncol(predictors)` grid of 1 km$^2$ cells. We chose this set of variables as they are publically available (see suplement for sources), are biologically plausible drivers of the distribution of many taxa, have previously been shown to predict the distributions of the study species in the region [**cite**] and are relatively uncorrelated with one another (maximum pearson correlaton coefficient = `r  fmt(max(abs(sort(layerStats(predictors, "pearson", na.rm = TRUE)[[1]], TRUE)[-1:-nlayers(predictors)])), 2)`).
 
 ### Species occurence data
 
@@ -58,22 +58,17 @@ We obtained 30 random occurrence records within the boundaries of the Hunter reg
 Modelling species distributions using Maxent
 --------------------------------------------
 
-To create species distribution maps on which to base our conservation plans we used the modeling software MaxEnt [**cite**]. 
+We used the modeling software MaxEnt [**cite**] to create species distribution maps on which to base the conservation plan. MaxEnt can be used to describe the potential distribution of species with occurrence records alone. The algorithm does this by comparing the distribution of occurrence records in covariate space to the distribution of covariate space as a whole, also known as the background (see below). We fit MaxEnt models to each species 
 
-### Background geographic data
-
-### Calculating the expected value with original informaion
-
-EVWOI = `r #fmt(evwoi * 100)`%
+### Background covariate data
 
 ```{r box3, child = "box3.rmd"}
 ```
 
-### Expected value with perfect information
+| Expected value | Average proportion of \\ carrying capacity remaining |
+|----------------|------------------------------------------------------|
+| EVWOI          | `r fmt(evwoi * 100)`                                 |
+| EVWPI          | `r fmt(evwpi * 100)`                                 |
+| EVPI           | `r fmt((evwpi - evwoi) * 100)`                       |
 
-EVWPI = `r #fmt(evwpi * 100)`%
-
-### Expected value of perfect information
-
-EVPI = `r #fmt((evwpi - evwoi) * 100)`%
-
+Table: Something
