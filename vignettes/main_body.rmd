@@ -1,12 +1,12 @@
 Case study: a spatial conservation plan for the Hunter region, NSW, Australia
 =============================================================================
 
-To demonstrate how to incorporate the value of information in a systematic spatial conservation plan, we now turn to a case study on priortizing the Hunter region for the conservation of threatened plants and animals. For the case study we make the simplifying assumptions that the entire region is an original position where no area is protected but the entire region is available for protection in a conservation plan. While this is entirely unrealistic, it would be unneccessary to complicate the demonstration with a more realistic scenario as the complication would only serve to distract the reader from the key components of the method we outline here.
+To demonstrate how to incorporate the value of information in a systematic spatial conservation plan, we now turn to a case study on prioritizing the Hunter region for the conservation of threatened plants and animals. For the case study we make the simplifying assumptions that the entire region is an original position where no area is protected but the entire region is available for protection in a conservation plan. While this is entirely unrealistic, it would be unnecessary to complicate the demonstration with a more realistic scenario as the complication would only serve to distract the reader from the key components of the method we outline here.
 
 Study area
 ----------
 
-The Hunter is a biodiverse region of north-eastern New South Wales, Australia. The region is home to many threatened species of plants and animals. There are multiple threats to biodiversity in the region. The Hunter is under is under active development and the area's land users utilize it's resources for mining, agricultrue, transport, urban infrastructure and conservation. For the the analyses we present here, we consider the Hunter region to include the local government areas of Cessnock, Dungog, Gloucester, Gosford, Greater Taree, Great Lakes, Lake Macquarie, Maitland, Musselbrook, Newcastle, Port Macquarie-Hastings, Port Stephens, Singleton, Upper Hunter and Wyong, an area of `r fmt(raster::cellStats(!is.na(hunter_alt), sum))` km$^2$.
+The Hunter is a biodiverse region of north-eastern New South Wales, Australia. The region is home to many threatened species of plants and animals. There are multiple threats to biodiversity in the region. The Hunter is under is under active development and the area's land users utilize it's resources for mining, agriculture, transport, urban infrastructure and conservation. For the the analyses we present here, we consider the Hunter region to include the local government areas of Cessnock, Dungog, Gloucester, Gosford, Greater Taree, Great Lakes, Lake Macquarie, Maitland, Musselbrook, Newcastle, Port Macquarie-Hastings, Port Stephens, Singleton, Upper Hunter and Wyong, an area of `r fmt(raster::cellStats(!is.na(hunter_alt), sum))` km$^2$.
 
 Study species
 -------------
@@ -22,7 +22,7 @@ The Hunter is home to many species of national conservation significance. Here w
 | Bynoe's Wattle       | _Acacia bynoeana_       |                    250.0 | E   | V    | -    |
 | Charmhaven Apple     | _Angophora inopina_     |                  18000.0 | V   | V    | -    |
 
-Table: Species used in the conservation plan for the Hunter region. LC = Least Concern;  NT = Near Threatened; V = Vulnerable; E = Endangered; CE = Critically Endangered. $\bar{K}^\mathrm{max}$ = Estimated maximum carrying capacity (no individuals per square kilometer).
+Table: Species used in the conservation plan for the Hunter region. LC = Least Concern;  NT = Near Threatened; V = Vulnerable; E = Endangered; CE = Critically Endangered. $\bar{K}^\mathrm{max}$ = Estimated maximum carrying capacity (no individuals per square kilometre).
 
 <!---
 ## Approximate maximum carrying capacity of the Hunter region
@@ -46,7 +46,7 @@ Input data for the conservation plan
 
 ### Predictors of species distributions
 
-We summarise the environment of the Hunter region with six data layers: annual mean solar radiation, annual mean temperature, annual precipitation, precipitation seasonality (coefficient of variation), inherent soil fertility, and topographic wetness index (Figure 3). Each layer is a `r nrow(predictors)` by `r ncol(predictors)` grid of 1 km$^2$ cells. We chose this set of variables as they are publically available (see suplement for sources), are biologically plausible drivers of the distribution of many taxa, have previously been shown to predict the distributions of the study species in the region [**cite**] and are relatively uncorrelated with one another (maximum pearson correlaton coefficient = `r  fmt(max(abs(sort(raster::layerStats(predictors, "pearson", na.rm = TRUE)[[1]], TRUE)[-1:-raster::nlayers(predictors)])), 2)`).
+We summarise the environment of the Hunter region with six data layers: annual mean solar radiation, annual mean temperature, annual precipitation, precipitation seasonality (coefficient of variation), inherent soil fertility, and topographic wetness index (Figure ?). Each layer is a `r nrow(predictors)` by `r ncol(predictors)` grid of 1 km$^2$ cells. We chose this set of variables as they are publicly available (see supplement for sources), are biologically plausible drivers of the distribution of many taxa, have previously been shown to predict the distributions of the study species in the region [**cite**] and are relatively uncorrelated with one another (maximum Pearson correlation coefficient = `r  fmt(max(abs(sort(raster::layerStats(predictors, "pearson", na.rm = TRUE)[[1]], TRUE)[-1:-raster::nlayers(predictors)])), 2)`).
 
 ### Species occurence data
 
@@ -57,12 +57,12 @@ We obtained 30 random occurrence records within the boundaries of the Hunter reg
 ```
 \newpage
 
-Modelling species distributions using Maxent
+Modelling species distributions using MaxEnt
 --------------------------------------------
 
-We used the modeling software MaxEnt [**cite**] to create species distribution maps on which to base the conservation plan. MaxEnt can be used to describe the potential distribution of species with occurrence records alone. The algorithm does this by comparing the distribution of occurrence records in covariate space to the distribution of covariate space as a whole, also known as the background (see below). We fit MaxEnt models to each species 
+We used the software MaxEnt [**cite**] to create species distribution maps on which to base the conservation plan. MaxEnt can be used to describe the potential distribution of species with occurrence records alone. The algorithm does this by comparing the distribution of occurrence records in covariate space to the distribution of covariate space as a whole, also known as the background (see below). We fit MaxEnt models to each species with only linear and quadratic features enabled.
 
-```{r plot_models, fig.cap = "Distribution of study species in the Hunter region. Maps show the relative carrying capacity (logistic output) of each species estimated by fitting Maxent models to the occurrence data in Figure 4 using the predictor set in Figure 1 and background data in Figure 5."}
+```{r plot_models, fig.cap = "Distribution of study species in the Hunter region. Maps show the relative carrying capacity (logistic output) of each species estimated by fitting Maxent models to the occurrence data in Figure ? using the predictor set in Figure ? and background data in Figure ?."}
 gg_raster(models, spp_of_interest, 2) +
 scale_fill_viridis(na.value = NA, name = "") +
 guides(fill = guide_colourbar(barheight = 10)) +
@@ -74,7 +74,21 @@ theme(
 ```
 
 ### Background geographic data
+
+To fit distribution models with the occurrence records and environmental predictors we used a set of background points selected so as to minimise sampling bias in the occurrence points. For each higher taxonomic group (birds, mammals and plants) the background points were selected by randomly sampling 10,000 occurrence records of all taxa belonging to each group for the same spatial and temporal extent indicated above.
 \newpage
+
+### Intepreting the output of MaxEnt
+
+Interpreting MaxEnt output in both it's native formats (raw and logistic) has in the past proved problematic and controversial. It has been shown that it equally problematic to interpret MaxEnt output as either relative occurrence rate or probability of presence it is legitimate to interpret MaxEnt output as an indicator of relative habitat suitability. Here we chose to interpret the logistic output of MaxEnt as a rough indicator of relative carrying capacity. Where the logistic output is zero, the carrying capacity should be zero (or close enough to zero) and where the output is one, the carrying capacity should be close to the maximum attainable for the species. When the output is some fraction of one then we assume the carrying capacity is that fraction of the maximum. The important caveat here is that the relationship between MaxEnt logisitic output and carrying capacity is linear. While there is no prima facie region that it should, be it is seems the most logical assumption and any conceivable deviation from lineararity should not matter too much in the present case as the species of interest here have carrying capacities that vary over many orders of magnitude. The benefit of intepreting the MaxEnt output in such a way is that we can use the distribution maps to calculate an estimate of total potential population size for each species. And subsequently once we have a conservation plan, we can calculate the potential impact on population size of the plan or other competing plans. 
+
+Incorporating uncertainty 
+-------------------------
+
+Simply fitting a MaxEnt model with a set of occurrence points does not by itself account for the uncertainty in species
+
+Prioritizing with Zonation
+-------------------------
 
 ```{r box3, child = "box3.rmd"}
 ```
