@@ -1,11 +1,3 @@
-```{r setup, echo = FALSE}
-knitr::opts_chunk$set(
-  cache = TRUE, echo = FALSE, message = FALSE, warning = FALSE, results = "hide"
-)
-
-knitr::opts_knit$set(root.dir = "./build")
-```
-
 ```{r package_setup}
 library(ALA4R)
 library(doSNOW)
@@ -194,8 +186,6 @@ extract_layers <- function(x, brick_list) lapply(brick_list, raster, layer = x)
 
 as.list.RasterBrick <-
   function(x) lapply(seq_len(nlayers(x)), function(y) raster(x, y))
-
-sd_inv_logit <- function(x) sd(qlogis(x))
 
 mn_plus_ci <- 
   function(x) {

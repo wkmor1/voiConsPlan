@@ -51,9 +51,11 @@ We summarise the environment of the Hunter region with six data layers: annual m
 ### Species occurence data
 
 We obtained 30 random occurrence records within the boundaries of the Hunter region (as defined above) and within the date range, 1996 to 2016, for each of the six study species from the Atlas of Living Australia database [**cite**]. We chose this relatively low sample-size random subset to ensure that subsequent modelling would have an initial level of uncertainty large enough for us to demonstrate how to calculate the value of information.
+\newpage
 
 ```{r box2, child = "box2.rmd"}
 ```
+\newpage
 
 Modelling species distributions using Maxent
 --------------------------------------------
@@ -72,9 +74,11 @@ theme(
 ```
 
 ### Background geographic data
+\newpage
 
 ```{r box3, child = "box3.rmd"}
 ```
+\newpage
 
 ```{r plot_plan, fig.cap = "Priority map for the Hunter region. Pixels have been ranked from lowest priority (blue) to highest priority (yellow) using the Zonation greedy algorithm. The additive benefit function was used to iteratively remove cells with the lowest marginal benefit. In calculating marginal benefit each species was weighted equally. The map can be used to calculate the expected value with original information for a fixed budget (number of cells protected) with value measured as the average proportion of species total carrying capacity remaining if all unprotected cells were removed."}
 gg_raster(plan$rasters$rank) +
@@ -103,11 +107,12 @@ theme(
 )
 ```
 
-| Expected value | Average proportion of \\\\ carrying capacity remaining |
-|----------------|--------------------------------------------------------|
-| EVWOI          | `r fmt(evwoi * 100)`                                   |
-| EVWPI          | `r fmt(evwpi * 100)`                                   |
-| EVPI           | `r fmt((evwpi - evwoi) * 100)`                         |
+| Expected value | Average proportion of          |
+|                | carrying capacity remaining    |
+|:---------------|-------------------------------:|
+| EVWOI          | `r fmt(evwoi * 100)`           |
+| EVWPI          | `r fmt(evwpi * 100)`           |
+| EVPI           | `r fmt((evwpi - evwoi) * 100)` |
 
 Table: Something
 

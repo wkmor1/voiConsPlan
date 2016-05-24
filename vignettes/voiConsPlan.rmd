@@ -19,6 +19,15 @@ bibliography: voiConsPlan.bib
 biblio-style: apalike
 ---
 
+```{r setup, echo = FALSE}
+knitr::opts_chunk$set(
+  cache = TRUE, echo = FALSE, message = FALSE, warning = FALSE,
+  results = "hide", fig.pos = "!h"
+)
+
+knitr::opts_knit$set(root.dir = "./build")
+```
+
 ```{r analyses, child = "analyses.rmd"}
 ```
 \newpage
