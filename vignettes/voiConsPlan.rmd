@@ -6,12 +6,11 @@ output:
   pdf_document:
     fig_caption: yes
     citation_package: natbib
-    keep_tex: true
 header-includes:
 - \linespread{2}\selectfont
 - \usepackage{setspace}
-#- \usepackage[labelsep = none, textformat = empty]{caption}
 - \usepackage{caption}
+#- \usepackage[labelsep = none, textformat = empty]{caption}
 #- \usepackage[nomarkers]{endfloat}
 #- \AtBeginDelayedFloats{\linespread{2}}
 - \usepackage{lineno}
@@ -35,12 +34,6 @@ biblio-style: apalike
 ```{r main_body, child = "main_body.rmd"}
 ```
 \newpage
-
-```{r captions, child = "captions.rmd"}
-```
-
-```{r figures, child = "figures.rmd"}
-```
 
 References
 ==========

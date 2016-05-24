@@ -2,3 +2,6 @@
 .Rhistory
 .RData
 .DS_Store
+vignettes/build/*
+vignettes/voiConsPlan_cache/*
+vignettes/voiConsPlan_files/*

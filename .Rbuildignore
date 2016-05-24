@@ -1,4 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\.httr-oauth$
-cache
+vignettes/build/*
+vignettes/voiConsPlan_cache/*
+vignettes/voiConsPlan_files/*
