@@ -6,7 +6,7 @@ To demonstrate how to incorporate the value of information in a systematic spati
 Study area
 ----------
 
-The Hunter is a biodiverse region of north-eastern New South Wales, Australia. The region is home to many threatened species of plants and animals. There are multiple threats to biodiversity in the region. The Hunter is under is under active development and the area's land users utilize it's resources for mining, agricultrue, transport, urban infrastructure and conservation. For the the analyses we present here, we consider the Hunter region to include the local government areas of Cessnock, Dungog, Gloucester, Gosford, Greater Taree, Great Lakes, Lake Macquarie, Maitland, Musselbrook, Newcastle, Port Macquarie-Hastings, Port Stephens, Singleton, Upper Hunter and Wyong, an are of `r # fmt(cellStats(!is.na(hunter_alt), sum))` km$^2$.
+The Hunter is a biodiverse region of north-eastern New South Wales, Australia. The region is home to many threatened species of plants and animals. There are multiple threats to biodiversity in the region. The Hunter is under is under active development and the area's land users utilize it's resources for mining, agricultrue, transport, urban infrastructure and conservation. For the the analyses we present here, we consider the Hunter region to include the local government areas of Cessnock, Dungog, Gloucester, Gosford, Greater Taree, Great Lakes, Lake Macquarie, Maitland, Musselbrook, Newcastle, Port Macquarie-Hastings, Port Stephens, Singleton, Upper Hunter and Wyong, an area of `r fmt(cellStats(!is.na(hunter_alt), sum))` km$^2$.
 
 Study species
 -------------
@@ -46,13 +46,13 @@ Input data for the conservation plan
 
 ### Predictors of species distributions
 
-We summarise the environment of the Hunter region with six data layers: annual mean solar radiation, annual mean temperature, annual precipitation, precipitation seasonality (coefficient of variation), inherent soil fertility, and topographic wetness index (Figure 3). Each layer is a `r #nrow(predictors)` by `r #ncol(predictors)` grid of 1 km$^2$ cells. We chose this set of variables as they are publically available (see suplement for sources), are biologically plausible drivers of the distribution of many taxa, have previously been shown to predict the distributions of the study species in the region [**cite**] and are relatively uncorrelated with one another (maximum pearson correlaton coefficient = `r #fmt(max(abs(sort(layerStats(predictors, "pearson", na.rm = TRUE)[[1]], TRUE)[-1:-nlayers(predictors)])), 2)`).
+We summarise the environment of the Hunter region with six data layers: annual mean solar radiation, annual mean temperature, annual precipitation, precipitation seasonality (coefficient of variation), inherent soil fertility, and topographic wetness index (Figure 3). Each layer is a `r nrow(predictors)` by `r ncol(predictors)` grid of 1 km$^2$ cells. We chose this set of variables as they are publically available (see suplement for sources), are biologically plausible drivers of the distribution of many taxa, have previously been shown to predict the distributions of the study species in the region [**cite**] and are relatively uncorrelated with one another (maximum pearson correlaton coefficient = `r fmt(max(abs(sort(layerStats(predictors, "pearson", na.rm = TRUE)[[1]], TRUE)[-1:-nlayers(predictors)])), 2)`).
 
 ### Species occurence data
 
 We obtained 30 random occurrence records within the boundaries of the Hunter region (as defined above) and within the date range, 1996 to 2016, for each of the six study species from the Atlas of Living Australia database [**cite**]. We chose this relatively low sample-size random subset to ensure that subsequent modelling would have an initial level of uncertainty large enough for us to demonstrate how to calculate the value of information.
 
-```{r box2, child = "box2.rmd"}
+```{r box2, child = "../box2.rmd"}
 ```
 
 Modelling species distributions using Maxent
@@ -60,20 +60,57 @@ Modelling species distributions using Maxent
 
 To create species distribution maps on which to base our conservation plans we used the modeling software MaxEnt [**cite**]. 
 
+```{r plot_models, fig.cap = "Distribution of study species in the Hunter region. Maps show the relative carrying capacity (logistic output) of each species estimated by fitting Maxent models to the occurrence data in Figure 4 using the predictor set in Figure 1 and background data in Figure 5."}
+gg_raster(models, spp_of_interest, 2) +
+scale_fill_viridis(na.value = NA, name = "") +
+guides(fill = guide_colourbar(barheight = 10)) +
+theme(
+  axis.text  = element_blank(),
+  axis.title = element_blank(),
+  strip.text = element_text(face = "italic")
+)
+```
+
 ### Background geographic data
 
 ### Calculating the expected value with original informaion
 
-EVWOI = `r #fmt(evwoi * 100)`%
+EVWOI = `r fmt(evwoi * 100)`%
 
-```{r box3, child = "box3.rmd"}
+```{r box3, child = "../box3.rmd"}
 ```
 
 ### Expected value with perfect information
 
-EVWPI = `r #fmt(evwpi * 100)`%
+EVWPI = `r fmt(evwpi * 100)`%
 
 ### Expected value of perfect information
 
-EVPI = `r #fmt((evwpi - evwoi) * 100)`%
+EVPI = `r fmt((evwpi - evwoi) * 100)`%
 
+```{r plot_plan, fig.cap = "Priority map for the Hunter region. Pixels have been ranked from lowest priority (blue) to highest priority (yellow) using the Zonation greedy algorithm. The additive benefit function was used to iteratively remove cells with the lowest marginal benefit. In calculating marginal benefit each species was weighted equally. The map can be used to calculate the expected value with original information for a fixed budget (number of cells protected) with value measured as the average proportion of species total carrying capacity remaining if all unprotected cells were removed."}
+gg_raster(plan$rasters$rank) +
+scale_fill_viridis(na.value = NA, name = "Rank") +
+guides(fill = guide_colourbar(barheight = 10, label = FALSE)) +
+theme(axis.text = element_blank(), axis.title = element_blank())
+```
+
+```{r plot_plan_uncertainty, fig.cap = "Uncertainty in pixel ranks."}
+sapply(plans_boot, values) %>%
+na.omit %>%
+{.[sample(nrow(.), 10000L), ]} %>%
+apply(1L, mn_plus_ci) %>%
+t %>%
+data.frame %>%
+arrange(mean) %>%
+cbind(x = 1:10000) %>%
+ggplot +
+aes(x = x, y = mean, ymin = lower95CI, ymax = upper95CI) +
+geom_ribbon(fill = 'grey') +
+geom_line(size = .5) +
+theme_bw() +
+theme(
+  axis.title  = element_blank(),
+  axis.text.x = element_blank()
+)
+```
