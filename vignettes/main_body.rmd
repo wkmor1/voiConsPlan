@@ -121,12 +121,16 @@ theme(
 )
 ```
 
-| Expected value | Average proportion of          |
-|                | carrying capacity remaining    |
-|:---------------|-------------------------------:|
-| EVWOI          | `r fmt(evwoi * 100)`           |
-| EVWPI          | `r fmt(evwpi * 100)`           |
-| EVPI           | `r fmt((evwpi - evwoi) * 100)` |
++-----------------+--------------------------------+
+| Expected value  | Average proportion of          |
+|                 | carrying capacity remaining    |
++=================+================================+
+| EVWOI           | `r fmt(evwoi * 100)`           |
++-----------------+--------------------------------+
+| EVWPI           | `r fmt(evwpi * 100)`           |
++-----------------+--------------------------------+
+| EVPI            | `r fmt((evwpi - evwoi) * 100)` |
++-----------------+--------------------------------+
 
 Table: Something
 

@@ -10,6 +10,7 @@ header-includes:
 - \linespread{2}\selectfont
 - \usepackage{setspace}
 - \usepackage{caption}
+- \captionsetup{font={stretch=2}}
 #- \usepackage[labelsep = none, textformat = empty]{caption}
 #- \usepackage[nomarkers]{endfloat}
 #- \AtBeginDelayedFloats{\linespread{2}}
