@@ -13,16 +13,35 @@ Study species
 
 The Hunter is home to many species of national conservation significance. Here we consider six species: two birds, two mammals and two plants. For the following analyses we build conservation plans that aim to maximise the average relative carrying capacity of these six species across the hunter region. Table 1 outlines these six species and an estimate of their maximum carrying capacity (see supplement for more details) as well as their conservation status according to the _NSW Threatened Species Conservation Act 1995_ (TSC), _Commonwealth Environment Protection and Biodiversity Conservation Act 1999_ (EPBC) and the IUCN Red list (IUCN).
 
-| Common Name          | Scientific Name         |   $\bar{K}^\mathrm{max}$ | TSC | EPBC | IUCN |
-|----------------------|-------------------------|-------------------------:|-----|------|------|
-| Powerful Owl         | _Ninox strenua_         |                      0.1 | V   | -    | LC   |
-| Spotted-tailed Quoll | _Dasyurus maculatus_    |                      0.2 | V   | E    | NT   |
-| Regent Honeyeater    | _Anthochaera phrygia_   |                      2.0 | CE  | CE   | CE   |
-| Squirrel Glider      | _Petaurus norfolcensis_ |                    150.0 | V   | -    | LC   |
-| Bynoe's Wattle       | _Acacia bynoeana_       |                    250.0 | E   | V    | -    |
-| Charmhaven Apple     | _Angophora inopina_     |                  18000.0 | V   | V    | -    |
-
-Table: Species used in the conservation plan for the Hunter region. LC = Least Concern;  NT = Near Threatened; V = Vulnerable; E = Endangered; CE = Critically Endangered. $\bar{K}^\mathrm{max}$ = Estimated maximum carrying capacity (no individuals per square kilometre).
+\vspace{12pt}
+```{r species_table, results = "asis"}
+data_frame(
+  `\\vrule width 0pt height 15pt depth 5pt\\relax Common Name` = paste0(
+                          "\\vrule width 0pt height 15pt depth 5pt\\relax ",
+                          c("Powerful Owl", "Spotted-tailed Quoll",
+                            "Regent Honeyeater", "Squirrel Glider",
+                            "Bynoe's Wattle", "Charmhaven Apple")
+                        ),
+  `Scientific Name` = paste0(
+                        "\\textit{", 
+                        c("Ninox strenua", "Dasyurus maculatus",
+                          "Anthochaera phrygiam", "Petaurus norfolcensis",
+                          "Acacia bynoeana", "Angophora inopina"),
+                        "}"
+                      ),
+  `$\\bar{K}^\\mathrm{max}$` = c(.1, .2, 2, 150, 250, 18000),
+  TSC = c("V", "V", "CE", "V", "E", "V"),
+  EPBC = c("-", "E", "CE", "-", "V", "V"),
+  IUCN = c("LC", "NT", "CE", "LC", "", "")
+) %>%
+xtable(
+  caption = "Species used in the conservation plan for the Hunter region. LC = Least Concern;  NT = Near Threatened; V = Vulnerable; E = Endangered; CE = Critically Endangered. $\\bar{K}^\\mathrm{max}$ = Estimated maximum carrying capacity (no individuals per square kilometre).",
+  label = "species_table",
+  align = "lllrlll",
+  digits = 1
+) %>%
+print(include.rownames = FALSE, comment = FALSE, sanitize.text.function = I)
+```
 
 <!---
 ## Approximate maximum carrying capacity of the Hunter region
@@ -104,7 +123,7 @@ theme(axis.text = element_blank(), axis.title = element_blank())
 ```
 
 \vspace{12pt}
-```{r plot_plan_uncertainty, fig.cap = "Uncertainty in pixel ranks."}
+```{r plot_plan_uncertainty, fig.cap = "Uncertainty in pixel ranks. Ten thousand random pixels have been selected and displayed in order of their priority rank (black line). Grey bars indicate the 95% inner quantile of the priority rankings based on the bootstrapped maps. Pixels which have mean values above the red horizontal line are included in the conservation plan under original information."}
 sapply(plans_boot, values) %>%
 na.omit %>%
 {.[sample(nrow(.), 10000L), ]} %>%
@@ -115,6 +134,7 @@ arrange(mean) %>%
 cbind(x = 1:10000) %>%
 ggplot +
 aes(x = x, y = mean, ymin = lower95CI, ymax = upper95CI) +
+geom_hline(aes(yintercept = .9, colour = "tomato4", show_guide = FALSE)) +
 geom_ribbon(fill = 'grey') +
 geom_line(size = .5) +
 theme_bw() +
@@ -124,16 +144,21 @@ theme(
 )
 ```
 
-+-----------------+--------------------------------+
-| Expected value  | Average proportion of          |
-|                 | carrying capacity remaining    |
-+=================+================================+
-| EVWOI           | `r fmt(evwoi * 100)`           |
-+-----------------+--------------------------------+
-| EVWPI           | `r fmt(evwpi * 100)`           |
-+-----------------+--------------------------------+
-| EVPI            | `r fmt((evwpi - evwoi) * 100)` |
-+-----------------+--------------------------------+
-
-Table: Something
-
+\vspace{12pt}
+```{r evi_table, results = "asis"}
+data_frame(
+  `\\vrule width 0pt height 17pt depth 5pt\\relax Expected value` =
+    paste0("\\vrule width 0pt height 15pt depth 5pt\\relax ",
+           c("EVWOI", "EVWPI", "EVPI")
+    ),
+  `\\pbox{20cm}{Average proportion of\\\\carrying capacity remaining}` =
+    c(evwoi, evwpi, evwpi - evwoi) * 100
+) %>%
+xtable(
+  caption = "Something",
+  label = "evi_table",
+  align = "llr",
+  digits = 1
+) %>%
+print(include.rownames = FALSE, comment = FALSE, sanitize.text.function = I)
+```

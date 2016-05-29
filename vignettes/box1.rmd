@@ -16,7 +16,7 @@ The __expected value__ (EV) is the value the planner expects (but not necessaril
 The EVWOI is the highest value the planner expects they could get, on average (the __maximum expected value__), by protecting a property with only the information they have on habitat suitability at hand. To work out the expected value of protecting a property, the planner weights (i.e., multiplies) the values that are possible by their probabilities and adds them together.
 
 \vspace{12pt}
-```{r plot_evwoi_bin_example, fig.cap = "How to calculate EVWOI. First calculate the expected value of choosing to protect each property separately. The expected value of protecting a property is the values (the grey bars) that are possible, multiplied by their respective probabilities (the height of the grey bars) and then added together. EVWOI is the greatest (maximum) of the expected values. In this case, the EVWOI is the expected value of protecting property 2 is **0.6**.",  fig.width = 7.5, fig.height = 5}
+```{r plot_evwoi_bin_example, fig.cap = "How to calculate EVWOI. First calculate the expected value of choosing to protect each property separately. The expected value of protecting a property is the values (the grey bars) that are possible, multiplied by their respective probabilities (the height of the grey bars) and then added together. EVWOI is the greatest (maximum) of the expected values. In this case, the EVWOI is the expected value of protecting property 2 is **0.6**."}
 par(mfrow = c(1, 2), mar = c(0, 1, 3, 3), oma = c(8, 4, 0, 0), lwd = 2, ps = 12)
 for (i in 0:1) {
   plot.new()
@@ -78,7 +78,7 @@ Where $a$ represents the __action__ taken by the conservation planner, $s$ repre
 The EVWPI is the value the planner expects if they knew the properties' habitat suitabilities before deciding which one to protect.
 
 \vspace{12pt}
-```{r plot_evwpi_bin_example, fig.cap = "How to calculate EVWPI. First work out the scenarios that are possible. Then choose the property to protect in each possible scenario. When the properties have equal value it doesn't matter which one is selected (e.g., in scenarios 3 &amp; 4). Next calculate the probability that the scenario occurs by multiplying the probabilities of the property habitat suitabilities (e.g., for scenario 1, the probability is $0.5 \\times 0.6 = 0.3$, see the rightmost arrows). Next multiply the scenario probabilties by the value of the properties selected in each scenario. Finally, sum the weighted scenario values (rightmost values). In this case the EVWPI is **0.8**.", fig.width = 7.5, fig.height = 5}
+```{r plot_evwpi_bin_example, fig.cap = "How to calculate EVWPI. First work out the scenarios that are possible. Then choose the property to protect in each possible scenario. When the properties have equal value it doesn't matter which one is selected (e.g., in scenarios 3 &amp; 4). Next calculate the probability that the scenario occurs by multiplying the probabilities of the property habitat suitabilities (e.g., for scenario 1, the probability is $0.5 \\times 0.6 = 0.3$, see the rightmost arrows). Next multiply the scenario probabilties by the value of the properties selected in each scenario. Finally, sum the weighted scenario values (rightmost values). In this case the EVWPI is **0.8**."}
 par(mfrow = c(1, 2), mar = c(0, 1, 3, 1), oma = c(15, 4, 0, 9), lwd = 2,
   ps = 12)
 for (i in 0:1) {

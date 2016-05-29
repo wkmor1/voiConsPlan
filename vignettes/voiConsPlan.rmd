@@ -5,12 +5,15 @@ date: "`r Sys.Date()`"
 output:
   pdf_document:
     fig_caption: yes
+    fig_width: 7.4
+    fig_height: 5
     citation_package: natbib
 header-includes:
 - \linespread{2}\selectfont
 - \usepackage{setspace}
 - \usepackage{caption}
 - \captionsetup{font={stretch=2}}
+- \usepackage{pbox}
 #- \usepackage[labelsep = none, textformat = empty]{caption}
 #- \usepackage[nomarkers]{endfloat}
 #- \AtBeginDelayedFloats{\linespread{2}}
@@ -23,7 +26,7 @@ biblio-style: apalike
 ```{r setup, echo = FALSE}
 knitr::opts_chunk$set(
   cache = TRUE, echo = FALSE, message = FALSE, warning = FALSE,
-  results = "hide", fig.pos = "!h"
+  results = "hide", fig.pos = "!ht"
 )
 
 knitr::opts_knit$set(root.dir = "./build")

@@ -17,6 +17,7 @@ library(sp)
 library(topmodel)
 library(viridis)
 library(voiConsPlan)
+library(xtable)
 
 ala_config(cache_directory = ".")
 ```
