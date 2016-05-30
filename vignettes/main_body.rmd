@@ -6,7 +6,7 @@ To demonstrate how to incorporate the value of information in a systematic spati
 Study area
 ----------
 
-The Hunter is a biodiverse region of north-eastern New South Wales, Australia. The region is home to many threatened species of plants and animals. There are multiple threats to biodiversity in the region. The Hunter is under is under active development and the area's land users utilize it's resources for mining, agriculture, transport, urban infrastructure and conservation. For the the analyses we present here, we consider the Hunter region to include the local government areas of Cessnock, Dungog, Gloucester, Gosford, Greater Taree, Great Lakes, Lake Macquarie, Maitland, Musselbrook, Newcastle, Port Macquarie-Hastings, Port Stephens, Singleton, Upper Hunter and Wyong, an area of `r fmt(raster::cellStats(!is.na(hunter_alt), sum))` km$^2$.
+The Hunter is a biodiverse region of north-eastern New South Wales, Australia. The region is home to many threatened species of plants and animals. There are multiple threats to biodiversity in the region. The Hunter is under is under active development and the area's land users utilize it's resources for mining, agriculture, transport, urban infrastructure and conservation. For the the analyses we present here, we consider the Hunter region to include the local government areas of Cessnock, Dungog, Gloucester, Gosford, Greater Taree, Great Lakes, Lake Macquarie, Maitland, Musselbrook, Newcastle, Port Macquarie-Hastings, Port Stephens, Singleton, Upper Hunter and Wyong, an area of `r fmt(raster::cellStats(!is.na(predictors[[1]]), sum))` km$^2$.
 
 Study species
 -------------
