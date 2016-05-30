@@ -5,7 +5,7 @@ Box 2: A slightly less simple example: value of information for a plan to protec
 
 In Box 1 we demonstrated how to calculate the value of information when the uncertainty in value was discrete (value of property could be zero or one). In the following example we increase the complexity slighlty and demonstrate how to calculate EVPI when uncertainty is continuous. Otherwise the problem remains the same. A planner has the budget to protect one property for the conservation of an endangered species and there are two properties available.
 
-Here again, the planner's aim is to maximise the area of habitat protected. And again, the planner is uncertain about the habitat suitability of both properties. This time, the uncertainty in habitat suitability is continous. The planner thinks that the habitat suitability of 
+Here again, the planner's aim is to maximise the area of habitat protected. And again, the planner is uncertain about the habitat suitability of both properties. This time however, the uncertainty in habitat suitability is continuous. Now planner thinks that the habitat suitability of both properties can be __any value__ between zero and one, whereas before the planner thought the value could be __either__ zero or one.
 
 \vspace{12pt}
 ```{r plot_evwoi_cont_example, fig.cap = "How to calculate EVWOI with continuous uncertainty. The EVWOI in this case is even simpler than for the discrete case (Figure 2). Simply take the expected value of each properties' distribution of value, the maximum of which, is the EVWOI (note that for property 2, which has an asymmetrical distribution, the expected value, its mean, is a little lower than its most probable value, the mode)."}
