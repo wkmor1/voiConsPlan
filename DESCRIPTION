@@ -1,26 +1,41 @@
 Package: voiConsPlan
 Title: Value of information for conservation planning
-Version: 0.0.0.9063
+Version: 0.0.0.9064
 Authors@R: person(c("William", "Keith"), "Morris", email = "wkmor1@gmail.com", role = c("aut", "cre"))
-Description: What is the value of information when doing spatial conservation
-    planning? The inputs of a spatial conservation plan can be uncertain. There
-    are many types of uncertainty in a spatial conservation plan. To create a
-    conservation plan with a greater expected outcome it may be worth reducing the
-    uncertainty of inputs before prioritizing. But which uncertainties should be
-    addressed and by how much? The concept of 'value of information' can guide how
-    to address uncertainty in a decision problem. Here we introduce the application
-    of an expected value of information analysis for spatial conservation planning
-    for the first time.
+Description: Spatial conservation plans are typically based upon uncertain
+    inputs and may benefit from additional data to inform them.However, the
+    toolset of spatial prioritization does not yet contain a method for
+    assessing the value of new information to a spatial conservation plan.
+    If the value of information were to be calculated, then conservation plans
+    would more effective, benefiting from a more optimal amount of information.
+    Here, for the first time we demonstrate how a formal value of information
+    analysis can be applied to a spatial conservation plan. We show how a value
+    of information analysis can be combined with traditional conservation
+    planning tools to map species distributions and optimize a reserve network
+    to protect them. We incorporate uncertainty into conservation planning with
+    Monte Carlo sampling of the planning inputs and then test the effects of
+    uncertainty reduction to calculate the value of additional information to a
+    conservation plan. The impact of optimally incorporating additional
+    information into conservation plans, will be more effective plans where
+    additional information is beneficial, and avoiding the loss of resources to
+    uneccessary information gathering where new data has no benefit to the
+    fundemental objectives of the plan.
 Depends:
     R (>= 3.2.1)
 License: MIT + file LICENSE
 LazyData: true
 Imports:
+    ALA4R,
     data.table,
+    dismo,
+    dplyr,
     ggplot2,
+    httr,
     methods,
     raster,
-    utils
+    rgeos,
+    sp,
+    topmodel
 Suggests:
     knitr
 VignetteBuilder: knitr

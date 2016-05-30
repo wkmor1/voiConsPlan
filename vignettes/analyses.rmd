@@ -1,20 +1,13 @@
 ```{r package_setup}
 library(ALA4R)
-library(doSNOW)
 library(dplyr)
-library(dismo)
+library(doSNOW)
 library(foreach)
-library(httr)
 library(gridExtra)
-library(ggplot2)
-library(maptools)
 library(raster)
 library(rgdal)
-library(rgeos)
 library(rzonation)
 library(scales)
-library(sp)
-library(topmodel)
 library(viridis)
 library(voiConsPlan)
 library(xtable)
@@ -23,8 +16,6 @@ ala_config(cache_directory = ".")
 ```
 
 ```{r variables}
-resolution <- 924L
-
 n_bg_points <- 1e4L
 
 n_sp_points <- 30L
@@ -34,6 +25,8 @@ n_cl_nodes <- 36L
 n_bs_samp <- 1e3L
 
 prop_loss <- .9
+
+resolution <- 1e3L
 
 projection <- "+init=epsg:28356"
 
@@ -53,6 +46,10 @@ spp_of_interest <- c("Anthochaera phrygia", "Dasyurus maculatus",    "Acacia byn
 
 spp_max_k  <- c(2e2, 2e2, 2e-2, 1e-2, 1e2, 1e2) %>% setNames(spp_of_interest)
 
+zonation_settings <- list("removal rule" = 2, "warp factor" = 10)
+```
+
+```{r get_data, eval = FALSE, echo = FALSE}
 predictor_sources <- c("http://www.abs.gov.au/", "http://www.bom.gov.au/",
                        "http://mapdata.environment.nsw.gov.au/")
 
@@ -81,129 +78,6 @@ filters <- c("decimalLatLongConversionFailed", "habitatMismatch",
              "unrecognizedGeodeticDatum",      "invalidGeodeticDatum", 
              "inferredDuplicateRecord")
 
-zonation_settings <- list("removal rule" = 2, "warp factor" = 10)
-```
-
-```{r functions}
-fmt <- function(x, digits = 0) {
-  format(round(x, digits), nsmall = digits, big.mark = ",", scientific = FALSE)
-}
-
-get_zip <-
-  function(u, p, q, d) {
-    GET(
-      url = u,
-      path = p,
-      query = q,
-      write_disk(d, overwrite = TRUE)
-    )
-    unzip(d, overwrite = TRUE, junkpaths = TRUE)
-  }
-
-get_bioclim <-
-  function(layer, extent, var = "bio") {
-    lapply(
-      c(xmin, xmax),
-      function(x) {
-        getData(
-          "worldclim",
-          var = var,
-          res = 0.5,
-          lon = do.call(x, list(extent)),
-          lat = ymin(extent)
-        ) %>%
-        crop(extent, snap = "out")
-      }
-    ) %>%
-    do.call(merge, .) %>%
-    subset(layer)
-  }
-
-dload_records <-
-  function(species_group, filters, poly, proj, mask) {
-    records <-
-      lapply(
-        paste0("[", LETTERS, " TO ", paste0(LETTERS, "zzzzz"), "]"),
-        function(x) {
-          occurrences(
-            taxon  = paste0('taxon_name:', x),
-            wkt    = writeWKT(gConvexHull(poly)),
-            fq     = c(sprintf("species_group:%s", species_group),
-                       "coordinate_uncertainty:[0 TO 100]", 
-                       "-duplicate_status:D", "geospatial_kosher:true", 
-                       "year:[1996 TO 2016]"),
-            qa     = filters,
-            download_reason_id = 4
-          ) %>%
-          getElement("data")
-      }
-    ) %>%
-    do.call(rbind, .) %>%
-    filter_(paste("!", filters, collapse = "&")) %>%
-    select_("species", coords[1], coords[2])
-    coordinates(records) <- coords
-    proj4string(records) <- "+init=epsg:4326"
-    if (!missing(mask)) {
-      records <- spTransform(records, CRS(proj4string(mask)))
-      records <- records[!is.na(extract(mask, records)), ]
-    } else {
-      records <- spTransform(records, CRS(proj4string(poly)))
-      o <- over(records, poly)
-      records <- records[!is.na(o), ]
-    }
-    spTransform(records, CRS(proj)) %>%
-    as.data.frame %>%
-    data.frame(species_group = species_group, ., stringsAsFactors = FALSE)
-  }
-
-twi <- 
-  function(x, sinkfill = 4, degree = .05) {
-    y <- as.matrix(x)
-    for (i in seq_len(sinkfill)) {
-      y <- sinkfill(y, xres(x), degree)
-    }
-    setValues(x, topidx(y, xres(x))$atb)
-  }
-
-fit_maxent_model <-
-  function(sp, data, bg, preds, coords = c("longitude", "latitude"),
-           maxent_args = c("hinge=FALSE", "threshold=FALSE"),
-           sp_col = "species", sp_grp_col = "species_group",
-           bg_sp_grp_col = "species_group") {
-    data <- as.data.frame(data)
-    bg <- as.data.frame(bg)
-    data_sp <- data[, sp_col]
-    data_spp_grp <- unique(data[, sp_grp_col])
-    bg_spp_grp <- bg[, bg_sp_grp_col]
-    maxent(
-      x = preds,
-      p = data[grepl(gsub(" ", ".*", sp), data_sp), coords],
-      a = bg[bg_spp_grp == data_spp_grp, coords],
-      args = maxent_args
-    )
-  }
-
-extract_layers <- function(x, brick_list) lapply(brick_list, raster, layer = x)
-
-as.list.RasterBrick <-
-  function(x) lapply(seq_len(nlayers(x)), function(y) raster(x, y))
-
-mn_plus_ci <- 
-  function(x) {
-    setNames(
-      c(mean(x, na.rm = TRUE), quantile(x, prob = c(.025, .975), na.rm = TRUE)),
-      c("mean", "lower95CI", "upper95CI")
-    )
-  }
-
-ave_prop_rem <-
-  function(x, y, p) {
-     ans <- cellStats(x * (y > p), sum) / cellStats(x, sum)
-     sum(ans, na.rm = TRUE) / nlayers(x)
-   }
-```
-
-```{r predictor_data}
 mapply(get_zip, predictor_sources, predictor_paths, predictor_queries,
        predictor_dest_files)
 
@@ -244,15 +118,8 @@ predictors <-
   mask(spTransform(hunter_poly, CRS(projection))) %>%
   projectRaster(crs = projection, res = resolution)
 
-hunter_alt <-
-  hunter_alt %>%
-  projectRaster(crs = projection, res = resolution) %>%
-  mask(calc(predictors, sum))
-
 predictors <- mask(predictors, calc(predictors, sum))
-```
 
-```{r occurrence_data}
 occurrence_records <-
   lapply(
     species_groups, dload_records, filters, hunter_poly, projection, hunter_alt
