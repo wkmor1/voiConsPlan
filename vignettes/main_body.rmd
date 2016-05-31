@@ -116,32 +116,42 @@ Prioritizing with Zonation
 
 \vspace{12pt}
 ```{r plot_plan, fig.cap = "Priority map for the Hunter region. Pixels have been ranked from lowest priority (blue) to highest priority (yellow) using the Zonation greedy algorithm. The additive benefit function was used to iteratively remove cells with the lowest marginal benefit. In calculating marginal benefit each species was weighted equally. The map can be used to calculate the expected value with original information for a fixed budget (number of cells protected) with value measured as the average proportion of species total carrying capacity remaining if all unprotected cells were removed."}
-gg_raster(plan$rasters$rank) +
+gg_raster(plan$rasters$rank, highlight = c(.9, 1)) +
 scale_fill_viridis(na.value = NA, name = "Rank") +
 guides(fill = guide_colourbar(barheight = 10, label = FALSE)) +
 theme(axis.text = element_blank(), axis.title = element_blank())
 ```
 
 \vspace{12pt}
-```{r plot_plan_uncertainty, fig.cap = "Uncertainty in pixel ranks. Ten thousand random pixels have been selected and displayed in order of their priority rank (black line). Grey bars indicate the 95% inner quantile of the priority rankings based on the bootstrapped maps. Pixels which have mean values above the red horizontal line are included in the conservation plan under original information."}
-sapply(plans_boot, values) %>%
-na.omit %>%
-{.[sample(nrow(.), 10000L), ]} %>%
-apply(1L, mn_plus_ci) %>%
-t %>%
-data.frame %>%
-arrange(mean) %>%
-cbind(x = 1:10000) %>%
-ggplot +
-aes(x = x, y = mean, ymin = lower95CI, ymax = upper95CI) +
-geom_hline(aes(yintercept = .9, colour = "tomato4", show_guide = FALSE)) +
-geom_ribbon(fill = 'grey') +
-geom_line(size = .5) +
-theme_bw() +
-theme(
-  axis.title  = element_blank(),
-  axis.text.x = element_blank()
+```{r plot_plan_uncertainty, fig.height = 3.4, fig.cap = "Uncertainty in pixel ranks. Pixels are displayed in order of their priority. Grey bars indicate the 95% inner quantile of the priority rankings based on the bootstrapped maps. Pixels which have mean values above the red horizontal line are included in the conservation plan under original information."}
+plans_boot_df <-
+  sapply(plans_boot, values) %>%
+  apply(1L, function(x) c(mean = mean(x), min = min(x), max = max(x))) %>%
+  t %>% data.frame %>% mutate(hl = min < .9 & max > .9)
+
+grid.arrange(
+  na.omit(plans_boot_df) %>%
+  arrange(mean) %>%
+  mutate(x = seq_len(n())) %>%
+  slice(floor(seq.int(1, n(), length.out = 10000))) %>%
+  ggplot +
+  geom_hline(aes(yintercept = .9)) +
+  geom_ribbon(aes(x = x, y = mean, ymin = min, ymax = max, alpha = hl)) +
+  scale_alpha_discrete(guide = "none", range = c(.3, 1)) +
+  theme_bw() +
+  theme(
+    axis.title  = element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank()
+  ),
+  gg_raster(plan$rasters$rank, highlight = plans_boot_df$hl) +
+  scale_fill_viridis(na.value = NA, name = "Rank") +
+  guides(fill = guide_colourbar(barheight = 10, label = FALSE)) +
+  theme(axis.text = element_blank(), axis.title = element_blank()),
+  nrow = 1,
+  padding = 0
 )
+
 ```
 
 \vspace{12pt}

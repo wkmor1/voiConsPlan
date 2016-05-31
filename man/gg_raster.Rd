@@ -8,13 +8,15 @@
 \alias{gg_raster,RasterStack-method}
 \title{Plot a raster using gg_plot}
 \usage{
-gg_raster(x, labels = names(x), nrow = 1)
+gg_raster(x, labels = names(x), nrow = 1, highlight = 1, invert = FALSE)
 
-\S4method{gg_raster}{RasterLayer}(x, labels)
+\S4method{gg_raster}{RasterLayer}(x, labels, highlight, invert)
 
-\S4method{gg_raster}{RasterStack}(x, labels = names(x), nrow = 1)
+\S4method{gg_raster}{RasterStack}(x, labels = names(x), nrow = 1,
+  highlight = 1, invert = FALSE)
 
-\S4method{gg_raster}{RasterBrick}(x, labels = names(x), nrow = 1)
+\S4method{gg_raster}{RasterBrick}(x, labels = names(x), nrow = 1,
+  highlight = 1, invert = FALSE)
 }
 \arguments{
 \item{x}{A Raster* object.}
@@ -22,6 +24,10 @@ gg_raster(x, labels = names(x), nrow = 1)
 \item{labels}{Character vector. Facet labels.}
 
 \item{nrow}{Integer. Number of rows for facets of rasters.}
+
+\item{highlight}{Highlight a region of the raster by alter alpha level of some parts.}
+
+\item{invert}{Invert the highlighted region.}
 }
 \description{
 Creates a facetted plot of a raster or set of rasters using ggplot.

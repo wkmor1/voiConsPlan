@@ -1,4 +1,4 @@
-```{r package_setup}
+```{r package_setup, cache = FALSE}
 library(ALA4R)
 library(dplyr)
 library(doSNOW)
