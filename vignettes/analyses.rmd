@@ -123,7 +123,8 @@ predictors <- mask(predictors, calc(predictors, sum))
 
 occurrence_records <-
   lapply(
-    species_groups, dload_records, filters, hunter_poly, projection, hunter_alt
+    species_groups, dload_records, filters, hunter_poly, projection, hunter_alt,
+    coords
   ) %>%
   bind_rows
 

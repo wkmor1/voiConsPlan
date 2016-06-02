@@ -48,8 +48,8 @@ Having perfect information is to have complete knowledge---no uncertainty. While
 ### The expected value of perfect information
 
 If the conservation planner can estimate the value of having perfect information, that is knowing what it is worth to resolve all uncertainty before enacting a conservation plan, then they will have an idea of the upper bound on what they should be willing to do to reduce uncertainty. If the expected value of perfect information is relatively small then it is less likely to be worth resolving uncertainty than if the value of perfect information was relatively large.
-\newpage
 
+\newpage
 ```{r box1, child = "box1.rmd"}
 ```
 \newpage

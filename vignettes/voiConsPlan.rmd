@@ -17,7 +17,7 @@ header-includes:
 #- \usepackage[labelsep = none, textformat = empty]{caption}
 #- \usepackage[nomarkers]{endfloat}
 #- \AtBeginDelayedFloats{\linespread{2}}
-- \usepackage{lineno}
+- \usepackage[displaymath,mathlines]{lineno}
 - \linenumbers
 bibliography: voiConsPlan.bib
 biblio-style: apalike
@@ -26,7 +26,7 @@ biblio-style: apalike
 ```{r setup, echo = FALSE}
 knitr::opts_chunk$set(
   cache = TRUE, echo = FALSE, message = FALSE, warning = FALSE,
-  results = "hide", fig.pos = "!ht"
+  results = "hide", fig.pos = "!htbp"
 )
 
 knitr::opts_knit$set(root.dir = "./build")
