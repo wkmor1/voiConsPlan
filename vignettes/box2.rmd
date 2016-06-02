@@ -4,23 +4,33 @@ Box 2: A slightly less simple example: value of information for a plan to protec
 
 In Box 1 we demonstrated how to calculate the value of information when the uncertainty in value was discrete (the value of a property could be zero or one). In the following example we increase the complexity slightly and demonstrate how to calculate EVPI when uncertainty is continuous. In all other aspects, the problem remains the same. A planner has the budget to protect one property for the conservation of an endangered species and there are two properties available.
 
-Here again, the planner's aim is to maximise the area of habitat protected. And again, the planner is uncertain about the habitat suitability of both properties. This time however, the uncertainty in habitat suitability is continuous. Now the planner thinks that the habitat suitability of both properties can be __any value__ between zero and one, whereas before the planner thought the value could be __either__ zero or one. For the continous case the habitat suitability can be described by a probability distribution function (PDF). The planner uses a different PDF to describe the uncertainty in each properties value (Figure \ref{fig:plot_evwoi_cont_example}). For property 1 the PDF is symmetrical indicating that planner thinks it is equally probable that the value is less than .5 as it is probable that the value is greater than .5. In contrast, the planner believes that property 2 has a value that is more likely to be greater than .5 than not. Therefore, the PDF describing the value of property 2 is shifted to the right, having a greater mass over values between .5 and 1 than over values between 0 and .5.
+Again, the planner's aim is to maximise the area of habitat protected. And again, the planner is uncertain about the habitat suitability of both properties. This time however, the uncertainty in habitat suitability is continuous. Now the planner thinks that the habitat suitability of both properties can be __any value__ between zero and one, whereas before the planner thought the value could be __either__ zero or one. For the continuous case the habitat suitability can be described by a continuous probability distribution function (PDF). The planner uses a different PDF to describe the uncertainty in each properties value (Figure \ref{fig:plot_evwoi_cont_example}). For property 1 the PDF is symmetrical indicating that planner thinks it is equally probable that the value is less than .5 as it is probable that the value is greater than .5. In contrast, the planner believes that property 2 has a value that is more likely to be greater than .5 than not. Therefore, the PDF describing the value of property 2 is shifted to the right, having a greater mass over values between .5 and 1 than over values between 0 and .5.
 
 ### Expected value with original information
 
-With these two PDFs, the planner can calculate the EVWOI. Again the planner needs to find the expected value of purchasing each property. The greater of the two, the maximum expected value, is the EVWOI. To find the expected value of a properties PDF the planner must integrate the PDF over the range of possible values. Doing so in this case yields an expected  
+With these two PDFs, the planner can calculate the EVWOI. Again the planner needs to find the expected value of purchasing each property. The greater of the two, the maximum expected value, is the EVWOI. To find the expected value of a property's PDF the planner must integrate the PDF over the range of possible values. In Figure \ref{fig:plot_evwoi_cont_example}. we demonstrate how this is done using Monte Carlo integration. This yields expected values of .52 and .62 for properties 1 and 2 respectively. Applying equation \ref{eq:evwoi} as in Box 1 we estimate the EVWOI is .62 and the optimal action for the planner would be to purchase and protect property 2.
 
-\vspace{12pt}
-```{r plot_evwoi_cont_example, fig.cap = "How to calculate EVWOI with continuous uncertainty. The EVWOI in this case is even simpler than for the discrete case (Figure 2). Simply take the expected value of each properties' distribution of value, the maximum of which, is the EVWOI (note that for property 2, which has an asymmetrical distribution, the expected value, its mean, is a little lower than its most probable value, the mode)."}
-par(mfrow = c(1, 2), mar = c(0, 1, 3, 3), oma = c(15, 4, 0, 0), lwd = 2, ps = 12)
+```{r box2_data}
 nsims <- 5
 
 set.seed(34)
 
 sim1 <- replicate(nsims, round(rbeta(1, 2.4, 1.6), 2))
+
 sim2 <- replicate(nsims, round(rbeta(1, 2, 2), 2))
+
 musim <- Map(mean, list(sim1, sim2))
 
+msim <- pmax(sim1, sim2)
+
+cEVWOI <- round(max(unlist(musim)), 1)
+cEVWPI <- round(mean(msim), 1)
+cEVPI  <- cEVWPI - cEVWOI
+```
+
+\vspace{12pt}
+```{r plot_evwoi_cont_example, fig.cap = sprintf("How to calculate EVWOI with continuous uncertainty using Monte Carlo integration. Like in Figure \\ref{fig:plot_evwoi_bin_example} EVWOI is the maximum expected value of the two properties. To calculate these expected values we generate samples from the respective PDFs and divide by the number of samples. By generating samples with probability according to their PDFs, as the number of samples increases the estimate of expected value increases in accuracy. With %1$s samples the estimates are %2$s and %3$s (note that for property 2, which has an asymmetrical distribution, the expected value, its mean, is a little lower than its most probable value, the mode). Therefore the estimate of EVWOI is %4$s, the greater of the two.", nsims, round(musim[[1]], 1), round(musim[[2]], 1), cEVWOI))}
+par(mfrow = c(1, 2), mar = c(0, 1, 3, 3), oma = c(15, 4, 0, 0), lwd = 2, ps = 12)
 for (j in 0:1) {
   plot.new()
   plot.window(xlim = 0:1, ylim = 0:1, yaxs = "i")
@@ -92,21 +102,15 @@ mtext(
   bquote(.("EVWOI") == .(round(max(unlist(musim)), 2))),
   1, 13.5, outer = TRUE, adj = .9
 )
-
-rm(i, j, nsims, sim1, sim2)
 ```
 
+### Expected value with perfect information
+
+Figure \\ref{fig:plot_evwpi_cont_example} demonstrates the application of Monte Carlo integration to calculating EVWPI. Here the samples generated are the same as in figure \\ref{fig:plot_evwpi_cont_example} (but they need not be). However this time we generate them as pairs and as in the calculation of EVWPI in Box 1, we maximise first and take the average (mean) at the end to arrive at the expected value which is our estimate of EVWPI.
+
 \vspace{12pt}
-```{r plot_evwpi_cont_example, fig.cap = "How to calculate EVWPI with Monte Carlo sampling. For continuous uncertainty, unlike discrete uncertainty the number of possible outcomes/scenarios are infinite. Any combination of values between 0 and 1 for each property (though some values are more likely than others). One solution is to use Monte Carlo sampling. For example we can estimate the  EVWPI by selecting random pairs from the distribution of property values (numbers at the end of arrows above), selecting the maximum in each case (numbers in black text) and averaging by dividing by the number of samples. By selecting each pair in proportion to the probability distribution functions (PDFs) as we take more Monte Carlo samples the estimate of EVWPI approaches its true value. With the five samples above we estimate an EVWPI of .72 (which is close to the true value of .69, which we would get it if used a large number of samples."}
+```{r plot_evwpi_cont_example, fig.cap = sprintf("How to calculate EVWPI with Monte Carlo integration. For continuous uncertainty, unlike discrete uncertainty the number of possible outcomes/scenarios are infinite. Any combination of values between 0 and 1 for each property (though some values are more likely than others). As in Figure \\ref{plot_evwoi_cont_example}, a conveinent solution is to use Monte Carlo integration. We can estimate EVWPI by generating random samples in pairs, one sample from each of the property value PDFs, selecting the maximum sample in each pair (samples in black text) and then averaging by dividing by the number of samples generated. By selecting each pair in proportion to the probability distribution functions (PDFs) as we take more Monte Carlo samples the estimate of EVWPI approaches its true value. With the %s samples above we estimate an EVWPI of %s (which is close to the true value of .69, which is what we would get it if we used a large number of samples.", nsims, cEVWPI)}
 par(mfrow = c(1, 2), mar = c(0, 1, 3, 3), oma = c(15, 4, 0, 0), lwd = 2, ps = 12)
-nsims <- 5
-
-set.seed(34)
-
-sim1 <- replicate(nsims, round(rbeta(1, 2.4, 1.6), 2))
-sim2 <- replicate(nsims, round(rbeta(1, 2, 2), 2))
-msim <- pmax(sim1, sim2)
-
 for (j in 0:1) {
   plot.new()
   plot.window(xlim = 0:1, ylim = 0:1, yaxs = "i")
@@ -176,7 +180,8 @@ mtext(
   ),
   1, 13.5, outer = TRUE, adj = 0
 )
-
-rm(i, j, msim, nsims, sim1, sim2)
 ```
 
+### Expected value of perfect information
+
+Once again we use equation \ref{eq:evpi} to calculate EVPI. In this case EVPI is $`r cEVWPI - cEVWOI` = \mathbf{`r  cEVPI`}$
