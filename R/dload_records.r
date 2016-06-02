@@ -2,10 +2,11 @@
 #' @importFrom dplyr %>% filter_ select_
 #' @importFrom raster extract
 #' @importFrom rgeos gConvexHull writeWKT
-#' @importFrom sp coordinates CRS over proj4string spTransform
+#' @importFrom sp "coordinates<-" CRS over proj4string "proj4string<-" spTransform
+#' @importFrom utils globalVariables
 #' @export
 dload_records <-
-  function(species_group, filters, poly, proj, mask) {
+  function(species_group, filters, poly, proj, mask, coords) {
     records <-
       lapply(
         paste0("[", LETTERS, " TO ", paste0(LETTERS, "zzzzz"), "]"),
@@ -40,3 +41,5 @@ dload_records <-
       as.data.frame %>%
       data.frame(species_group = species_group, ., stringsAsFactors = FALSE)
   }
+
+globalVariables(".")

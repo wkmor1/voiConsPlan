@@ -49,7 +49,9 @@
 #'
 #' @importFrom raster raster mask compareRaster as.data.frame
 #' @importFrom data.table data.table as.data.table is.data.table :=
-#' @importFrom utils globalVariables
+#' @importFrom methods is
+#' @importFrom stats complete.cases setNames
+#' @importFrom utils count.fields globalVariables
 #' @export
 
 project_maxent <- function(lambdas, newdata, mask) {

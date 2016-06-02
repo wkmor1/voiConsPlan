@@ -8,9 +8,10 @@
 #' @param highlight Highlight a region of the raster by alter alpha level of some parts.
 #' @param invert Invert the highlighted region.
 #'
-#' @importFrom ggplot2 aes_string coord_equal facet_wrap geom_raster ggplot theme_bw
+#' @importFrom ggplot2 aes_string coord_equal facet_wrap geom_raster ggplot theme_bw scale_alpha_discrete
 #' @importFrom methods setGeneric setMethod
 #' @importFrom raster getValues ncell xyFromCell
+#' @importFrom stats setNames
 #' @importFrom utils stack
 #'
 #' @export

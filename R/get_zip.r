@@ -1,4 +1,5 @@
 #' @importFrom httr GET write_disk
+#' @importFrom utils unzip
 #' @export
 get_zip <-
   function(u, p, q, d) {

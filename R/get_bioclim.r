@@ -1,5 +1,6 @@
 #' @importFrom dplyr %>%
-#' @importFrom raster crop getData merge subset xmax xmin
+#' @importFrom raster crop getData merge subset xmax xmin ymin
+#' @importFrom utils globalVariables
 #' @export
 get_bioclim <-
   function(layer, extent, var = "bio") {
@@ -19,3 +20,5 @@ get_bioclim <-
     do.call(merge, .) %>%
     subset(layer)
   }
+
+globalVariables(".")
