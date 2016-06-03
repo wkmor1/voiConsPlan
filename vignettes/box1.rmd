@@ -2,9 +2,7 @@
 Box 1: A simple example: value of information for a plan to protect one species at two properties
 -------------------------------------------------------------------------------------------------
 
-A conservation planner can afford to protect a property to help save an endangered species from extinction. Two properties are available.
-
-The planner's aim is to maximise the area of habitat protected for the endangered species. The planner is uncertain about each property's __habitat suitability__. A property's habitat suitability can be either one (suitable) or zero (unsuitable). The first property has a 50% chance of being suitable (a 50% chance that habitat suitability is one, and a 50% chance that it is zero). But the planner knows that the second property has a slightly better chance (60%) of being suitable (i.e., a 40% chance it's unsuitable). The properties are identical in all other ways. A property can be protected __with original information__ (i.e., choosing a property while still ignorant of the habitat suitabilities) or __with perfect information__ (i.e., knowing the actual habitat suitabilities of each property in advance). The __value__ of protecting a property is its habitat suitability (i.e., the value can be zero or one). Regardless of they habitat suitability, an unprotected property has no value to the planner. The conservation planner must decide which property to protect.
+A conservation planner can afford to protect a property to help save an endangered species from extinction. Two properties are available. The planner's aim is to maximise the area of habitat protected for the endangered species. The planner is uncertain about each property's __habitat suitability__. A property's habitat suitability can be either one (suitable) or zero (unsuitable). The first property has a 50% chance of being suitable (a 50% chance that habitat suitability is one, and a 50% chance that it is zero). But the planner knows that the second property has a slightly better chance (60%) of being suitable (i.e., a 40% chance it's unsuitable). The properties are identical in all other ways. A property can be protected __with original information__ (i.e., choosing a property while still ignorant of the habitat suitabilities) or __with perfect information__ (i.e., knowing the actual habitat suitabilities of each property in advance). The __value__ of protecting a property is its habitat suitability (i.e., the value can be zero or one). Regardless of they habitat suitability, an unprotected property has no value to the planner. The conservation planner must decide which property to protect.
 
 ### Expected value
 
@@ -97,7 +95,7 @@ for (i in 0:1) {
   } else {
     mtext('Probability', 2, 3)
     abline(h = .5, lty = 2)
-    segments(1, .5, 2.32, .5, xpd = NA, lwd = 1, col = 'grey25')
+    segments(1, .5, 2.3, .5, xpd = NA, lwd = 1, col = 'grey25')
   }
   box()
   arrows({if (i) c(.3, .7) else c(.7, .3)}, c(-.3, -.3),
@@ -142,7 +140,7 @@ for (i in 1:4 * 2 + 3) {
 mtext('EVWPI', 1, 13, at = 1.65, adj = 1, font = 2)
 mtext('=', 1, 13, at = 1.7)
 mtext('0.8', 1, 13, at = 1.8, font = 2)
-segments(1.85, -1.8, -1, xpd = NA)
+segments(1.9, -1.8, -1, xpd = NA)
 rm(i, j)
 ```
 

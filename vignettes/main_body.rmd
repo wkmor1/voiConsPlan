@@ -35,7 +35,7 @@ data_frame(
   IUCN = c("LC", "NT", "CE", "LC", "", "")
 ) %>%
 xtable(
-  caption = "Species used in the conservation plan for the Hunter region. LC = Least Concern;  NT = Near Threatened; V = Vulnerable; E = Endangered; CE = Critically Endangered. $\\bar{K}^\\mathrm{max}$ = Estimated maximum carrying capacity (no individuals per square kilometre).",
+  caption = "Species used in the conservation plan for the Hunter region. LC = Least Concern;  NT = Near Threatened; V = Vulnerable; E = Endangered; CE = Critically Endangered. $\\bar{K}^\\mathrm{max}$ = Estimated maximum carrying capacity (number of individuals per square kilometre).",
   label = "species_table",
   align = "lllrlll",
   digits = 1
@@ -60,21 +60,21 @@ Angophora inopina: to [this](http://www.publish.csiro.au/paper/BT03058.htm) 1100
 Acacia bynoeana: [1600 plants](https://www.environment.gov.au/cgi-bin/sprat/public/publicspecies.pl?taxon_id=8575) / [650ha](http://www.environment.nsw.gov.au/resources/parks/PoMLakeMacquarieSCAPulbahIslandNRMoonIslandNR.pdf)So approximately plants per 2.5 plants per hectare.
 --->
 
+\newpage
+```{r box2, child = "box2.rmd"}
+```
+\newpage
+
 Input data for the conservation plan
 ------------------------------------
 
 ### Predictors of species distributions
 
-We summarise the environment of the Hunter region with six data layers: annual mean solar radiation, annual mean temperature, annual precipitation, precipitation seasonality (coefficient of variation), inherent soil fertility, and topographic wetness index (Figure ?). Each layer is a `r nrow(predictors)` by `r ncol(predictors)` grid of 1 km$^2$ cells. We chose this set of variables as they are publicly available (see supplement for sources), are biologically plausible drivers of the distribution of many taxa, have previously been shown to predict the distributions of the study species in the region [**cite**] and are relatively uncorrelated with one another (maximum Pearson correlation coefficient = `r  fmt(max(abs(sort(raster::layerStats(predictors, "pearson", na.rm = TRUE)[[1]], TRUE)[-1:-raster::nlayers(predictors)])), 2)`).
+We summarise the environment of the Hunter region with six data layers: annual mean solar radiation, annual mean temperature, annual precipitation, precipitation seasonality (coefficient of variation), inherent soil fertility, and topographic wetness index. Each layer is a `r nrow(predictors)` by `r ncol(predictors)` grid of 1 km$^2$ cells. We chose this set of variables as they are publicly available (see supplement for sources), are biologically plausible drivers of the distribution of many taxa, have previously been shown to predict the distributions of the study species in the region [**cite**] and are relatively uncorrelated with one another (maximum Pearson correlation coefficient = `r  fmt(max(abs(sort(raster::layerStats(predictors, "pearson", na.rm = TRUE)[[1]], TRUE)[-1:-raster::nlayers(predictors)])), 2)`).
 
 ### Species occurence data
 
 We obtained 30 random occurrence records within the boundaries of the Hunter region (as defined above) and within the date range, 1996 to 2016, for each of the six study species from the Atlas of Living Australia database [**cite**]. We chose this relatively low sample-size random subset to ensure that subsequent modelling would have an initial level of uncertainty large enough for us to demonstrate how to calculate the value of information.
-
-\newpage
-```{r box2, child = "box2.rmd"}
-```
-\newpage
 
 Modelling species distributions using MaxEnt
 --------------------------------------------
@@ -84,7 +84,7 @@ We used the software MaxEnt [**cite**] to create species distribution maps on wh
 \vspace{12pt}
 ```{r plot_models, fig.cap = "Distribution of study species in the Hunter region. Maps show the relative carrying capacity (logistic output) of each species estimated by fitting Maxent models to the occurrence data in Figure ? using the predictor set in Figure ? and background data in Figure ?."}
 gg_raster(models, spp_of_interest, 2) +
-scale_fill_viridis(na.value = NA, name = "") +
+scale_fill_viridis(na.value = NA, name = expression(bar(italic(K))^"max")) +
 guides(fill = guide_colourbar(barheight = 10)) +
 theme(
   axis.text  = element_blank(),
@@ -95,12 +95,12 @@ theme(
 
 ### Background geographic data
 
-To fit distribution models with the occurrence records and environmental predictors we used a set of background points selected so as to minimise sampling bias in the occurrence points. For each higher taxonomic group (birds, mammals and plants) the background points were selected by randomly sampling 10,000 occurrence records of all taxa belonging to each group for the same spatial and temporal extent indicated above.
+To fit distribution models with the occurrence records and environmental predictors we used a set of background points selected so as to minimise sampling bias in the occurrence points. For each higher taxonomic group (birds, mammals and plants) the background points were selected by randomly sampling 10,000 occurrence records of all taxa belonging to each group from the Atlas of Living Australia for the same spatial and temporal extent indicated above.
 \newpage
 
 ### Intepreting the output of MaxEnt
 
-Interpreting MaxEnt output in both it's native formats (raw and logistic) has in the past proved problematic and controversial. It has been shown that it equally problematic to interpret MaxEnt output as either relative occurrence rate or probability of presence it is legitimate to interpret MaxEnt output as an indicator of relative habitat suitability. Here we chose to interpret the logistic output of MaxEnt as a rough indicator of relative carrying capacity. Where the logistic output is zero, the carrying capacity should be zero (or close enough to zero) and where the output is one, the carrying capacity should be close to the maximum attainable for the species. When the output is some fraction of one then we assume the carrying capacity is that fraction of the maximum. The important caveat here is that the relationship between MaxEnt logisitic output and carrying capacity is linear. While there is no prima facie region that it should, be it is seems the most logical assumption and any conceivable deviation from lineararity should not matter too much in the present case as the species of interest here have carrying capacities that vary over many orders of magnitude. The benefit of intepreting the MaxEnt output in such a way is that we can use the distribution maps to calculate an estimate of total potential population size for each species. And subsequently once we have a conservation plan, we can calculate the potential impact on population size of the plan or other competing plans. 
+Interpreting MaxEnt output in both it's native formats (raw and logistic) has in the past proved problematic and controversial. It has been shown that it while it is equally problematic to interpret MaxEnt output as either relative occurrence rate or probability of presence, it is legitimate to interpret MaxEnt output as an indicator of relative habitat suitability. Here we chose to interpret the logistic output of MaxEnt as a rough indicator of relative carrying capacity. Where the logistic output is zero, the carrying capacity should be zero (or close enough to zero) and where the output is one, the carrying capacity should be close to the maximum attainable for the species. When the output is some fraction of one then we assume the carrying capacity is that fraction of the maximum. The important caveat here is that the relationship between MaxEnt logisitic output and carrying capacity is linear. While there is no prima facie reason that it should be. Therefore, linearity would seem to be the most logical initial assumption. Any conceivable deviation from lineararity should not matter too much in the present case as the species of interest, have carrying capacities that vary over many orders of magnitude \ref{table:species_table}. The benefit of intepreting the MaxEnt output in such a way is that we can use the distribution maps to calculate an estimate of total potential population size for each species. And subsequently once we have a conservation plan, we can calculate the potential impact on population size of the plan or other competing plans.
 
 Incorporating uncertainty 
 -------------------------
@@ -156,7 +156,7 @@ grid.arrange(
 
 ```
 
-\vspace{12pt}
+\vspace{16pt}
 ```{r evi_table, results = "asis"}
 data_frame(
   `\\vrule width 0pt height 17pt depth 5pt\\relax Expected value` =
