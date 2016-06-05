@@ -82,7 +82,7 @@ Modelling species distributions using MaxEnt
 We used the software MaxEnt [**cite**] to create species distribution maps on which to base the conservation plan. MaxEnt can be used to describe the potential distribution of species with occurrence records alone. The algorithm does this by comparing the distribution of occurrence records in covariate space to the distribution of covariate space as a whole, also known as the background (see below). We fit MaxEnt models to each species with only linear and quadratic features enabled.
 
 \vspace{12pt}
-```{r plot_models, fig.cap = "Distribution of study species in the Hunter region. Maps show the relative carrying capacity (logistic output) of each species estimated by fitting Maxent models to the occurrence data in Figure ? using the predictor set in Figure ? and background data in Figure ?."}
+```{r plot_models, fig.cap = "Distribution of study species in the Hunter region. Maps show the relative carrying capacity (logistic output) of each species estimated by fitting Maxent models."}
 gg_raster(models, spp_of_interest, 2) +
 scale_fill_viridis(na.value = NA, name = expression(bar(italic(K))^"max")) +
 guides(fill = guide_colourbar(barheight = 10)) +
