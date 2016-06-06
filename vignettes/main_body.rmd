@@ -74,7 +74,11 @@ We summarise the environment of the Hunter region with six data layers: annual m
 
 ### Species occurence data
 
-We obtained 30 random occurrence records within the boundaries of the Hunter region (as defined above) and within the date range, 1996 to 2016, for each of the six study species from the Atlas of Living Australia database [**cite**]. We chose this relatively low sample-size random subset to ensure that subsequent modelling would have an initial level of uncertainty large enough for us to demonstrate how to calculate the value of information.
+We obtained 30 random occurrence records within the boundaries of the Hunter region (as defined above) and collected within the date range, January 1, 1996 to May 1, 2016, for each of the six study species from the Atlas of Living Australia database [**cite**]. We chose this relatively low sample-size random subset to ensure that subsequent modelling would have an initial level of uncertainty large enough for us to demonstrate how to calculate the value of information.
+
+### Background geographic data
+
+To fit distribution models with the occurrence records and environmental predictors, we used a set of background points selected so as to minimise sampling bias in the occurrence points. For each higher taxonomic group (birds, mammals and plants), the background points were selected by randomly sampling 10,000 occurrence records of all taxa belonging to each group from the Atlas of Living Australia database for the same spatial and temporal extent indicated above.
 
 Modelling species distributions using MaxEnt
 --------------------------------------------
@@ -93,27 +97,39 @@ theme(
 )
 ```
 
-### Background geographic data
-
-To fit distribution models with the occurrence records and environmental predictors we used a set of background points selected so as to minimise sampling bias in the occurrence points. For each higher taxonomic group (birds, mammals and plants) the background points were selected by randomly sampling 10,000 occurrence records of all taxa belonging to each group from the Atlas of Living Australia for the same spatial and temporal extent indicated above.
-\newpage
-
 ### Intepreting the output of MaxEnt
 
-Interpreting MaxEnt output in both it's native formats (raw and logistic) has in the past proved problematic and controversial. It has been shown that it while it is equally problematic to interpret MaxEnt output as either relative occurrence rate or probability of presence, it is legitimate to interpret MaxEnt output as an indicator of relative habitat suitability. Here we chose to interpret the logistic output of MaxEnt as a rough indicator of relative carrying capacity. Where the logistic output is zero, the carrying capacity should be zero (or close enough to zero) and where the output is one, the carrying capacity should be close to the maximum attainable for the species. When the output is some fraction of one then we assume the carrying capacity is that fraction of the maximum. The important caveat here is that the relationship between MaxEnt logisitic output and carrying capacity is linear. While there is no prima facie reason that it should be. Therefore, linearity would seem to be the most logical initial assumption. Any conceivable deviation from lineararity should not matter too much in the present case as the species of interest, have carrying capacities that vary over many orders of magnitude \ref{table:species_table}. The benefit of intepreting the MaxEnt output in such a way is that we can use the distribution maps to calculate an estimate of total potential population size for each species. And subsequently once we have a conservation plan, we can calculate the potential impact on population size of the plan or other competing plans.
+Interpreting MaxEnt output in both it's native formats (raw and logistic) has in the past proved problematic and controversial. It has been shown that it while it is equally problematic to interpret MaxEnt output as either relative occurrence rate or probability of presence, it is legitimate to interpret MaxEnt output as an indicator of relative habitat suitability [**cite**]. Here we chose to interpret the logistic output of MaxEnt as a rough indicator of relative carrying capacity. Where the logistic output is zero, the carrying capacity should be zero (or close to zero) and where the output is one, the carrying capacity should be close to the maximum attainable for the species. When the output is some fraction of one, then we assume the carrying capacity is that fraction of the maximum. The important caveat here is that the relationship between MaxEnt logistic output and carrying capacity is assumed linear. While there is no prima facie reason that it should be. Equally there is no prima facie reason there should be some more complicated relationship. Therefore, linearity would seem to be the most logical initial assumption, in the absence of information to the contrary. In any case, any conceivable deviation from linearity should not matter too much here, as the species of interest have carrying capacities that vary over many orders of magnitude \ref{table:species_table}. The benefit of interpreting the MaxEnt output in such a way is that we can use the modelled distribution maps to calculate an estimate of the total potential population size for each species. And subsequently once we have a conservation plan, we can calculate the potential impact on that population size of the plan, or other competing plans.
 
-Incorporating uncertainty 
+Incorporating uncertainty
 -------------------------
 
-Simply fitting a MaxEnt model with a set of occurrence points does not by itself account for the uncertainty in species
+To calculate the value of information requires some means of quantifying the level of uncertainty in a prediction of the system state. One way to express the uncertainty in species distributions is to consider a set of distribution maps where each map is equally likely to represent the true distribution, in instead having a single map that alone describes the distribution of a species. The multi-map description of species distributions acknowledges that species distributions a modelled based on a sample of points and those points are used to estimate the species relationship to the environment. As the points are a sample, the estimated relationship will be inherently uncertain.
+
+### Uncertainty and MaxEnt
+
+Fitting a MaxEnt model with a set of occurrence points does not by itself account for uncertainty in a species' distribution. It provides a single possible realization (even if it is a likely, or most likely one) of a species distribution and does not account for the fact that the distribution was estimated from a sample of occurrence points and is therefore inherently uncertain. MaxEnt does not natively account for uncertainty. That is, at the time of writing, the MaxEnt software does not provide a means of quantifying uncertainty in its output, and only provides a single map for a single sample of species occurrence points and background dataset.
+
+### The bootstrap
+
+To overcome the shortcomings in the MaxEnt software's ability to incorporate uncertainty we use a statistical method known as the bootstrap. At heart the bootstrap is a simple technique that can be used to describe uncertainty in quantities that have been generated by a model. Many improvements and extensions have been made to the bootstrap since its introduction, but here, for simplicities sake, we focus on and employ the basic bootstrap. In essence the bootstrap quantifies uncertainty by refitting a model to a dataset that has been resampled with replacement. For example, if we fit a model to a dataset consisting of three data-points labelled A, B and C (note for the purposes of the bootstrap it is unimportant how many variables they consists of and what value(s) the data-points take), there are ten bootstrap samples to fit models to (AAA, AAB, AAC, ABC, ABB, ACC, BBB, BBC, BCC and CCC), and ten possible outputs that describe the uncertainty of the model fitted to the data-set. However, as the sample-size increases the number of possible bootstrap samples increases rapidly (e.g. for the sample-size of only 30 used in this case study there are almost $6\times10^16$ different possible bootstrap samples) so in practice a random (or Monte Carlo) set of $n$ bootstrap sample is used to estimate the bootstrapped quantities' uncertainty.
+
+To bootstrap a species distribution model using MaxEnt we resample the 30 occurrence points 1000 times and run the MaxEnt algorithm on each set to output 1000  distribution maps.We performed the bootstrap on a MaxEnt model for each of the six focal species. Note that we only bootstrap the species occurrence data and not the background as this is considered a fixed model parameter for our purposes.
 
 Prioritizing with Zonation
--------------------------
+--------------------------
+
+We used the spatial planning sofware Zonation [**cite**] to make a conservation plan for the Hunter Region. The conservation plan we implement here has a budget large enough to protect 10% of the hunter region (with simplifying assumption that all of the hunter has the potential to be protected and that any 10% will have cost equal to the budget). The objective of the conservation plan is to minimise the average proportional loss (maximise the average proportion remaining) of total carrying capacity of the six species of interest. We give equal weight to each species (no species is prefererred over any other).
+
+The Zonation software uses a greedy algorithm to rank grid cells in order of priorty such that preserving the highest ranked 10% of grid cells is the approximately maximal solution to the objective above. The Zonation algorithm works be iteratively removing grid cells that contribute the least to the objective. The removal process is repeated until all cells have been removed and the order of removal constitutes the ranking of the cells (the last cell to be removed being the highest ranked and the first cell the lowest ranked). Zonation provides a number of implementations of its greedy algorithm that differ by the way they calculate the contribution of each cell to the objective (the basis on which cell removal is determined). Here we use Zonation's "additive benefit" cell removal rule whereby cells that contribute the least to the average proportion of value remaining are removed first.
 
 \newpage
 ```{r box3, child = "box3.rmd"}
 ```
 \newpage
+
+The expected value of information for the Hunter region conservation plan
+-------------------------------------------------------------------------
 
 \vspace{12pt}
 ```{r plot_plan, fig.cap = "Priority map for the Hunter region. Pixels have been ranked from lowest priority (blue) to highest priority (yellow) using the Zonation greedy algorithm. The additive benefit function was used to iteratively remove cells with the lowest marginal benefit. In calculating marginal benefit each species was weighted equally. The map can be used to calculate the expected value with original information for a fixed budget (number of cells protected) with value measured as the average proportion of species total carrying capacity remaining if all unprotected cells were removed."}
