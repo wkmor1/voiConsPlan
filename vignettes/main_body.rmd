@@ -32,7 +32,7 @@ data_frame(
   `$\\bar{K}^\\mathrm{max}$` = c(.1, .2, 2, 150, 250, 18000),
   TSC = c("V", "V", "CE", "V", "E", "V"),
   EPBC = c("-", "E", "CE", "-", "V", "V"),
-  IUCN = c("LC", "NT", "CE", "LC", "", "")
+  IUCN = c("LC", "NT", "CE", "LC", "-", "-")
 ) %>%
 xtable(
   caption = "Species used in the conservation plan for the Hunter region. LC = Least Concern;  NT = Near Threatened; V = Vulnerable; E = Endangered; CE = Critically Endangered. $\\bar{K}^\\mathrm{max}$ = Estimated maximum carrying capacity (number of individuals per square kilometre).",
@@ -70,7 +70,7 @@ Input data for the conservation plan
 
 ### Predictors of species distributions
 
-We summarise the environment of the Hunter region with six data layers: annual mean solar radiation, annual mean temperature, annual precipitation, precipitation seasonality (coefficient of variation), inherent soil fertility, and topographic wetness index. Each layer is a `r nrow(predictors)` by `r ncol(predictors)` grid of 1 km$^2$ cells. We chose this set of variables as they are publicly available (see supplement for sources), are biologically plausible drivers of the distribution of many taxa, have previously been shown to predict the distributions of the study species in the region [**cite**] and are relatively uncorrelated with one another (maximum Pearson correlation coefficient = `r  fmt(max(abs(sort(raster::layerStats(predictors, "pearson", na.rm = TRUE)[[1]], TRUE)[-1:-raster::nlayers(predictors)])), 2)`).
+We summarised the environment of the Hunter region with six data layers: annual mean solar radiation, annual mean temperature, annual precipitation, precipitation seasonality (coefficient of variation), inherent soil fertility, and topographic wetness index. Each layer is a `r nrow(predictors)` by `r ncol(predictors)` grid of 1 km$^2$ cells. We chose this set of variables as they are publicly available (see supplement for sources), are biologically plausible drivers of the distribution of many taxa, have previously been shown to predict the distributions of the study species in the region [**cite**] and are relatively uncorrelated with one another (maximum Pearson correlation coefficient = `r  fmt(max(abs(sort(raster::layerStats(predictors, "pearson", na.rm = TRUE)[[1]], TRUE)[-1:-raster::nlayers(predictors)])), 2)`).
 
 ### Species occurence data
 
@@ -83,7 +83,7 @@ To fit distribution models with the occurrence records and environmental predict
 Modelling species distributions using MaxEnt
 --------------------------------------------
 
-We used the software MaxEnt [**cite**] to create species distribution maps on which to base the conservation plan. MaxEnt can be used to describe the potential distribution of species with occurrence records alone. The algorithm does this by comparing the distribution of occurrence records in covariate space to the distribution of covariate space as a whole, also known as the background (see below). We fit MaxEnt models to each species with only linear and quadratic features enabled.
+We used the software MaxEnt [**cite**] to create species distribution maps on which to base the conservation plan. MaxEnt can be used to describe the potential distribution of species with occurrence records alone. The algorithm does this by comparing the distribution of occurrence records in covariate space to the distribution of covariate space as a whole, also known as the background (see below). We fitted MaxEnt models to each species with only linear and quadratic features enabled.
 
 \vspace{12pt}
 ```{r plot_models, fig.cap = "Distribution of study species in the Hunter region. Maps show the relative carrying capacity (logistic output) of each species estimated by fitting Maxent models."}
@@ -99,48 +99,60 @@ theme(
 
 ### Intepreting the output of MaxEnt
 
-Interpreting MaxEnt output in both it's native formats (raw and logistic) has in the past proved problematic and controversial. It has been shown that it while it is equally problematic to interpret MaxEnt output as either relative occurrence rate or probability of presence, it is legitimate to interpret MaxEnt output as an indicator of relative habitat suitability [**cite**]. Here we chose to interpret the logistic output of MaxEnt as a rough indicator of relative carrying capacity. Where the logistic output is zero, the carrying capacity should be zero (or close to zero) and where the output is one, the carrying capacity should be close to the maximum attainable for the species. When the output is some fraction of one, then we assume the carrying capacity is that fraction of the maximum. The important caveat here is that the relationship between MaxEnt logistic output and carrying capacity is assumed linear. While there is no prima facie reason that it should be. Equally there is no prima facie reason there should be some more complicated relationship. Therefore, linearity would seem to be the most logical initial assumption, in the absence of information to the contrary. In any case, any conceivable deviation from linearity should not matter too much here, as the species of interest have carrying capacities that vary over many orders of magnitude \ref{table:species_table}. The benefit of interpreting the MaxEnt output in such a way is that we can use the modelled distribution maps to calculate an estimate of the total potential population size for each species. And subsequently once we have a conservation plan, we can calculate the potential impact on that population size of the plan, or other competing plans.
+Interpreting MaxEnt output in both it's native formats (raw and logistic) has, in the past, proved problematic and controversial. It has been shown that it while it is equally problematic to interpret MaxEnt output as either relative occurrence rate or probability of presence, it is legitimate to interpret MaxEnt output as an indicator of relative habitat suitability [**cite**]. Here we chose to interpret the logistic output of MaxEnt as a rough indicator of relative carrying capacity. Where the logistic output is zero, the carrying capacity should be zero (or close to zero) and where the output is one, the carrying capacity should be close to the maximum attainable for the species. When the output is some fraction of one, then we assume the carrying capacity is that fraction of the maximum. The important caveat here is that the relationship between MaxEnt logistic output and carrying capacity is assumed linear. While there is no prima facie reason that it should be. Equally there is no prima facie reason there should be some more complicated relationship. Therefore, linearity would seem to be the most logical initial assumption, in the absence of information to the contrary. In any case, any conceivable deviation from linearity should not matter too much here, as the species of interest have carrying capacities that vary over many orders of magnitude \ref{table:species_table}. The benefit of interpreting the MaxEnt output in such a way is that we can use the modelled distribution maps to calculate an estimate of the total potential population size for each species. And subsequently once we have a conservation plan, we can calculate the potential impact on that population size of the plan, or other competing plans.
 
 Incorporating uncertainty
 -------------------------
 
-To calculate the value of information requires some means of quantifying the level of uncertainty in a prediction of the system state. One way to express the uncertainty in species distributions is to consider a set of distribution maps where each map is equally likely to represent the true distribution, in instead having a single map that alone describes the distribution of a species. The multi-map description of species distributions acknowledges that species distributions a modelled based on a sample of points and those points are used to estimate the species relationship to the environment. As the points are a sample, the estimated relationship will be inherently uncertain.
+To calculate the value of information requires some means of quantifying the level of uncertainty in a prediction of the system state. One way to express the uncertainty in species distributions is to consider a set of distribution maps where each map is equally likely to represent the true distribution, instead having a single map that (alone) describes the distribution of a species. The multi-map description of species distributions acknowledges that species distributions are modelled based on a sample of points and those points are used to estimate the species relationship to the environment. As the points are a sample, the estimated relationship will be inherently uncertain.
 
 ### Uncertainty and MaxEnt
 
-Fitting a MaxEnt model with a set of occurrence points does not by itself account for uncertainty in a species' distribution. It provides a single possible realization (even if it is a likely, or most likely one) of a species distribution and does not account for the fact that the distribution was estimated from a sample of occurrence points and is therefore inherently uncertain. MaxEnt does not natively account for uncertainty. That is, at the time of writing, the MaxEnt software does not provide a means of quantifying uncertainty in its output, and only provides a single map for a single sample of species occurrence points and background dataset.
+Fitting a MaxEnt model with a set of occurrence points does not by itself account for uncertainty in a species' distribution. It provides a single possible realization (even if it is a likely, or the most likely one) of a species distribution and does not account for the fact that the distribution was estimated from a sample of occurrence points and is therefore inherently uncertain. MaxEnt does not natively account for uncertainty. That is, at the time of writing, the MaxEnt software does not provide a means of quantifying uncertainty in its output, and only provides a single map for a single sample of species occurrence points and background dataset.
 
 ### The bootstrap
 
-To overcome the shortcomings in the MaxEnt software's ability to incorporate uncertainty we use a statistical method known as the bootstrap. At heart the bootstrap is a simple technique that can be used to describe uncertainty in quantities that have been generated by a model. Many improvements and extensions have been made to the bootstrap since its introduction, but here, for simplicities sake, we focus on and employ the basic bootstrap. In essence the bootstrap quantifies uncertainty by refitting a model to a dataset that has been resampled with replacement. For example, if we fit a model to a dataset consisting of three data-points labelled A, B and C (note for the purposes of the bootstrap it is unimportant how many variables they consists of and what value(s) the data-points take), there are ten bootstrap samples to fit models to (AAA, AAB, AAC, ABC, ABB, ACC, BBB, BBC, BCC and CCC), and ten possible outputs that describe the uncertainty of the model fitted to the data-set. However, as the sample-size increases the number of possible bootstrap samples increases rapidly (e.g. for the sample-size of only 30 used in this case study there are almost $6\times10^16$ different possible bootstrap samples) so in practice a random (or Monte Carlo) set of $n$ bootstrap sample is used to estimate the bootstrapped quantities' uncertainty.
+To overcome the shortcomings in the MaxEnt software's ability to incorporate uncertainty we used a statistical method known as the bootstrap. At heart the bootstrap is a simple technique that can be used to describe uncertainty in quantities that have been generated by a model. Many improvements and extensions have been made to the bootstrap since its introduction, but here, for simplicities sake, we focus on and employ the basic bootstrap. In essence the bootstrap quantifies uncertainty by refitting a model to a dataset that has been resampled with replacement. For example, if we fit a model to a dataset consisting of three data-points labelled A, B and C (note for the purposes of the bootstrap it is unimportant how many variables they consists of and what value(s) the data-points take), there are ten bootstrap samples to fit models to (AAA, AAB, AAC, ABC, ABB, ACC, BBB, BBC, BCC and CCC), and ten possible outputs that describe the uncertainty of the model fitted to the data-set. However, as the sample-size increases the number of possible bootstrap samples increases rapidly (e.g., for the sample-size of only 30 used in this case study there are almost $6\times10^{16}$ different possible bootstrap samples) so in practice a random (or Monte Carlo) set of $n$ bootstrap sample is used to estimate the bootstrap quantities' uncertainty.
 
-To bootstrap a species distribution model using MaxEnt we resample the 30 occurrence points 1000 times and run the MaxEnt algorithm on each set to output 1000  distribution maps.We performed the bootstrap on a MaxEnt model for each of the six focal species. Note that we only bootstrap the species occurrence data and not the background as this is considered a fixed model parameter for our purposes.
+To bootstrap a species distribution model using MaxEnt we resampled the 30 occurrence points 1000 times, with replacementm and ran the MaxEnt algorithm on each set to produce 1000 distribution maps. We performed this Monte Carlo bootstrap analysis on a MaxEnt model for each of the six focal species, to produce a total 6000 distribution maps (6 times 1000).
 
 Prioritizing with Zonation
 --------------------------
 
-We used the spatial planning software Zonation [**cite**] to make a conservation plan for the Hunter Region. The conservation plan we implement here has a budget large enough to protect 10% of the hunter region (with simplifying assumption that all of the hunter has the potential to be protected and that any 10% will have cost equal to the budget). The objective of the conservation plan is to minimise the average proportional loss (maximise the average proportion remaining) of total carrying capacity of the six species of interest. We give equal weight to each species (no species is preferred over any other).
+We used the spatial planning software Zonation [**cite**] to make a conservation plan for the Hunter Region. The conservation plan we implemented had a budget large enough to protect 10% of the hunter region (with the simplifying assumption that all of the Hunter has the potential to be protected, and that any 10% of region will have a cost equal to the budget). The objective of the conservation plan was to minimise the average proportional loss (maximise the average proportion remaining) of the total carrying capacity of the six species of interest. We gave equal weight to each species (no species was preferred over any other).
 
-The Zonation software uses a greedy algorithm to rank grid cells in order of priority such that preserving the highest ranked 10% of grid cells is the approximately maximal solution to the objective above. The Zonation algorithm works be iteratively removing grid cells that contribute the least to the objective. The removal process is repeated until all cells have been removed and the order of removal constitutes the ranking of the cells (the last cell to be removed being the highest ranked and the first cell the lowest ranked). Zonation provides a number of implementations of its greedy algorithm that differ by the way they calculate the contribution of each cell to the objective (the basis on which cell removal is determined). Here we use Zonation's "additive benefit" cell removal rule whereby cells that contribute the least to the average proportion of value remaining are removed first.
+### The Zonation algorithm
+
+The Zonation software uses a greedy algorithm to rank grid cells in order of priority such that preserving the highest ranked 10% of grid cells is the approximately maximal solution to the objective above. The Zonation algorithm works be iteratively removing grid cells that contribute the least to the objective. The removal process is repeated until all cells have been removed and the order of removal constitutes the ranking of the cells (the last cell to be removed being the highest ranked and the first cell removed is the lowest ranked). Zonation provides a number of implementations of its greedy algorithm that differ by the way they calculate the contribution of each cell to the objective (the basis on which cell removal is determined). Here we use Zonation's "additive benefit" cell removal rule, whereby cells that contribute the least to the average proportion of value remaining are removed first.
 
 \newpage
 ```{r box3, child = "box3.rmd"}
 ```
 \newpage
 
-The expected value of information for the Hunter region conservation plan
--------------------------------------------------------------------------
+The expected value of information for the Hunter conservation plan
+------------------------------------------------------------------
+
+Using the methods outlined in Boxes 1, 2 and 3 and the data highlighted above, we calculated EVPI and it's components (EVWOI and EVWPI) for our conservation plan for the Hunter region.
+
+### The expected value with original information
+
+First we calculated the EVWOI, that is, how well do we expect the conservation plan to perform (on average) when basing it only on the 30 observations per species. To calcuate EVWOI we first averaged the bootstrap species distributions to produce one map per species. Using these six maps (Figure $\ref{fig:plot_models}$) we applied the Zonation algorithm to rank the grid cells of the Hunter region in order of priority. Figure $\ref{fig: plot_plan}$ shows the grid cells of the Hunter ranked in their order of priority. According to Zonation, the grid cells in the top 10% are located in south-east and central coast area of the Hunter in the hinterland behind the major centres of Newcastle and Gosford. Protecting this region of the Hunter, on average, protects `r fmt(evwoi * 100)` of the total carrying capacity of the six species of interest. This value is the EVWOI.
 
 \vspace{12pt}
-```{r plot_plan, fig.cap = "Priority map for the Hunter region. Pixels have been ranked from lowest priority (blue) to highest priority (yellow) using the Zonation greedy algorithm. The additive benefit function was used to iteratively remove cells with the lowest marginal benefit. In calculating marginal benefit each species was weighted equally. The map can be used to calculate the expected value with original information for a fixed budget (number of cells protected) with value measured as the average proportion of species total carrying capacity remaining if all unprotected cells were removed."}
+```{r plot_plan, fig.cap = "Priority map for the Hunter region. Grid cells have been ranked from lowest priority (blue) to highest priority (yellow) using the Zonation greedy algorithm. Grid cells ranked in the top 10% have been higlighted. The additive benefit function was used to iteratively remove cells with the lowest marginal benefit. In calculating marginal benefit each species was weighted equally. The map can be used to calculate the expected value with original information for a fixed budget (number of cells protected) with value measured as the average proportion of species total carrying capacity remaining if all unprotected cells were removed."}
 gg_raster(plan$rasters$rank, highlight = c(.9, 1)) +
 scale_fill_viridis(na.value = NA, name = "Rank") +
 guides(fill = guide_colourbar(barheight = 10, label = FALSE)) +
 theme(axis.text = element_blank(), axis.title = element_blank())
 ```
 
+### The expected value with perfect information
+
+To calculate the EVWPI we applied the method outlined in Box 3 reversing the two steps of, averaging over the bootstrap samples and applying the Zonation algorithm to find the solution that maximised (approximately) the objective of the conservation plan. The time, we first applied the Zonation algorithm to each set of bootstrap distribution maps. This resulted in 1000 conservation plans (instead of the single plan arrived at when calculating EVWOI). In each of these maps the ranking of the grid cells differs. Figure $\ref{fig:plot_plan_uncertainty}$ shows the range of rankings each grid cell has across the bootstrapped conservation plans and highlights those grid cells that are ranked in the top 10% at least once in the bootstrapped plans. For each bootstrapped conservation plan we calculate the average proportion of total carrying capacity. These 1000 values are the expected performances if we were certain of the distribution of the six species across the Hunter (with each set of bootstrapped maps and plan representing a separate realization of that certainty). Averageing these 1000 values 
+
 \vspace{12pt}
-```{r plot_plan_uncertainty, fig.height = 3.4, fig.cap = "Uncertainty in pixel ranks. Pixels are displayed in order of their priority. Grey bars indicate the 95% inner quantile of the priority rankings based on the bootstrapped maps. Pixels which have mean values above the red horizontal line are included in the conservation plan under original information."}
+```{r plot_plan_uncertainty, fig.height = 3.4, fig.cap = "Uncertainty in grid cell ranks. In the left pane grid cells have been ordered along the x-axis according to their mean bootstrap ranking. The grey shaded region indicated the range of bootstrap rankings (along the y-axis). The black horizontal line marks the top 10$^th$ percentile cells that have bootstrap rankings that span this line are shaded a darker grey. The right panel shows the same map displayed in Figure $\\ref{fig:plot-plan}$ however this time the cells that have bootstrap ranks spanning the top 10$^th$ percentile have been highlighted."}
 plans_boot_df <-
   sapply(plans_boot, values) %>%
   apply(1L, function(x) c(mean = mean(x), min = min(x), max = max(x))) %>%
@@ -172,21 +184,26 @@ grid.arrange(
 
 ```
 
-\vspace{16pt}
+### The expected value of perfect information
+
+\vspace{18pt}
 ```{r evi_table, results = "asis"}
 data_frame(
   `\\vrule width 0pt height 17pt depth 5pt\\relax Expected value` =
     paste0("\\vrule width 0pt height 15pt depth 5pt\\relax ",
            c("EVWOI", "EVWPI", "EVPI")
     ),
-  `\\pbox{20cm}{Average proportion of\\\\carrying capacity remaining}` =
+  `\\pbox{20cm}{Average percentage of\\\\carrying capacity remaining}` =
     c(evwoi, evwpi, evwpi - evwoi) * 100
 ) %>%
 xtable(
-  caption = "Something",
+  caption = "The expected value of perfect information and its components for a conservation plan for the Hunter region",
   label = "evi_table",
   align = "llr",
   digits = 1
 ) %>%
 print(include.rownames = FALSE, comment = FALSE, sanitize.text.function = I)
 ```
+
+Conclusions
+-----------
