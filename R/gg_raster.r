@@ -40,7 +40,7 @@ gg_raster_ <-
 
     ggplot(data, aes_string("x", "y")) + theme_bw() + coord_equal() +
     geom_raster(aes_string(fill = "value", alpha = "hl"), na.rm = TRUE) +
-    scale_alpha_discrete(guide = "none", range = c(.3, 1))
+    scale_alpha_discrete(guide = "none", range = c(.15, 1))
   }
 
 gg_raster__ <- function(x, labels, nrow, highlight, invert) {
