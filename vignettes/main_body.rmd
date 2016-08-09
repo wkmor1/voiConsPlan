@@ -6,7 +6,7 @@ To demonstrate how to incorporate the value of information in a systematic spati
 Study area
 ----------
 
-The Hunter is a biodiverse region of north-eastern New South Wales, Australia. The region is home to many threatened species of plants and animals. There are multiple threats to biodiversity in the region. The Hunter is under active development and the area's land users utilize it's resources for mining, agriculture, transport, urban infrastructure and conservation [**cite**]. For the the analyses we present here, we consider the Hunter region to include the local government areas of Cessnock, Dungog, Gloucester, Gosford, Greater Taree, Great Lakes, Lake Macquarie, Maitland, Musselbrook, Newcastle, Port Macquarie-Hastings, Port Stephens, Singleton, Upper Hunter and Wyong, an area of `r fmt(raster::cellStats(!is.na(predictors[[1]]), sum))` km$^2$.
+The Hunter is a biodiverse region of north-eastern New South Wales, Australia. The region is home to many threatened species of plants and animals. There are multiple threats to biodiversity in the region. The Hunter is under active development and the area's land users utilize it's resources for mining, agriculture, transport, urban infrastructure and conservation [@Whitehead2014]. For the the analyses we present here, we consider the Hunter region to include the local government areas of Cessnock, Dungog, Gloucester, Gosford, Greater Taree, Great Lakes, Lake Macquarie, Maitland, Musselbrook, Newcastle, Port Macquarie-Hastings, Port Stephens, Singleton, Upper Hunter and Wyong, an area of `r fmt(raster::cellStats(!is.na(predictors[[1]]), sum))` km$^2$.
 
 Study species
 -------------
@@ -70,11 +70,11 @@ Input data for the conservation plan
 
 ### Predictors of species distributions
 
-We summarised the environment of the Hunter region with six data layers: annual mean solar radiation, annual mean temperature, annual precipitation, precipitation seasonality (coefficient of variation), inherent soil fertility, and topographic wetness index. Each layer is a `r nrow(predictors)` by `r ncol(predictors)` grid of 1 km$^2$ cells. We chose this set of variables as they are publicly available (see supplement for sources), are biologically plausible drivers of the distribution of many taxa, have previously been shown to predict the distributions of the study species in the region [**cite**] and are relatively uncorrelated with one another (maximum Pearson correlation coefficient = `r  fmt(max(abs(sort(raster::layerStats(predictors, "pearson", na.rm = TRUE)[[1]], TRUE)[-1:-raster::nlayers(predictors)])), 2)`).
+We summarised the environment of the Hunter region with six data layers: annual mean solar radiation, annual mean temperature, annual precipitation, precipitation seasonality (coefficient of variation), inherent soil fertility, and topographic wetness index. Each layer is a `r nrow(predictors)` by `r ncol(predictors)` grid of 1 km$^2$ cells. We chose this set of variables as they are publicly available (see supplement for sources), are biologically plausible drivers of the distribution of many taxa, have previously been shown to predict the distributions of the study species in the region [@Kujala2015] and are relatively uncorrelated with one another (maximum Pearson correlation coefficient = `r  fmt(max(abs(sort(raster::layerStats(predictors, "pearson", na.rm = TRUE)[[1]], TRUE)[-1:-raster::nlayers(predictors)])), 2)`).
 
 ### Species occurence data
 
-We obtained 30 random occurrence records within the boundaries of the Hunter region (as defined above) and collected within the date range, January 1, 1996 to May 1, 2016, for each of the six study species from the Atlas of Living Australia database [**cite**]. We chose this relatively low sample-size random subset to ensure that subsequent modelling would have an initial level of uncertainty large enough for us to demonstrate how to calculate the value of information.
+We obtained 30 random occurrence records within the boundaries of the Hunter region (as defined above) and collected within the date range, January 1, 1996 to May 1, 2016, for each of the six study species from the Atlas of Living Australia database [@ALA2016]. We chose this relatively low sample-size random subset to ensure that subsequent modelling would have an initial level of uncertainty large enough for us to demonstrate how to calculate the value of information.
 
 ### Background geographic data
 
@@ -99,7 +99,7 @@ theme(
 
 ### Intepreting the output of MaxEnt
 
-Interpreting MaxEnt output in both it's native formats (raw and logistic) has, in the past, proved problematic and controversial. It has been shown that it while it is equally problematic to interpret MaxEnt output as either relative occurrence rate or probability of presence, it is legitimate to interpret MaxEnt output as an indicator of relative habitat suitability [**cite**]. Here we chose to interpret the logistic output of MaxEnt as a rough indicator of relative carrying capacity. Where the logistic output is zero, the carrying capacity should be zero (or close to zero) and where the output is one, the carrying capacity should be close to the maximum attainable for the species. When the output is some fraction of one, then we assume the carrying capacity is that fraction of the maximum. The important caveat here is that the relationship between MaxEnt logistic output and carrying capacity is assumed linear. While there is no prima facie reason that it should be, equally there is no prima facie reason there should be some more complicated relationship. Therefore, linearity would seem to be the most logical initial assumption, in the absence of information to the contrary. In any case, any conceivable deviation from linearity should not matter too much here, as the species of interest have carrying capacities that vary over many orders of magnitude (Table \ref{species_table}). The benefit of interpreting the MaxEnt output in such a way is that we can use the modelled distribution maps to calculate an estimate of the total potential population size for each species. And subsequently once we have a conservation plan, we can calculate the potential impact on that population size of the plan, or other competing plans.
+Interpreting MaxEnt output in both it's native formats (raw and logistic) has, in the past, proved problematic and controversial. It has been shown that it while it is equally problematic to interpret MaxEnt output as either relative occurrence rate or probability of presence, it is legitimate to interpret MaxEnt output as an indicator of relative habitat suitability [@Merow2013]. Here we chose to interpret the logistic output of MaxEnt as a rough indicator of relative carrying capacity. Where the logistic output is zero, the carrying capacity should be zero (or close to zero) and where the output is one, the carrying capacity should be close to the maximum attainable for the species. When the output is some fraction of one, then we assume the carrying capacity is that fraction of the maximum. The important caveat here is that the relationship between MaxEnt logistic output and carrying capacity is assumed linear. While there is no prima facie reason that it should be, equally there is no prima facie reason there should be some more complicated relationship. Therefore, linearity would seem to be the most logical initial assumption, in the absence of information to the contrary. In any case, any conceivable deviation from linearity should not matter too much here, as the species of interest have carrying capacities that vary over many orders of magnitude (Table \ref{species_table}). The benefit of interpreting the MaxEnt output in such a way is that we can use the modelled distribution maps to calculate an estimate of the total potential population size for each species. And subsequently once we have a conservation plan, we can calculate the potential impact on that population size of the plan, or other competing plans.
 
 Incorporating uncertainty
 -------------------------
@@ -112,7 +112,7 @@ Fitting a MaxEnt model with a set of occurrence points does not by itself accoun
 
 ### The bootstrap
 
-To overcome the shortcomings in the MaxEnt software's ability to incorporate uncertainty we used a statistical method known as the bootstrap [**cite**]. At heart the bootstrap is a simple technique that can be used to describe uncertainty in quantities that have been generated by a model. Many improvements and extensions have been made to the bootstrap since its introduction, but here, for simplicity's sake, we focus on and employ the basic bootstrap. In essence the bootstrap quantifies uncertainty by refitting a model to a dataset that has been resampled with replacement. For example, if we fit a model to a dataset consisting of three data-points labelled A, B and C (note for the purposes of the bootstrap it is unimportant how many variables they consists of and what value(s) the data-points take), there are ten bootstrap samples to fit models to (AAA, AAB, AAC, ABC, ABB, ACC, BBB, BBC, BCC and CCC), and ten possible outputs that describe the uncertainty of the model fitted to the data-set. However, as the sample-size increases the number of possible bootstrap samples increases rapidly (e.g., for the sample-size of only 30 used in this case study there are almost $6\times10^{16}$ different possible bootstrap samples) so in practice a random (or Monte Carlo) set of $n$ bootstrap samples is used to estimate the bootstrap quantities' uncertainty.
+To overcome the shortcomings in the MaxEnt software's ability to incorporate uncertainty we used a statistical method known as the bootstrap [@Efron1986]. At heart the bootstrap is a simple technique that can be used to describe uncertainty in quantities that have been generated by a model. Many improvements and extensions have been made to the bootstrap since its introduction, but here, for simplicity's sake, we focus on and employ the basic bootstrap. In essence the bootstrap quantifies uncertainty by refitting a model to a dataset that has been resampled with replacement. For example, if we fit a model to a dataset consisting of three data-points labelled A, B and C (note for the purposes of the bootstrap it is unimportant how many variables they consists of and what value(s) the data-points take), there are ten bootstrap samples to fit models to (AAA, AAB, AAC, ABC, ABB, ACC, BBB, BBC, BCC and CCC), and ten possible outputs that describe the uncertainty of the model fitted to the data-set. However, as the sample-size increases the number of possible bootstrap samples increases rapidly (e.g., for the sample-size of only 30 used in this case study there are almost $6\times10^{16}$ different possible bootstrap samples) so in practice a random (or Monte Carlo) set of $n$ bootstrap samples is used to estimate the bootstrap quantities' uncertainty.
 
 To bootstrap a species distribution model using MaxEnt we resampled the 30 occurrence points 1000 times, with replacement and ran the MaxEnt algorithm on each set to produce 1000 distribution maps. We performed this Monte Carlo bootstrap analysis on a MaxEnt model for each of the six focal species, to produce a total 6000 distribution maps (6 times 1000).
 
@@ -206,3 +206,17 @@ xtable(
 ) %>%
 print(include.rownames = FALSE, comment = FALSE, sanitize.text.function = I)
 ```
+
+Discussion
+==========
+<!---
+Core Area vs Additive benefit
+
+So where are the places to target learning.
+
+Given the above, Why do it. and how does this change.
+
+Defining performance
+
+What you need to do a voi. An expresssion of uncertainty.
+--->
