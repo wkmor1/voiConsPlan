@@ -209,14 +209,15 @@ print(include.rownames = FALSE, comment = FALSE, sanitize.text.function = I)
 
 Discussion
 ==========
-<!---
-Core Area vs Additive benefit
 
-So where are the places to target learning.
+Here we have chosen to use the zonation alogorithm function known as additive benifit. Many conservation plans use instead the core-area function as it is believed to have better ecological properties. However core-area only has a heuristic definition of it's objective function and it is not currently known if it is truely maxismising. Additive benifit on the otherhand is known to maximise the average benefit to all features the conservation plan is being made for.
 
-Given the above, Why do it. and how does this change.
+The results we have obtained now beg the question of how learning in a conservation plan should be targeted. For instance, what are the best locations (spatially) for learning. Figure 8 indicates there is band of of areas in the east where the critical uncertainty in conservation value lies. Sites in the far west appear to have the lowest value and according to the analyses have little chance of being of high enough value to warrant inclusion in a plan. Conversely there are areas in the central hinterland that are of such consistantly high value that the need not be investigated further either. The remaining patches in the north and on the central and south coasts however are those that are probably the most benficial to learn more about in terms of their conservation value. These areas, though many probably have marginal if any value, are ones that knowing more about would make the most difference to the outcome of a conservation plan.
 
-Defining performance
+Given the above, why do a value of information analysis at all?. How would this change the outcome of a conservation plan? While the gains to a conservation plan of a value of information analysis may necessarly be modest, they will indeed be real gains, as a VOI analysis itself is free. The VOI analysis gives the planner the ability to discriminate between three zones of certainty. Those are that should see no investment, those sites which must only be invested in with actual conservation dollars. And finally those areas which need to be invested in with research initially to decide whether further investment is warranted.
 
-What you need to do a voi. An expresssion of uncertainty.
---->
+The areas in the third categorey will almost by definition yield modest gains for the ultimate conservation plans, as these sites are the ones with the most marginal of benefits. How modest a gain will be in proportion to the amount of knowledge that is held initially. The import of knowledge will follow a law of diminishing returns.
+
+Then there is the question of high we define performance. If the performance of the conservation plan is not defined intrinsically, as is the usually case, but  in terms of the actually conservation outcome that a plan yields then the value of informaiton may increase as this additional layer of uncertainty is introduced.
+
+So what are the ingredients of a value of information analyses. A well defined objective, such that performance can be measuered. More than one alternative action to take to compare the performance of, and finally some expression of the uncertainty of the performance of the alternatives.
