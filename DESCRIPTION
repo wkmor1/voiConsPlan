@@ -1,6 +1,6 @@
 Package: voiConsPlan
 Title: Value of information for conservation planning
-Version: 0.0.0.9071
+Version: 0.0.0.9072
 Authors@R: person(c("William", "Keith"), "Morris", email = "wkmor1@gmail.com", role = c("aut", "cre"))
 Description: Spatial conservation plans are typically based upon uncertain
     inputs and may benefit from additional data to inform them.However, the

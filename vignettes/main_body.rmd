@@ -20,18 +20,18 @@ data_frame(
                           "\\vrule width 0pt height 15pt depth 5pt\\relax ",
                           c("Powerful Owl", "Spotted-tailed Quoll", 
                             "Squirrel Glider", "Regent Honeyeater", 
-                            "Bynoe's Wattle", "Charmhaven Apple")
+                            "Bynoe's Wattle", "Grove's Paperbark")
                         ),
   `Scientific Name` = paste0(
                         "\\textit{",
                         c("Ninox strenua", "Dasyurus maculatus", 
                           "Petaurus norfolcensis", "Anthochaera phrygia",
-                          "Acacia bynoeana", "Angophora inopina"),
+                          "Acacia bynoeana", "Melaleuca groveana"),
                         "}"
                       ),
-  `$\\bar{K}^\\mathrm{max}$` = c(.1, .2, 150, 200, 250, 18000),
+  `$\\bar{K}^\\mathrm{max}$` = c(.1, .2, 150, 200, 250, 2500),
   TSC = c("V", "V", "V", "CE", "E", "V"),
-  EPBC = c("-", "E",  "-", "CE", "V", "V"),
+  EPBC = c("-", "E",  "-", "CE", "V", "-"),
   IUCN = c("LC", "NT", "LC", "CE",  "-", "-")
 ) %>%
 xtable(

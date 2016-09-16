@@ -43,30 +43,18 @@ predictor_names <- c("Annual Mean Radiation", "Annual Mean Temperature",
 
 species_groups  <- c("Birds",               "Mammals",               "Plants")
 spp_of_interest <- c("Anthochaera phrygia", "Dasyurus maculatus",    "Acacia bynoeana",
-                     "Ninox strenua",       "Petaurus norfolcensis", "Angophora inopina")
-
-spp_max_k  <- c(2e2, 2e2, 2e-2, 1e-2, 1e2, 1e2) %>% setNames(spp_of_interest)
+                     "Ninox strenua",       "Petaurus norfolcensis", "Melaleuca groveana")
 
 zonation_settings <- list("removal rule" = 2, "warp factor" = 10)
 ```
 
 ```{r get_data, eval = FALSE, echo = FALSE}
 predictor_sources <- c("http://www.abs.gov.au/", "http://www.bom.gov.au/",
-                       "http://mapdata.environment.nsw.gov.au/")
+                       "http://data.environment.nsw.gov.au/")
 
 predictor_paths <- c("Ausstats/subscriber.nsf/0/56A7AA594A7F44F9CA2578CC0011CE44/$File/1259030001_sla11aaust_shape.zip",
                      "web01/ncc/www/climatology/solar_radiation/solaran.zip",
-                     "geonetwork/srv/en/resources.get.archive_OEH")
-
-predictor_queries <-
-  list(
-    list(), 
-    list(), 
-    list(
-      name = "@", org = "@", email = "@", downloadCateg = "@", comments = "@",
-      OEHdownloadLINK = "/Soil_InherentSoilFertilityofNSW.zip"
-    )
-  )
+                     "dataset/D793E5CD-3DF6-4F76-9DBF-12CEDF46795A/resource/cdc0fc7a-8e67-4d67-964e-f6640a8f117a/download/soilinherentsoilfertilityofnsw.zip")
 
 predictor_dest_files <- c("SLA11aAust.zip", "srad.zip", "soilNSW.zip")
 
@@ -79,7 +67,7 @@ filters <- c("decimalLatLongConversionFailed", "habitatMismatch",
              "unrecognizedGeodeticDatum",      "invalidGeodeticDatum", 
              "inferredDuplicateRecord")
 
-mapply(get_zip, predictor_sources, predictor_paths, predictor_queries,
+mapply(get_zip, predictor_sources, predictor_paths,
        predictor_dest_files)
 
 hunter_poly <- readOGR(".", "SLA11aAust")
@@ -121,12 +109,23 @@ predictors <-
 
 predictors <- mask(predictors, calc(predictors, sum))
 
+hunter_alt <-
+  projectRaster(hunter_alt, crs = projection, res = resolution) %>%
+  mask(predictors[[1]])
+
 occurrence_records <-
   lapply(
     species_groups, dload_records, filters, hunter_poly, projection, hunter_alt,
     coords
   ) %>%
   bind_rows
+
+save(predictors, file = "~/voiConsPlan/data/predictors.rda", compress = "xz")
+save(occurrence_records, file = "~/voiConsPlan/data/occurrence_records.rda", compress = "xz")
+```
+
+```{r sample_occurrences}
+set.seed(19831111)
 
 spp_fltr <-
   paste(gsub(" ", ".*", spp_of_interest), collapse = "|") %>%

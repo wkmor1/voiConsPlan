@@ -14,9 +14,6 @@ header-includes:
 - \usepackage{caption}
 - \captionsetup{font={stretch=2}}
 - \usepackage{pbox}
-#- \usepackage[labelsep = none, textformat = empty]{caption}
-#- \usepackage[nomarkers]{endfloat}
-#- \AtBeginDelayedFloats{\linespread{2}}
 - \usepackage[displaymath,mathlines]{lineno}
 - \linenumbers
 bibliography: voiConsPlan.bib

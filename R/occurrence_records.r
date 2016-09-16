@@ -10,4 +10,4 @@
 #'   \item{latitude}{}
 #' }
 #'
-"species_occurrences"
+"occurrence_records"
