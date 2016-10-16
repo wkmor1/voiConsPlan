@@ -25,7 +25,7 @@ n_cl_nodes <- 36L
 
 n_bs_samp <- 1e3L
 
-prop_loss <- .9
+prop_loss <- .8
 
 resolution <- 1e3L
 
@@ -182,9 +182,15 @@ plan <- zonation(models, settings = zonation_settings)
 
 ```{r evwoi}
 evwoi <- ave_prop_rem(models, get_rank(plan), prop_loss)
+
+evwoi_by_sp <-
+  sapply(
+    seq_along(spp_of_interest),
+    function(x) ave_prop_rem(models[[x]], get_rank(plan), prop_loss)
+  )
 ```
 
-```{r plan_boot}
+```{r plans_boot}
 cl <- makeCluster(n_cl_nodes)
 registerDoSNOW(cl)
 
@@ -202,4 +208,18 @@ evwpi <-
     ave_prop_rem, models_boot, plans_boot, MoreArgs = list(p = prop_loss)
   ) %>%
   mean
+
+evwpi_by_sp <-
+  lapply(
+    seq_along(spp_of_interest),
+    function(x) {
+      mapply(
+        ave_prop_rem,
+        lapply(models_boot, `[[`, i = x),
+        plans_boot,
+        MoreArgs = list(p = prop_loss)
+      )
+    }
+  ) %>%
+  sapply(mean)
 ```

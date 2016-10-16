@@ -10,6 +10,7 @@ output:
     citation_package: natbib
 header-includes:
 - \linespread{2}\selectfont
+- \usepackage{booktabs}
 - \usepackage{setspace}
 - \usepackage{caption}
 - \captionsetup{font={stretch=2}}

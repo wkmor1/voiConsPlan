@@ -141,7 +141,7 @@ First we calculated the EVWOI, that is, how well do we expect the conservation p
 
 \vspace{12pt}
 ```{r plot_plan, fig.cap = "Priority map for the Hunter region. Grid cells have been ranked from lowest priority (blue) to highest priority (yellow) using the Zonation greedy algorithm. Grid cells ranked in the top 10% have been highlighted. The additive benefit function was used to iteratively remove cells with the lowest marginal benefit. In calculating marginal benefit each species was weighted equally. The map can be used to calculate the expected value with original information for a fixed budget (number of cells protected) with value measured as the average proportion of species total carrying capacity remaining if all unprotected cells were removed. \\label{fig:plot_plan}"}
-gg_raster(plan$rasters$rank, highlight = c(.9, 1)) +
+gg_raster(plan$rasters$rank, highlight = c(prop_loss, 1)) +
 scale_fill_viridis(na.value = NA, name = "Rank") +
 guides(fill = guide_colourbar(barheight = 10, label = FALSE)) +
 theme(axis.text = element_blank(), axis.title = element_blank())
@@ -156,7 +156,7 @@ To calculate the EVWPI we applied the method outlined in Box 3 reversing the two
 plans_boot_df <-
   sapply(plans_boot, values) %>%
   apply(1L, function(x) c(mean = mean(x), min = min(x), max = max(x))) %>%
-  t %>% data.frame %>% mutate(hl = min < .9 & max > .9)
+  t %>% data.frame %>% mutate(hl = min < prop_loss & max > prop_loss)
 
 grid.arrange(
   na.omit(plans_boot_df) %>%
@@ -164,9 +164,9 @@ grid.arrange(
   mutate(x = seq(0, 1, length.out = n())) %>%
   slice(floor(seq.int(1, n(), length.out = 10000))) %>%
   ggplot +
-  geom_hline(aes(yintercept = .9)) +
-  geom_ribbon(aes(x = x, y = mean, ymin = min, ymax = max, alpha = hl)) +
-  scale_alpha_discrete(guide = "none", range = c(.3, 1)) +
+  geom_hline(aes(yintercept = prop_loss)) +
+  geom_linerange(aes(x = x, y = mean, ymin = min, ymax = max, col = hl)) +
+  scale_colour_manual(values = viridis(2, .1, .1, .9), guide = "none") +
   theme_bw() +
   theme(
     axis.title  = element_blank(),
@@ -190,21 +190,44 @@ Finally we arrive at the EVPI, which is simply the difference between EVWPI and 
 
 \vspace{18pt}
 ```{r evi_table, results = "asis"}
-data_frame(
-  `\\vrule width 0pt height 17pt depth 5pt\\relax Expected value` =
-    paste0("\\vrule width 0pt height 15pt depth 5pt\\relax ",
-           c("EVWOI", "EVWPI", "EVPI")
-    ),
-  `\\pbox{20cm}{Average percentage of\\\\carrying capacity remaining}` =
-    c(evwoi, evwpi, evwpi - evwoi) * 100
+#data_frame(
+#  `\\vrule width 0pt height 17pt depth 5pt\\relax Expected value` =
+#    paste0("\\vrule width 0pt height 15pt depth 5pt\\relax ",
+#         c("EVWOI", "EVWPI", "EVPI")
+#    ),
+#  `\\pbox{20cm}{Average percentage of\\\\carrying capacity remaining}` =
+#    c(evwoi, evwpi, evwpi - evwoi) * 100
+#) %>%
+#xtable(
+#  caption = "The expected value of perfect information and its components for a conservation plan for the Hunter region",
+#  label = "evi_table",
+#  align = "llr",
+#  digits = 1
+#) %>%
+#print(include.rownames = FALSE, comment = FALSE, sanitize.text.function = I)
+
+data_frame(Species = paste0("\\textit{", c(spp_of_interest), "}"),
+           EVWOI = evwoi_by_sp * 100,
+           EVWPI = evwpi_by_sp * 100) %>%
+mutate(EVPI = EVWPI - EVWOI) %>%
+arrange(EVPI) %>%
+bind_rows(
+  data_frame(Species = "Average",
+             EVWOI = evwoi * 100,
+             EVWPI = evwpi * 100,
+             EVPI = evwpi * 100 - evwoi * 100)
 ) %>%
 xtable(
-  caption = "The expected value of perfect information and its components for a conservation plan for the Hunter region",
+  caption = "The expected value of perfect information and its components for a conservation plan for the Hunter region", 
   label = "evi_table",
-  align = "llr",
+  align = "llrrr",
   digits = 1
 ) %>%
-print(include.rownames = FALSE, comment = FALSE, sanitize.text.function = I)
+print(include.rownames = FALSE, 
+      comment = FALSE, 
+      sanitize.text.function = I, 
+      booktabs = TRUE, 
+      hline.after = c(-1, 0, 6:7))
 ```
 
 Discussion
