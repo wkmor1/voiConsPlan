@@ -21,7 +21,7 @@ n_bg_points <- 1e4L
 
 n_sp_points <- 30L
 
-n_cl_nodes <- 36L
+n_cl_nodes <- 20L
 
 n_bs_samp <- 1e3L
 

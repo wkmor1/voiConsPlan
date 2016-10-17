@@ -11,7 +11,7 @@ The Hunter is a biodiverse region of north-eastern New South Wales, Australia. T
 Study species
 -------------
 
-The Hunter Valley is home to many species of national conservation significance. Here we consider six species: two birds, two mammals and two plants. For the following analyses we build conservation plans that aim to maximise the average relative carrying capacity of these six species across the hunter region. Table 1 outlines these six species and an estimate of their maximum carrying capacity (see supplement for more details) as well as their conservation status according to the _NSW Threatened Species Conservation Act 1995_ (TSC), _Commonwealth Environment Protection and Biodiversity Conservation Act 1999_ (EPBC) and the IUCN Red list (IUCN).
+The Hunter Valley is home to many species of national conservation significance. Here we consider six species: two birds, two mammals and two plants. For the following analyses we build conservation plans that aim to maximize the average relative carrying capacity of these six species across the hunter region. Table 1 outlines these six species and an estimate of their maximum carrying capacity (see supplement for more details) as well as their conservation status according to the _NSW Threatened Species Conservation Act 1995_ (TSC), _Commonwealth Environment Protection and Biodiversity Conservation Act 1999_ (EPBC) and the IUCN Red list (IUCN).
 
 \vspace{12pt}
 ```{r species_table, results = "asis"}
@@ -70,7 +70,7 @@ Input data for the conservation plan
 
 ### Predictors of species distributions
 
-We summarised the environment of the Hunter region with six data layers: annual mean solar radiation, annual mean temperature, annual precipitation, precipitation seasonality (coefficient of variation), inherent soil fertility, and topographic wetness index. Each layer is a `r nrow(predictors)` by `r ncol(predictors)` grid of 1 km$^2$ cells. We chose this set of variables as they are publicly available (see supplement for sources), are biologically plausible drivers of the distribution of many taxa, have previously been shown to predict the distributions of the study species in the region [@Kujala2015] and are relatively uncorrelated with one another (maximum Pearson correlation coefficient = `r  fmt(max(abs(sort(raster::layerStats(predictors, "pearson", na.rm = TRUE)[[1]], TRUE)[-1:-raster::nlayers(predictors)])), 2)`).
+We summarized the environment of the Hunter region with six data layers: annual mean solar radiation, annual mean temperature, annual precipitation, precipitation seasonality (coefficient of variation), inherent soil fertility, and topographic wetness index. Each layer is a `r nrow(predictors)` by `r ncol(predictors)` grid of 1 km$^2$ cells. We chose this set of variables as they are publicly available (see supplement for sources), are biologically plausible drivers of the distribution of many taxa, have previously been shown to predict the distributions of the study species in the region [@Kujala2015] and are relatively uncorrelated with one another (maximum Pearson correlation coefficient = `r  fmt(max(abs(sort(raster::layerStats(predictors, "pearson", na.rm = TRUE)[[1]], TRUE)[-1:-raster::nlayers(predictors)])), 2)`).
 
 ### Species occurence data
 
@@ -78,7 +78,7 @@ We obtained 30 random occurrence records within the boundaries of the Hunter reg
 
 ### Background geographic data
 
-To fit distribution models with the occurrence records and environmental predictors, we used a set of background points selected so as to minimise sampling bias in the occurrence points. For each higher taxonomic group (birds, mammals and plants), the background points were selected by randomly sampling 10,000 occurrence records of all taxa belonging to each group from the Atlas of Living Australia database for the same spatial and temporal extent indicated above.
+To fit distribution models with the occurrence records and environmental predictors, we used a set of background points selected so as to minimize sampling bias in the occurrence points. For each higher taxonomic group (birds, mammals and plants), the background points were selected by randomly sampling 10,000 occurrence records of all taxa belonging to each group from the Atlas of Living Australia database for the same spatial and temporal extent indicated above.
 
 Modelling species distributions using MaxEnt
 --------------------------------------------
@@ -99,12 +99,12 @@ theme(
 
 ### Intepreting the output of MaxEnt
 
-Interpreting MaxEnt output in both it's native formats (raw and logistic) has, in the past, proved problematic and controversial. It has been shown that it while it is equally problematic to interpret MaxEnt output as either relative occurrence rate or probability of presence, it is legitimate to interpret MaxEnt output as an indicator of relative habitat suitability [@Merow2013]. Here we chose to interpret the logistic output of MaxEnt as a rough indicator of relative carrying capacity. Where the logistic output is zero, the carrying capacity should be zero (or close to zero) and where the output is one, the carrying capacity should be close to the maximum attainable for the species. When the output is some fraction of one, then we assume the carrying capacity is that fraction of the maximum. The important caveat here is that the relationship between MaxEnt logistic output and carrying capacity is assumed linear. While there is no prima facie reason that it should be, equally there is no prima facie reason there should be some more complicated relationship. Therefore, linearity would seem to be the most logical initial assumption, in the absence of information to the contrary. In any case, any conceivable deviation from linearity should not matter too much here, as the species of interest have carrying capacities that vary over many orders of magnitude (Table \ref{species_table}). The benefit of interpreting the MaxEnt output in such a way is that we can use the modelled distribution maps to calculate an estimate of the total potential population size for each species. And subsequently once we have a conservation plan, we can calculate the potential impact on that population size of the plan, or other competing plans.
+Interpreting MaxEnt output in both it's native formats (raw and logistic) has, in the past, proved problematic and controversial. It has been shown that it while it is equally problematic to interpret MaxEnt output as either relative occurrence rate or probability of presence, it is legitimate to interpret MaxEnt output as an indicator of relative habitat suitability [@Merow2013]. Here we chose to interpret the logistic output of MaxEnt as a rough indicator of relative carrying capacity. Where the logistic output is zero, the carrying capacity should be zero (or close to zero) and where the output is one, the carrying capacity should be close to the maximum attainable for the species. When the output is some fraction of one, then we assume the carrying capacity is that fraction of the maximum. The important caveat here is that the relationship between MaxEnt logistic output and carrying capacity is assumed linear. While there is no prima facie reason that it should be, equally there is no prima facie reason there should be some more complicated relationship. Therefore, linearity would seem to be the most logical initial assumption, in the absence of information to the contrary. In any case, any conceivable deviation from linearity should not matter too much here, as the species of interest have carrying capacities that vary over many orders of magnitude (Table \ref{species_table}). The benefit of interpreting the MaxEnt output in such a way is that we can use the modeled distribution maps to calculate an estimate of the total potential population size for each species. And subsequently once we have a conservation plan, we can calculate the potential impact on that population size of the plan, or other competing plans.
 
 Incorporating uncertainty
 -------------------------
 
-To calculate the value of information requires some means of quantifying the level of uncertainty in a prediction of the system state. One way to express the uncertainty in species distributions is to consider a set of distribution maps where each map is equally likely to represent the true distribution, instead having a single map that (alone) describes the distribution of a species. The multi-map description of species distributions acknowledges that species distributions are modelled based on a sample of points and those points are used to estimate the species relationship to the environment. As the points are a sample, the estimated relationship will be inherently uncertain.
+To calculate the value of information requires some means of quantifying the level of uncertainty in a prediction of the system state. One way to express the uncertainty in species distributions is to consider a set of distribution maps where each map is equally likely to represent the true distribution, instead having a single map that (alone) describes the distribution of a species. The multi-map description of species distributions acknowledges that species distributions are modeled based on a sample of points and those points are used to estimate the species relationship to the environment. As the points are a sample, the estimated relationship will be inherently uncertain.
 
 ### Uncertainty and MaxEnt
 
@@ -119,7 +119,7 @@ To bootstrap a species distribution model using MaxEnt we resampled the 30 occur
 Prioritizing with Zonation
 --------------------------
 
-We used the spatial planning software Zonation [@Moilanen2009] to make a conservation plan for the Hunter Region. The conservation plan we implemented had a budget large enough to protect 10% of the Hunter region (with the simplifying assumption that all of the Hunter is available to be protected, and that any 10% of region will have a cost equal to the budget). The objective of the conservation plan was to minimise the average proportional loss (maximise the average proportion remaining) of the total carrying capacity of the six species of interest. We gave equal weight to each species (no species was preferred over any other).
+We used the spatial planning software Zonation [@Moilanen2009] to make a conservation plan for the Hunter Region. The conservation plan we implemented had a budget large enough to protect 10% of the Hunter region (with the simplifying assumption that all of the Hunter is available to be protected, and that any 10% of region will have a cost equal to the budget). The objective of the conservation plan was to minimize the average proportional loss (maximize the average proportion remaining) of the total carrying capacity of the six species of interest. We gave equal weight to each species (no species was preferred over any other).
 
 ### The Zonation algorithm
 
@@ -149,10 +149,10 @@ theme(axis.text = element_blank(), axis.title = element_blank())
 
 ### The expected value with perfect information
 
-To calculate the EVWPI we applied the method outlined in Box 3 reversing the two steps of averaging over the bootstrap samples and applying the Zonation algorithm to find the solution that maximised (approximately) the objective of the conservation plan. This time, we first applied the Zonation algorithm to each set of bootstrap distribution maps. This resulted in 1000 conservation plans (instead of the single plan arrived at when calculating EVWOI). In each of these maps the ranking of the grid cells differs. Figure \ref{fig:plot_plan_uncertainty} shows the range of rankings each grid cell has across the bootstrapped conservation plans and highlights those grid cells that are ranked in the top 10% at least once in the bootstrapped plans. For each bootstrapped conservation plan we calculate the average proportion of total carrying capacity remaining after protecting the top 10% of cells. These 1000 values are the expected performances if we were certain of the distribution of the six species across the Hunter (with each set of bootstrapped maps and plan representing a separate realization of that certainty). Averaging these 1000 values is the final step and gives the EVWPI or the performance we would expect to conservation plan to achieve on average if we had no uncertainty about the distribution of each of the six species. In this case the EVWPI is `r fmt(evwpi * 100, 1)`%.
+To calculate the EVWPI we applied the method outlined in Box 3 reversing the two steps of averaging over the bootstrap samples and applying the Zonation algorithm to find the solution that maximized (approximately) the objective of the conservation plan. This time, we first applied the Zonation algorithm to each set of bootstrap distribution maps. This resulted in 1000 conservation plans (instead of the single plan arrived at when calculating EVWOI). In each of these maps the ranking of the grid cells differs. Figure \ref{fig:plot_plan_uncertainty} shows the range of rankings each grid cell has across the bootstrapped conservation plans and highlights those grid cells that are ranked in the top 10% at least once in the bootstrapped plans. For each bootstrapped conservation plan we calculate the average proportion of total carrying capacity remaining after protecting the top 10% of cells. These 1000 values are the expected performances if we were certain of the distribution of the six species across the Hunter (with each set of bootstrapped maps and plan representing a separate realization of that certainty). Averaging these 1000 values is the final step and gives the EVWPI or the performance we would expect to conservation plan to achieve on average if we had no uncertainty about the distribution of each of the six species. In this case the EVWPI is `r fmt(evwpi * 100, 1)`%.
 
 \vspace{12pt}
-```{r plot_plan_uncertainty, fig.height = 3.4, fig.cap = "Uncertainty in grid cell ranks. In the left pane, grid cells have been ordered along the x-axis according to their mean bootstrap ranking. The grey shaded region indicated the range of bootstrap rankings (along the y-axis). The black horizontal line marks the top 10$^{th}$ percentile, cells that have bootstrap rankings that span this line are shaded a darker grey. The right panel shows the same map displayed in Figure $\\ref{fig:plot_plan}$ however this time the cells that have bootstrap ranks spanning the top 10$^{th}$ percentile have been highlighted. \\label{fig:plot_plan_uncertainty}"}
+```{r plot_plan_uncertainty, fig.height = 3.4, fig.cap = "Uncertainty in grid cell ranks. In the left pane, grid cells have been ordered along the x-axis by their mean bootstrap ranking. The colored bars indicate the range of bootstrap rankings (along the y-axis). The black horizontal line marks the top 20$^{th}$ percentile. Cells represented by bars that span this line are shaded a green. The right panel shows the same map displayed in Figure $\\ref{fig:plot_plan}$ however this time the cells that have bootstrap ranks spanning the top 20$^{th}$ percentile have been highlighted. \\label{fig:plot_plan_uncertainty}"}
 plans_boot_df <-
   sapply(plans_boot, values) %>%
   apply(1L, function(x) c(mean = mean(x), min = min(x), max = max(x))) %>%
@@ -186,26 +186,10 @@ grid.arrange(
 
 ### The expected value of perfect information
 
-Finally we arrive at the EVPI, which is simply the difference between EVWPI and EVWOI. Here EVPI is `r fmt((evwpi - evwoi) * 100)`%. This is the increase in performance we would expect to see on average if we learned everything there was to know about the distribution of the species of conservation concern in our conservation plan. To express this value in different terms, if we consider a species with a carrying capacity of 1 individual per km$^2$ and that species had a total carrying capacity in the Hunter of 10,000 individuals, enacting a conservation plan with the information at hand (based on 30 observations) we would expect (on average) to preserve enough habitat to accomodate `r fmt(evwoi * 10000)` individuals. Were we to then enact a plan with complete certainty the we would expect to preserve enough habitat (though the area) to accomodate `r fmt((evwpi - evwoi) * 10000)` more individuals.
+Finally we arrive at the EVPI, which is simply the difference between EVWPI and EVWOI. Here EVPI is `r fmt((evwpi - evwoi) * 100)`%. This is the increase in performance we would expect to see on average, if we learned everything there was to know about the distribution of the species of conservation concern in our conservation plan. To express this value in different terms, if we consider a species with a carrying capacity of 1 individual per km$^2$, and that species had a total carrying capacity in the Hunter of 10,000 individuals, enacting a conservation plan with the information initially at hand, we would expect (on average) to preserve enough habitat to accommodate `r fmt(evwoi * 10000)` individuals. Were we to then enact a plan with complete certainty, we would expect to preserve enough habitat to accommodate `r fmt((evwpi - evwoi) * 10000)` more individuals.
 
 \vspace{18pt}
 ```{r evi_table, results = "asis"}
-#data_frame(
-#  `\\vrule width 0pt height 17pt depth 5pt\\relax Expected value` =
-#    paste0("\\vrule width 0pt height 15pt depth 5pt\\relax ",
-#         c("EVWOI", "EVWPI", "EVPI")
-#    ),
-#  `\\pbox{20cm}{Average percentage of\\\\carrying capacity remaining}` =
-#    c(evwoi, evwpi, evwpi - evwoi) * 100
-#) %>%
-#xtable(
-#  caption = "The expected value of perfect information and its components for a conservation plan for the Hunter region",
-#  label = "evi_table",
-#  align = "llr",
-#  digits = 1
-#) %>%
-#print(include.rownames = FALSE, comment = FALSE, sanitize.text.function = I)
-
 data_frame(Species = paste0("\\textit{", c(spp_of_interest), "}"),
            EVWOI = evwoi_by_sp * 100,
            EVWPI = evwpi_by_sp * 100) %>%
@@ -231,16 +215,27 @@ print(include.rownames = FALSE,
 ```
 
 Discussion
-==========
+---------
 
-Here we have chosen to use the zonation alogorithm function known as additive benifit. Many conservation plans use instead the core-area function as it is believed to have better ecological properties. However core-area only has a heuristic definition of it's objective function and it is not currently known if it is truely maxismising. Additive benifit on the otherhand is known to maximise the average benefit to all features the conservation plan is being made for.
+This case study represents a template for incorporating a VOI analyses into spatial conservation plans. Here we have shown the resolving uncertainty could lead to an expected gain in the average carrying capacity of a set of species of conservation concern. 
 
-The results we have obtained now beg the question of how learning in a conservation plan should be targeted. For instance, what are the best locations (spatially) for learning. Figure 8 indicates there is band of of areas in the east where the critical uncertainty in conservation value lies. Sites in the far west appear to have the lowest value and according to the analyses have little chance of being of high enough value to warrant inclusion in a plan. Conversely there are areas in the central hinterland that are of such consistantly high value that the need not be investigated further either. The remaining patches in the north and on the central and south coasts however are those that are probably the most benficial to learn more about in terms of their conservation value. These areas, though many probably have marginal if any value, are ones that knowing more about would make the most difference to the outcome of a conservation plan.
+The results we obtained now beg the question of how learning in a conservation plan should be targeted. For instance, what are the best locations (spatially) for learning. Figure 8 indicates there is band of areas in the east where the most critical uncertainty in conservation value lies. Sites in the far west appear to have the lowest value and according to the analyses, and have little chance of being of high enough value to warrant inclusion in a conservation plan that can only afford to protect 20% of the landscape. Conversely there are areas in the central hinterland that are of such consistently high value that they need not be investigated further either. The remaining patches in the north and on the central and south coasts however, are those that are probably the most beneficial to learn more about, in terms of their conservation value. These areas, though many probably have marginal, if any value, are ones that knowing more about would make the most difference to the outcome of a conservation plan.
 
-Given the above, why do a value of information analysis at all?. How would this change the outcome of a conservation plan? While the gains to a conservation plan of a value of information analysis may necessarly be modest, they will indeed be real gains, as a VOI analysis itself is free. The VOI analysis gives the planner the ability to discriminate between three zones of certainty. Those are that should see no investment, those sites which must only be invested in with actual conservation dollars. And finally those areas which need to be invested in with research initially to decide whether further investment is warranted.
+Given the above, why do a value of information analysis at all?. How would this change the outcome of a conservation plan? While the gains to a conservation plan of a value of information analysis may necessarily be modest, they will indeed be real gains. The VOI analysis gives the planner the ability to discriminate between three zones of certainty. Those are that should see no investment, those which must only be invested in with actual conservation dollars as they are of high and certain benefit. And finally, those areas which need to be invested in with research initially to decide whether further investment is warranted. The areas in the third category will almost by definition yield modest gains for the ultimate conservation plan, as these sites are the ones with the most marginal benefits. How modest a gain will be in proportion to the amount of knowledge that is held initially, with additional knowledge following abiding by the law of diminishing returns.
 
-The areas in the third categorey will almost by definition yield modest gains for the ultimate conservation plans, as these sites are the ones with the most marginal of benefits. How modest a gain will be in proportion to the amount of knowledge that is held initially. The import of knowledge will follow a law of diminishing returns.
+### The ingredients of a value of information analyses.
 
-Then there is the question of high we define performance. If the performance of the conservation plan is not defined intrinsically, as is the usually case, but  in terms of the actually conservation outcome that a plan yields then the value of informaiton may increase as this additional layer of uncertainty is introduced.
+To undertake a VOI analyses like the case study outlined here requires three key ingredients:
 
-So what are the ingredients of a value of information analyses. A well defined objective, such that performance can be measuered. More than one alternative action to take to compare the performance of, and finally some expression of the uncertainty of the performance of the alternatives.
+* A well defined objective, such that performance can be measured. Without a well defined objective, we could not compare the expected performance of a conservation plan informed by the original information to one with new information.
+
+* More than one alternative action to take to compare performance. If we can't change the implementation of the plan then we can react to change in uncertainty and take advantage of the improvement in knowledge.
+
+* Some expression of the uncertainty of the performance of the alternative actions. We must be able to express uncertainty in such a way that we can propose alternate outcomes of the actions we take to meet the objectives. 
+
+Then there is the question of high we define performance. If the performance of the conservation plan is not defined intrinsically, as is the usually case, but in terms of the actually conservation outcome that a plan yields then the value of information may increase as this additional layer of uncertainty is introduced.
+
+### Additive benefit vs. core-area
+
+Here we have chosen to use the Zonation algorithm objective function known as additive benefit. Many conservation plans would instead use the core-area function as it is believed to have better ecological properties. However, core-area only has a heuristic definition of it's objective function and it is not currently known if it is truly maximizing. Additive benefit on the other hand is known to maximize the average benefit to all features the conservation plan is being made for and it is for this reason we use it to undertake our value of information analyses.
+
