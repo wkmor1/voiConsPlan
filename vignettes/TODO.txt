@@ -1,0 +1,27 @@
+TODO
+
+{} Add results to the abstract. 2 sentences.
+
+{} Add ref (Watts etal 2009 [marxan with zones]) at line 34
+
+{} Order refs by increasing date
+
+{} Add ref (Plumtree, A etal [anti-poaching patrols])
+
+{} Add ref (Guissan etal 2013) at line 74
+
+{} Add ref (Elith etal [presence only data]) at line 79
+
+{} Need a para in the intro (or maybe discussion) on time being cost. Citing Martin, Camaclang, McDonald-Madden, Grantham.
+
+{} Add ref (Game etal 2009, Tulloch 2016, Marxan with Probabiltiy) at section "accounting for uncertainty".
+
+{} Add ref (Canessa etal 2015) at line 129
+
+{} Add ref for line 308
+
+{} Explain negative VOI in table 1
+
+{} In discussion add paragraph mentioning other ways of characterising uncert in SDMs.
+
+{} In dicussion mention other VOI tools EVSI excetara

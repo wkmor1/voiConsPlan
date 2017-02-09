@@ -11,7 +11,7 @@ The Hunter is a biodiverse region of north-eastern New South Wales, Australia. T
 Study species
 -------------
 
-The Hunter Valley is home to many species of national conservation significance. Here we consider six species: two birds, two mammals and two plants. For the following analyses we build conservation plans that aim to maximize the average relative carrying capacity of these six species across the hunter region. Table 1 outlines these six species and an estimate of their maximum carrying capacity (see supplement for more details) as well as their conservation status according to the _NSW Threatened Species Conservation Act 1995_ (TSC), _Commonwealth Environment Protection and Biodiversity Conservation Act 1999_ (EPBC) and the IUCN Red list (IUCN).
+The Hunter region is home to many species of national conservation significance. Here we consider six species: two birds, two mammals and two plants. For the following analyses we build conservation plans that aim to maximize the average relative carrying capacity of these six species across the hunter region. Table 1 outlines these six species and an estimate of their maximum carrying capacity (see supplement for more details) as well as their conservation status according to the _NSW Threatened Species Conservation Act 1995_ (TSC), _Commonwealth Environment Protection and Biodiversity Conservation Act 1999_ (EPBC) and the IUCN Red list (IUCN).
 
 \vspace{12pt}
 ```{r species_table, results = "asis"}
@@ -119,7 +119,7 @@ To bootstrap a species distribution model using MaxEnt we resampled the 30 occur
 Prioritizing with Zonation
 --------------------------
 
-We used the spatial planning software Zonation [@Moilanen2009] to make a conservation plan for the Hunter Region. The conservation plan we implemented had a budget large enough to protect 10% of the Hunter region (with the simplifying assumption that all of the Hunter is available to be protected, and that any 10% of region will have a cost equal to the budget). The objective of the conservation plan was to minimize the average proportional loss (maximize the average proportion remaining) of the total carrying capacity of the six species of interest. We gave equal weight to each species (no species was preferred over any other).
+We used the spatial planning software Zonation [@Moilanen2009] to make a conservation plan for the Hunter region. The conservation plan we implemented had a budget large enough to protect 10% of the Hunter region (with the simplifying assumptions that all of the Hunter is available to be protected, and that any 10% of region will have a cost equal to the budget). The objective of the conservation plan was to minimize the average proportional loss (maximize the average proportion remaining) of the total carrying capacity of the six species of interest. We gave equal weight to each species (no species was preferred over any other).
 
 ### The Zonation algorithm
 
@@ -152,7 +152,7 @@ theme(axis.text = element_blank(), axis.title = element_blank())
 To calculate the EVWPI we applied the method outlined in Box 3 reversing the two steps of averaging over the bootstrap samples and applying the Zonation algorithm to find the solution that maximized (approximately) the objective of the conservation plan. This time, we first applied the Zonation algorithm to each set of bootstrap distribution maps. This resulted in 1000 conservation plans (instead of the single plan arrived at when calculating EVWOI). In each of these maps the ranking of the grid cells differs. Figure \ref{fig:plot_plan_uncertainty} shows the range of rankings each grid cell has across the bootstrapped conservation plans and highlights those grid cells that are ranked in the top 10% at least once in the bootstrapped plans. For each bootstrapped conservation plan we calculate the average proportion of total carrying capacity remaining after protecting the top 10% of cells. These 1000 values are the expected performances if we were certain of the distribution of the six species across the Hunter (with each set of bootstrapped maps and plan representing a separate realization of that certainty). Averaging these 1000 values is the final step and gives the EVWPI or the performance we would expect to conservation plan to achieve on average if we had no uncertainty about the distribution of each of the six species. In this case the EVWPI is `r fmt(evwpi * 100, 1)`%.
 
 \vspace{12pt}
-```{r plot_plan_uncertainty, fig.height = 3.4, fig.cap = "Uncertainty in grid cell ranks. In the left pane, grid cells have been ordered along the x-axis by their mean bootstrap ranking. The colored bars indicate the range of bootstrap rankings (along the y-axis). The black horizontal line marks the top 20$^{th}$ percentile. Cells represented by bars that span this line are shaded a green. The right panel shows the same map displayed in Figure $\\ref{fig:plot_plan}$ however this time the cells that have bootstrap ranks spanning the top 20$^{th}$ percentile have been highlighted. \\label{fig:plot_plan_uncertainty}"}
+```{r plot_plan_uncertainty, fig.height = 3.4, fig.cap = "Uncertainty in grid cell ranks. In the left pane, grid cells have been ordered along the x-axis by the mean of their bootstrapped rankings. The colored bars indicate the range of bootstrapped rankings (along the y-axis). The black horizontal line marks the top 20$^{th}$ percentile. Cells represented by bars that span this line are shaded a green. The right panel shows the same map displayed in Figure $\\ref{fig:plot_plan}$ however this time the cells that have bootstrap ranks spanning the top 20$^{th}$ percentile have been highlighted. \\label{fig:plot_plan_uncertainty}"}
 plans_boot_df <-
   sapply(plans_boot, values) %>%
   apply(1L, function(x) c(mean = mean(x), min = min(x), max = max(x))) %>%
@@ -205,7 +205,7 @@ xtable(
   caption = "The expected value of perfect information and its components for a conservation plan for the Hunter region", 
   label = "evi_table",
   align = "llrrr",
-  digits = 1
+  digits = 0
 ) %>%
 print(include.rownames = FALSE, 
       comment = FALSE, 
