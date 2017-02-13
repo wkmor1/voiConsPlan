@@ -14,15 +14,6 @@ TODO
 
 {*} Add ref (Game etal 2009, Tulloch 2016, Marxan with Probabiltiy) at section "accounting for uncertainty".
 
-{} Add ref (Canessa etal 2015) at line 129
+{*} Add ref for line 308
 
-{} Add ref for line 308
-
-{} Expand caption for table 1. explain negative VOI
-
-{} In discussion add paragraph mentioning other ways of characterising uncert in SDMs.
-
-{} In dicussion mention other VOI tools EVSI etc
-
-{} Need a para in the intro (or maybe discussion) on time being cost. Citing Martin, Camaclang, McDonald-Madden, Grantham.
-
+{*} Expand caption for table 1. explain negative VOI

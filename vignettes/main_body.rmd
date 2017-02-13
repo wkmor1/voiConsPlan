@@ -78,7 +78,7 @@ We obtained 30 random occurrence records within the boundaries of the Hunter reg
 
 ### Background geographic data
 
-To fit distribution models with the occurrence records and environmental predictors, we used a set of background points selected so as to minimize sampling bias in the occurrence points. For each higher taxonomic group (birds, mammals and plants), the background points were selected by randomly sampling 10,000 occurrence records of all taxa belonging to each group from the Atlas of Living Australia database for the same spatial and temporal extent indicated above.
+To fit distribution models with the occurrence records and environmental predictors, we used a set of background points selected so as to minimize sampling bias in the occurrence points [@Phillips2009]. For each higher taxonomic group (birds, mammals and plants), the background points were selected by randomly sampling 10,000 occurrence records of all taxa belonging to each group from the Atlas of Living Australia database for the same spatial and temporal extent indicated above.
 
 Modelling species distributions using MaxEnt
 --------------------------------------------
@@ -202,14 +202,14 @@ bind_rows(
              EVPI = evwpi * 100 - evwoi * 100)
 ) %>%
 xtable(
-  caption = "The expected value of perfect information and its components for a conservation plan for the Hunter region", 
+  caption = "The expected value of perfect information and its components for a conservation plan for the Hunter region. The zonation algorithm is programmed to maximise the average proportion of the species distributions remaining. As a result, the expected performance gain from new information (EVPI) varies among the species included in the conservation plan. Some species may even have a reduced level of protection (on average) when more information is included in the plan (e.g., \\emph{Acacia bynoeana}) as the extra information allows losses in such species to be traded of against greater gains in others.", 
   label = "evi_table",
   align = "llrrr",
   digits = 0
 ) %>%
 print(include.rownames = FALSE, 
       comment = FALSE, 
-      sanitize.text.function = I, 
+      sanitize.text.function = identity, 
       booktabs = TRUE, 
       hline.after = c(-1, 0, 6:7))
 ```
@@ -218,9 +218,11 @@ Discussion
 ---------
 
 This case study represents a template for incorporating a VOI analyses into spatial conservation plans. Here we have shown the resolving uncertainty could lead to an expected gain in the average carrying capacity of a set of species of conservation concern. 
-The results we obtained now beg the question of how learning in a conservation plan should be targeted. For instance, what are the best locations (spatially) for learning. Figure 8 indicates there is band of areas in the east where the most critical uncertainty in conservation value lies. Sites in the far west appear to have the lowest value and according to the analyses, and have little chance of being of high enough value to warrant inclusion in a conservation plan that can only afford to protect 20% of the landscape. Conversely there are areas in the central hinterland that are of such consistently high value that they need not be investigated further either. The remaining patches in the north and on the central and south coasts however, are those that are probably the most beneficial to learn more about, in terms of their conservation value. These areas, though many probably have marginal, if any value, are ones that knowing more about would make the most difference to the outcome of a conservation plan.
+The results we obtained now beg the question of how learning in a conservation plan should be targeted. For instance, what are the best locations (spatially) for learning. Figure 8 indicates there is band of areas in the east where the most critical uncertainty in conservation value lies. Sites in the far west appear to have the lowest value and according to the analyses, and have little chance of being of high enough value to warrant inclusion in a conservation plan that can only afford to protect 20% of the landscape. Conversely there are areas in the central hinterland that are of such consistently high value that they need not be investigated further either. The remaining patches in the north and on the central and south coasts however, are those that are probably the most beneficial to learn more about, in terms of their conservation value. These areas, though many probably have marginal if any value, are ones that knowing more about would make the most difference to the outcome of a conservation plan.
 
-Given the above, why do a value of information analysis at all?. How would this change the outcome of a conservation plan? While the gains to a conservation plan of a value of information analysis may necessarily be modest, they will indeed be real gains. The VOI analysis gives the planner the ability to discriminate between three zones of certainty. Those are that should see no investment, those which must only be invested in with actual conservation dollars as they are of high and certain benefit. And finally, those areas which need to be invested in with research initially to decide whether further investment is warranted. The areas in the third category will almost by definition yield modest gains for the ultimate conservation plan, as these sites are the ones with the most marginal benefits. How modest a gain will be in proportion to the amount of knowledge that is held initially, with additional knowledge following abiding by the law of diminishing returns.
+Given the above, why do a value of information analysis at all? How would this change the outcome of a conservation plan? While the gains to a conservation plan of a value of information analysis may necessarily be modest, they will indeed be real gains. The VOI analysis gives the planner the ability to discriminate between three zones of certainty. Those are that should see no investment, those which must only be invested in with actual conservation dollars as they are of high and certain benefit. And finally, those areas which need to be invested in with research initially to decide whether further investment is warranted. The areas in the third category will almost by definition yield modest gains for the ultimate conservation plan, as these sites are the ones with the most marginal benefits. How modest a gain will be in proportion to the amount of knowledge that is held initially, with additional knowledge following the law of diminishing returns.
+
+There is also a question of high we define performance. If the performance of the conservation plan is not defined intrinsically (i.e., defined in terms of some aspect of species distributions), as is the usually case, but in terms of the actually conservation outcome  that a plan yields (e.g., some aspect of the species populations; declines, increases, etc.) then the value of information may increase as this additional layer of uncertainty is introduced.
 
 ### The ingredients of a value of information analyses.
 
@@ -231,10 +233,6 @@ To undertake a VOI analyses like the case study outlined here requires three key
 * More than one alternative action to take to compare performance. If we can't change the implementation of the plan then we can react to change in uncertainty and take advantage of the improvement in knowledge.
 
 * Some expression of the uncertainty of the performance of the alternative actions. We must be able to express uncertainty in such a way that we can propose alternate outcomes of the actions we take to meet the objectives. 
-
-Then there is the question of high we define performance. If the performance of the conservation plan is not defined intrinsically, as is the usually case, but in terms of the actually conservation outcome that a plan yields then the value of information may increase as this additional layer of uncertainty is introduced.
-
-### Additive benefit vs. core-area
 
 Here we have chosen to use the Zonation algorithm objective function known as additive benefit. Many conservation plans would instead use the core-area function as it is believed to have better ecological properties. However, core-area only has a heuristic definition of it's objective function and it is not currently known if it is truly maximizing. Additive benefit on the other hand is known to maximize the average benefit to all features the conservation plan is being made for and it is for this reason we use it to undertake our value of information analyses.
 
