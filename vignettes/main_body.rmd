@@ -165,7 +165,7 @@ grid.arrange(
   slice(floor(seq.int(1, n(), length.out = 10000))) %>%
   ggplot +
   geom_hline(aes(yintercept = prop_loss)) +
-  geom_linerange(aes(x = x, y = mean, ymin = min, ymax = max, col = hl)) +
+  geom_linerange(aes(x = x, ymin = min, ymax = max, col = hl)) +
   scale_colour_manual(values = viridis(2, .1, .1, .9), guide = "none") +
   theme_bw() +
   theme(
@@ -218,7 +218,6 @@ Discussion
 ---------
 
 This case study represents a template for incorporating a VOI analyses into spatial conservation plans. Here we have shown the resolving uncertainty could lead to an expected gain in the average carrying capacity of a set of species of conservation concern. 
-
 The results we obtained now beg the question of how learning in a conservation plan should be targeted. For instance, what are the best locations (spatially) for learning. Figure 8 indicates there is band of areas in the east where the most critical uncertainty in conservation value lies. Sites in the far west appear to have the lowest value and according to the analyses, and have little chance of being of high enough value to warrant inclusion in a conservation plan that can only afford to protect 20% of the landscape. Conversely there are areas in the central hinterland that are of such consistently high value that they need not be investigated further either. The remaining patches in the north and on the central and south coasts however, are those that are probably the most beneficial to learn more about, in terms of their conservation value. These areas, though many probably have marginal, if any value, are ones that knowing more about would make the most difference to the outcome of a conservation plan.
 
 Given the above, why do a value of information analysis at all?. How would this change the outcome of a conservation plan? While the gains to a conservation plan of a value of information analysis may necessarily be modest, they will indeed be real gains. The VOI analysis gives the planner the ability to discriminate between three zones of certainty. Those are that should see no investment, those which must only be invested in with actual conservation dollars as they are of high and certain benefit. And finally, those areas which need to be invested in with research initially to decide whether further investment is warranted. The areas in the third category will almost by definition yield modest gains for the ultimate conservation plan, as these sites are the ones with the most marginal benefits. How modest a gain will be in proportion to the amount of knowledge that is held initially, with additional knowledge following abiding by the law of diminishing returns.
