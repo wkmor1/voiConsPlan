@@ -1,8 +1,8 @@
 
-Box 2: A slightly less simple example: value of information for a plan to protect one species at two properties with continuous uncertainty
+Box 2: A slightly less simple example: value of information for a plan to protect one species from two properties with continuous uncertainty
 -------------------------------------------------------------------------------------------------------------------------------------------
 
-In Box 1 we demonstrated how to calculate the value of information when the uncertainty in value was discrete (the value of a property could be zero or one because the value was derived from the speices being present or absent). In the following example we increase the complexity slightly and demonstrate how to calculate EVPI when uncertainty is continuous. In all other aspects, the problem remains the same. A planner has the budget to protect one property for the conservation of an endangered species and there are two properties available.
+In Box 1 we demonstrated how to calculate the value of information when the uncertainty in value was discrete (the value of a property could be zero or one because the value was derived from the species being present or absent). In the following example we increase the complexity slightly and demonstrate how to calculate EVPI when uncertainty is continuous. In all other aspects, the problem remains the same. A planner has the budget to protect one property for the conservation of an endangered species and there are two properties available.
 
 Again, the planner's aim is to maximise the area of habitat protected. And again, the planner is uncertain about the habitat suitability of both properties. This time however, the true value and uncertainty of habitat suitability is continuous. Now the planner thinks that the habitat suitability of both properties can be __any value__ between zero and one, whereas before the planner thought the value could be __either__ zero or one. For the continuous case the habitat suitability can be described by a continuous probability distribution function (PDF). The planner uses a different PDF to describe the uncertainty in each property's value (Figure \ref{fig:plot_evwoi_cont_example}). For property 1 the PDF is symmetrical indicating that planner thinks it is equally probable that the value is less than .5 as it is probable that the value is greater than .5. In contrast, the planner believes that property 2 has a value that is more likely to be greater than .5 than not. Therefore, the PDF describing the value of property 2 is shifted to the right, having a greater mass over values between .5 and 1 than over values between 0 and .5.
 
@@ -184,4 +184,4 @@ mtext(
 
 ### Expected value of perfect information
 
-Once again we use equation \ref{eq:evpi} to calculate EVPI. In this case EVPI is $`r cEVWPI` - `r cEVWOI` = \mathbf{`r  cEVPI`}$
+Once again we use equation \ref{eq:evpi} to calculate EVPI. In this case EVPI is $`r cEVWPI` - `r cEVWOI` = \mathbf{`r  cEVPI`}$. Again, if they could express habitat value as money, they should be willing to spend up to 9% of the price of a property on gathering new information.
