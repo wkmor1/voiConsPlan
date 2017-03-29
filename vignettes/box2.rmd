@@ -8,7 +8,7 @@ Again, the planner's aim is to maximise the area of habitat protected. And again
 
 ### Expected value with original information
 
-With these two PDFs, the planner can calculate the EVWOI. Again the planner needs to find the expected value of purchasing each property. The greater of the two, the maximum expected value, is the EVWOI. To find the expected value of a property's PDF the planner must integrate the PDF over the range of possible values. In Figure \ref{fig:plot_evwoi_cont_example}. we demonstrate how this is done using Monte Carlo integration. This yields expected values of .52 and .62 for properties 1 and 2 respectively. Applying equation \ref{eq:evwoi} as in Box 1 we estimate the EVWOI is .62 and the optimal action for the planner would be to purchase and protect property 2.
+With these two PDFs, the planner can calculate the EVWOI. Again the planner needs to find the expected value of purchasing each property. The greater of the two, the maximum expected value, is the EVWOI. To find the expected value of a property's PDF the planner must integrate the PDF over the range of possible values. In Figure \ref{fig:plot_evwoi_cont_example} we demonstrate how this is done using Monte Carlo integration. This yields expected values of .52 and .62 for properties 1 and 2 respectively. Applying equation \ref{eq:evwoi} as in Box 1 we estimate the EVWOI is .62 and the optimal action for the planner would be to purchase and protect property 2.
 
 ```{r box2_data}
 nsims <- 5
