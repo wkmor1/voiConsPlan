@@ -1,6 +1,11 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\.httr-oauth$
-vignettes/build/*
-vignettes/voiConsPlan_cache/*
-vignettes/voiConsPlan_files/*
+^thesis.bst$
+^voiConsPlan\.bib$
+^voiConsPlan\.Rmd$
+^abstract\.tex$
+^build.*
+^vignettes/.*
+^voiConsPlan_cache.*
+^voiConsPlan_files.*
