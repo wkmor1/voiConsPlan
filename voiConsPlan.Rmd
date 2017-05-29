@@ -26,7 +26,7 @@ header-includes:
 - \usepackage[displaymath,mathlines]{lineno}
 - \linenumbers
 subparagraph: true
-biblio-style: thesis.bst
+biblio-style: voiConsPlan.bst
 bibliography: voiConsPlan.bib
 ---
 
