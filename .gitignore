@@ -1,7 +1,10 @@
 .Rproj.user
 .Rhistory
 .RData
+voiConsPlan.Rdata
 .DS_Store
-vignettes/build/*
-vignettes/voiConsPlan_cache/*
-vignettes/voiConsPlan_files/*
+build/*
+voiConsPlan_cache/*
+voiConsPlan_files/*
+voiConsPlan.tex
+voiConsPlan.pdf
