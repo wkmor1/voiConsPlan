@@ -1097,7 +1097,7 @@ The Zonation software uses a greedy algorithm to rank grid cells in order of pri
 
 ### The expected value of information for the Hunter conservation plan {-}
 
-Using the methods outlined in Boxes 1, 2 and 3 and the data highlighted above, we calculated EVPI and it's components (EVWOI and EVWPI) for our conservation plan for the Hunter region. 
+Using the methods outlined in Boxes 1, 2 and 3 and the data highlighted above, we calculated EVPI and it's components (EVWOI and EVWPI) for our conservation plan for the Hunter region. In Box 3 the example used had only 25 cells and budget large enough to protect one of them. For the Hunter region, 
 
 #### The expected value with original information {-}
 
