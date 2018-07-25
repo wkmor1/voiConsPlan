@@ -1133,11 +1133,12 @@ grid.arrange(
   scale_colour_manual(values = viridis(2, .1, .1, .9), guide = "none") +
   theme_bw() +
   theme(
-    axis.title  = element_blank(),
     axis.text.x = element_blank(),
     axis.text.y = element_blank()
   ) +
-  coord_fixed(.715),
+  coord_fixed(.715) +
+  xlab(expression("Mean rank" %->% "")) +
+  ylab(expression("Bootstrap rank" %->% "")),
   gg_raster(plans_boot_max, highlight = plans_boot_df$hl) +
   scale_fill_viridis(na.value = NA, name = "Rank") +
   guides(fill = guide_colourbar(barheight = 10, label = FALSE)) +
