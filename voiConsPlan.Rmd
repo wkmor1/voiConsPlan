@@ -1044,17 +1044,17 @@ Acacia bynoeana: [1600 plants](https://www.environment.gov.au/cgi-bin/sprat/publ
 
 We summarized the environment of the Hunter region with six data layers: annual mean solar radiation, annual mean temperature, annual precipitation, precipitation seasonality (coefficient of variation), inherent soil fertility, and topographic wetness index. Each layer is a `r nrow(predictors)` by `r ncol(predictors)` grid of 1 km$^2$ cells. We chose this set of variables as they are publicly available (see supplement for sources), are biologically plausible drivers of the distribution of many taxa, have previously been shown to predict the distributions of the study species in the region [@Kujala2015] and are relatively uncorrelated with one another (maximum Pearson correlation coefficient = `r  fmt(max(abs(sort(raster::layerStats(predictors, "pearson", na.rm = TRUE)[[1]], TRUE)[-1:-raster::nlayers(predictors)])), 2)`).
 
-#### Species occurence data {-}
-
-We obtained 30 random occurrence records within the boundaries of the Hunter region (as defined above) and collected within the date range, January 1, 1996 to May 1, 2016, for each of the six study species from the Atlas of Living Australia database [@ALA2016]. We chose this relatively low sample-size random subset to ensure that subsequent modelling would have an initial level of uncertainty large enough for us to demonstrate how to calculate the value of information.
-
-#### Background geographic data {-}
-
-To fit distribution models with the occurrence records and environmental predictors, we used a set of background points selected so as to minimize sampling bias in the occurrence points [@Phillips2009]. For each higher taxonomic group (birds, mammals and plants), the background points were selected by randomly sampling 10,000 occurrence records of all taxa belonging to each group from the Atlas of Living Australia database for the same spatial and temporal extent indicated above.
-
 ### Modelling species distributions using MaxEnt {-}
 
 We used the software MaxEnt [@Phillips2006; @Phillips2008] to create species distribution maps on which to base the conservation plan. MaxEnt can be used to describe the potential distribution of species with occurrence records alone. The algorithm does this by comparing the distribution of occurrence records in covariate space to the distribution of covariate space as a whole, also known as the background (see below). We fitted MaxEnt models to each species with only linear and quadratic features enabled.
+
+#### Species occurence data {-}
+
+We obtained 30 occurrence records chosen at random within the boundaries of the Hunter region (as defined above) and collected within the date range, January 1, 1996 to May 1, 2016, for each of the six study species from the Atlas of Living Australia database [@ALA2016]. We chose this relatively low sample-size subset to ensure that subsequent modelling would have an initial level of uncertainty large enough for us to demonstrate how to calculate the value of information.
+
+#### Background geographic data {-}
+
+To fit distribution models with the occurrence records and environmental covariates, we used a set of background points selected so as to minimize sampling bias in the occurrence points [@Phillips2009]. For each higher taxonomic group (birds, mammals and plants), the background points were selected by randomly sampling 10,000 occurrence records of all taxa belonging to each group from the Atlas of Living Australia database for the same spatial and temporal extent indicated above.
 
 (ref:plotHunterModels) Distribution of study species in the Hunter region. Maps show the relative carrying capacity (logistic output) of each species estimated by fitting Maxent models.
 
@@ -1097,7 +1097,7 @@ The Zonation software uses a greedy algorithm to rank grid cells in order of pri
 
 ### The expected value of information for the Hunter conservation plan {-}
 
-Using the methods outlined in Boxes 1, 2 and 3 and the data highlighted above, we calculated EVPI and it's components (EVWOI and EVWPI) for our conservation plan for the Hunter region.
+Using the methods outlined in Boxes 1, 2 and 3 and the data highlighted above, we calculated EVPI and it's components (EVWOI and EVWPI) for our conservation plan for the Hunter region. 
 
 #### The expected value with original information {-}
 
