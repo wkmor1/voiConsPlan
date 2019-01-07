@@ -1,6 +1,6 @@
 ---
-title: "The value of information for spatial conservation planning"
-author: "William K. Morris, Heini Kujala & Peter A. Vesk"
+title: "The value of information for conservation planning"
+author: ""
 date: "`r Sys.Date()`"
 output:
   bookdown::pdf_document2:
@@ -17,6 +17,7 @@ header-includes:
 - \titleformat{\subparagraph}{\small\normalfont}{}{0pt}{}
 - \linespread{2}\selectfont
 - \usepackage{booktabs}
+- \usepackage[open=true]{bookmark}
 - \usepackage{setspace}
 - \usepackage{caption}
 - \usepackage{tikz}
@@ -28,6 +29,8 @@ header-includes:
 subparagraph: true
 biblio-style: voiConsPlan.bst
 bibliography: voiConsPlan.bib
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, echo = FALSE}
@@ -165,7 +168,7 @@ save(predictors, file = "~/voiConsPlan/data/predictors.rda", compress = "xz")
 save(occurrence_records, file = "~/voiConsPlan/data/occurrence_records.rda", compress = "xz")
 ```
 
-```{r sample_occurrences}
+```{r sample_occurrences, eval = FALSE}
 set.seed(19831111)
 
 spp_fltr <-
@@ -186,7 +189,7 @@ background <-
   sample_n(n_bg_points)
 ```
 
-```{r models_boot, cache.lazy = FALSE}
+```{r models_boot, cache.lazy = FALSE, eval = FALSE}
 bs_samples <-
   replicate(
     n_bs_samp, 
@@ -215,7 +218,7 @@ models_boot_by_sp <-
 models <- lapply(models_boot_by_sp, calc, mean) %>% brick
 ```
 
-```{r plans_boot}
+```{r plans_boot, eval = FALSE}
 cl <- makeCluster(n_cl_nodes)
 registerDoSNOW(cl)
 
@@ -227,7 +230,7 @@ plans_boot <-
 stopCluster(cl)
 ```
 
-```{r evwoi}
+```{r evwoi, eval = FALSE}
 cl <- makeCluster(n_cl_nodes)
 registerDoSNOW(cl)
 
@@ -252,7 +255,7 @@ stopCluster(cl)
 evwoi_by_sp = rowMeans(evwoi_by_sp_mat)
 ```
 
-```{r evwpi}
+```{r evwpi, eval = FALSE}
 evwpi <-
   mapply(
     ave_prop_rem, models_boot, plans_boot, MoreArgs = list(p = prop_loss)
@@ -274,65 +277,70 @@ evwpi_by_sp <-
   sapply(mean)
 ```
 
-## Introduction {-}
+```{r load_cache, cache.lazy = FALSE}
+load("cache/cache-data.RData")
+```
+# Introduction {-}
 
-Spatial conservation planning focuses on developing methods to select candidate sites for protection and other conservation actions [@Moilanen2009]. Spatial conservation plans are complex and their inputs are frequently uncertain because they are often based on few data [@Rondinini2006]. The outcomes of spatial conservation plans could always be improved if they incorporated additional information [@Polasky2001]. For example, additional occurrence data could be included for species of concern to the conservation planner, so that the input layers of the spatial plan were more precise. But additional information comes at a cost. And that cost may have to be traded-off against implementing the conservation plan itself. Therefore, it is crucial to measure the value of new information to the conservation plan. If the value of new information is too low, it could be better to implement a plan based on the original information alone, with remaining resources used for direct conservation actions. 
+Conservation planning, including reserve network design, focuses on developing methods to select candidate sites for protection and other conservation actions [@Moilanen2009]. Spatial conservation plans are complex and their inputs are frequently uncertain because they are often based on few data [@Rondinini2006]. The outcomes of conservation plans could always be improved if they incorporated additional information. For example, additional occurrence data could be included for species of concern to the conservation planner, so that the input layers of the spatial plan were more precise. But additional information comes at a cost. And that cost may have to be traded-off against implementing the conservation plan itself. Therefore, it is crucial to measure the value of new information to the conservation plan. If the value of new information is too low, it could be better to implement a plan based on the original information alone, with remaining resources used for direct conservation actions.
 
-### Spatial conservation planning and imperfect information {-}
+@Polasky2001 defined the value of information for reserve site selection almost two decades ago with a stylized example of the maximum expected coverage problem. Since then the concept has only rarely been discussed in the context of conservation planning [e.g., @Costello2010]. In the intervening period many new tools have been made available to the conservation planner such as species distribution modelling software [e.g., MaxEnt, @Phillips2008] and spatial planning tools [e.g., Zonation, @Moilanen2009] but their use rarely if ever coincides with a value of information analysis. Here using a realistic case study we illustrate how in combination with the non-parametric bootstrap, modern conservation planning tools such as MaxEnt and Zonation can be used to calculate the value of information. We quite deliberately gloss over, if not ignore, many issues salient to both species distribution modelling and optimal conservation planning so as to highlight only those aspects that are required for a value of information analysis. Issues including but not limited to, spatial autocorrelation [@Dormann2007], detectability [@Mackenzie2002] and complementarity [@Margules2000]. The paper has been organised as follows. In the reminder of the introduction we discuss the topic of uncertainty in conservation planning and the concept of information value in more detail. In several breakout boxes we use toy examples of increasing complexity to familiarize the reader with the previously discussed concepts in the context of conservation planning. We then use these techniques to calculate the value of information for a realistic conservation plan. And in the last section we end with discussion and concluding remarks.
 
-Nearly all conservation actions include a spatial component: that is, decisions about where to act. Spatial conservation planning originally focused on designing networks of conservation reserves [@Kirkpatrick1983; @Margules1988], but has expanded to also cover other conservation actions and multi-action planning [e.g., @Westphal2007; @Thomson2009; @Watts2009; @Kujala2015]. An aim of conservation planning is to preserve a comprehensive, adequate and representative subset of a region's biota [@Margules2000] by separating its constituents from threatening processes [@Gaston2002]. States and non-state actors practicing conservation do so with limited budgets and resources [@Naidoo2006]. Therefore, conservation planning must be systematic [@Margules2000].
+## Conservation planning and imperfect information {-}
 
-A typical (systematic) spatial conservation plan will assess a pool of candidate locations for reservation or some equivalent action such as anti-poaching measures [@Plumptre2014]. The planner will either find a set of locations that maximize conservation benefits within a given budget, or prioritize locations in order to meet a conservation target as cost effectively as possible. These are called maximal benefit or minimal set problems respectively [@Cocks1989; @Camm1996]. 
+Nearly all conservation actions include a spatial component: that is, decisions about where to act. Conservation planning originally focused on designing networks of conservation reserves [@Kirkpatrick1983; @Margules1988], but has expanded to also cover other conservation actions and multi-action planning [e.g., @Westphal2007; @Thomson2009; @Watts2009; @Kujala2015]. An aim of conservation planning is to preserve a comprehensive, adequate and representative subset of a region's biota [@Margules2000] by separating its constituents from threatening processes [@Gaston2002]. States and non-state actors practicing conservation do so with limited budgets and resources [@Naidoo2006]. Therefore, conservation planning must be systematic [@Margules2000].
 
-### The information needed to make a spatial conservation plan {-}
+A typical (systematic) conservation plan will assess a pool of candidate locations for reservation or some equivalent action such as anti-poaching measures [@Plumptre2014]. The planner will either find a set of locations that maximize conservation benefits within a given budget, or prioritize locations in order to meet a conservation target as cost effectively as possible. These are called maximal benefit or minimal set problems respectively [@Cocks1989; @Camm1996]. 
 
-A systematic spatial conservation plan is in essence a classic decision problem requiring optimization. Like any problem, it first requires a structured definition. In defining the problem the conservation planner needs five types of information to proceed [@Possingham2001].
+## The information needed to make a conservation plan {-}
+
+A systematic conservation plan is in essence a classic decision problem requiring optimization. Like any problem, it first requires a structured definition. In defining the problem the conservation planner needs five types of information to proceed [@Possingham2001].
 
 * __Objective__: The objective may be a target (e.g., protect 20% of the habitat of a set of species) or a goal to maximize some gain or minimize some loss (e.g. protect locations so as to minimize the average loss of habitat for a set of species.)
-* __Constraints__: The bounds in which the plan operates. Including but not limited to, the spatial and temporal frame the plan will operate in, and the resources (e.g., monetary) available to the planner (note that objectives and constraints, depending on context, can be interchangable).
+* __Constraints__: The bounds in which the plan operates. Including but not limited to, the spatial and temporal frame the plan will operate in, and the resources (e.g., monetary) available to the planner (note that objectives and constraints, depending on context, can be interchangeable).
 * __Actions__: The actions the planner can take (e.g., protect, not protect, restore habitat, eradicate pests, patrol for poachers, etc.) to meet their objectives within the given constraints.
-* __State variables__: The components of the system in which the plan will operate that the planner seeks to affect and against which, the performance of the plan will be measured. In a spatial conservation plan the state variables are typically the distribution of a set of species or habitats the plan is seeking to protect.
+* __State variables__: The components of the system in which the plan will operate that the planner seeks to affect and against which, the performance of the plan will be measured. In a conservation plan the state variables are typically the distribution of a set of species or habitats the plan is seeking to protect.
 * __System models__: A system model links the actions the planner will take and the state variables. With a system model the planner can predict what the outcome of any given plan will be with respect to the state variables of interest (e.g., what will be the effect of protecting certain areas on the distribution and abundance of species).
 
-### Uncertainty in spatial conservation planning {-}
+## Uncertainty in conservation planning {-}
 
-Of the components in the list above, it is the last two, state variables and system models, where the most critical uncertainty lies. By critical, here we mean uncertainty which could, once addressed, change the decision being made and the decision outcome [@Runge2011b]. Here we focus on the uncertainty in state variables and leave the treatment of system model uncertainty for other fora. While in some sense, there may be uncertainty in objectives, constraints and actions, these cannot be critical (in the strict sense we use the term above) as these components define the decision problem itself and thus addressing them is not directly changing the decision and its outcome, it is changing the framework under which the decision maker is operating. That is not to say that these other forms of uncertainty are not important it is just that there are not pertinent to the topic as we narrowly define it here.
+Of the components in the list above, it is the last two, state variables and system models, where the most critical uncertainty lies. By critical, here we mean uncertainty which could, once addressed, change the decision being made and the decision outcome [@Runge2011b]. Here we focus on the uncertainty in state variables and leave the treatment of system model uncertainty for other fora. While in some sense, there may be uncertainty in objectives, constraints and actions, these cannot be critical (in the strict sense we use the term above) as these components define the decision problem itself and thus addressing them is not directly changing the decision and its outcome, it is changing the framework under which the decision maker is operating. That is not to say that these other forms of uncertainty are not important it is just that they are not pertinent to the topic as we narrowly define it here.
 
 State variables (often modeled species distributions) are almost always based on imperfect knowledge. Conservation planners do not know with certainty where the species they seek to protect occur and must rely on models to predict their occurrence or abundance [@Burgman2005; @Guisan2013]. Such models may themselves be based on uncertain and imperfect inputs (e.g., the distribution of a species may be predicted from a climate envelope that is based on uncertain climate data) [@GuilleraArroita2015]. Uncertainty also arises in state variables, such as species distribution maps, because the models used to build them are trained with a sample of data points. For example, a common approach to predicting the distribution of species is to use so called presence-only species distribution models [@Elith2011]. In such models, the environment of the locations where a species is known to occur, is compared to the distribution of environmental values over the complete landscape under consideration. Ignoring for a moment any uncertainty in the nature of the environment, for a given species, the fewer locations it is known to be present at, the more imprecise and uncertain the predictions of its overall distribution from such models will be.
 
 State variable uncertainty matters to conservation planning because the uncertainty will propagate from inputs all the way through the planning algorithm, to the output and then to the conservation plan. This happens regardless of whether or not the uncertainty is accounted for explicitly.
 
-### Accounting for uncertainty in spatial conservation planning {-}
+## Accounting for uncertainty in conservation planning {-}
 
-Ultimately, a conservation planner, like any decision maker, can do one of two things in the face of uncertainty. They can make a decision (formulate a plan) with the uncertainty or try to reduce the uncertainty. Even if they take the second option, uncertainty is rarely completely resolved and the plan must be made with imperfect information. More often than not [though see e.g., @Game2008], spatial conservation planning is done in spite of uncertainty rather than by taking any uncertainty into account [@Gaston2003]. Addressing uncertainty has been shown to have clear benefits when making decisions for conservation [@Drechsler2000; @Regan2005] even in reserve design problems [@Moilanen2006].
+Ultimately, a conservation planner, like any decision maker, can do one of two things in the face of uncertainty. They can make a decision (formulate a plan) with the uncertainty or try to reduce the uncertainty. Even if they take the second option, uncertainty is rarely completely resolved and the plan must be made with imperfect information. More often than not [though see e.g., @Game2008], conservation planning is done in spite of uncertainty rather than by taking any uncertainty into account [@Gaston2003; @Tulloch2016]. Addressing uncertainty has been shown to have clear benefits when making decisions for conservation [@Drechsler2000; @Regan2005] even in reserve design problems [@Moilanen2006].
 
-Uncertainty, whether or not explicitly acknowledged, is often not quantified for the state variables in a conservation plan. Typically a set of species distribution maps will be produced, on top of which a spatial plan is built. However, only one map per species is produced and these maps will be implicitly treated as the state of the system. In reality, the maps represent one possible, and at best, average or most likely (though typically not both and perhaps neither), version of the system state under the assumption that the data used to produce them were unbiased. If instead, a set of maps was produced that reflected the uncertainty (multiple maps for each species) then a complementary set of plans could be produced that reflected the uncertainty in state variables. It is only at this point, having quantified uncertainty, that uncertainty can be addressed and an assessment made of whether, and/or how, to reduce it by acquiring additional information. To know whether or how to reduce uncertainty a conservation planner must measure the value of information [@Polasky2001].
+Uncertainty, whether or not explicitly acknowledged, is often not quantified for the state variables in a conservation plan. Typically a set of species distribution maps will be produced, on top of which a spatial plan is built. However, only one map per species is produced and these maps will be implicitly treated as the state of the system. In reality, the maps represent one possible, and at best, average or most likely (though typically not both and perhaps neither), version of the system state under the assumption that the data used to produce them were unbiased. If instead, a set of maps was produced that reflected the uncertainty (multiple maps for each species) then a complementary set of plans could be produced that reflected the uncertainty in state variables. It is only at this point, having propagated or accounted for the uncertainty in conservation plan, that uncertainty can be addressed and an assessment made of whether, and/or how, to reduce it by acquiring additional information. To know whether or how to reduce uncertainty a conservation planner must measure the value of information [@Polasky2001].
 
-### The value of information {-}
+## The value of information {-}
 
-Value of information analysis is a tool used to quantify how much reducing the uncertainty in a predictive model is worth to a decision maker [@Raiffa1961; @Berger1985]. The value of information is the difference between the final outcome of a decision (or plan) with or without additional information [Ades2004; @Yokota2004a]. Value, in and of itself, cannot be known in advance of the resolution of any decision problem, including a spatial conservation plan. Therefore, decision analysts work with expected value. Expected value is the mean of possible outcomes weighted by their probability of occurring. For example, if a person will earn a dollar when a fair coin toss is heads, and nothing if it is tails, the expected value of the toss is 50 cents. When making a decision with multiple alternatives, assuming the decision maker is risk neutral, it is always best to take the action that maximizes the expected value [@Williams2011]. 
+Value of information analysis is a tool used to quantify how much reducing the uncertainty in a predictive model is worth to a decision maker [@Raiffa1961; @Berger1985]. The value of information is the difference between the final outcome of a decision (or plan) with and without additional information [@Ades2004; @Yokota2004a]. Value, in and of itself, cannot be known in advance of the resolution of any decision problem, including a conservation plan. Therefore, decision analysts work with expected value. Expected value is the mean of possible outcomes weighted by their probability of occurring. For example, if a person will earn a dollar when a fair coin toss is heads, and nothing if it is tails, the expected value of the toss is 50 cents. When making a decision with multiple alternatives, assuming the decision maker is risk neutral, it is always best to take the action that maximizes the expected value [@Williams2011]. 
 
-#### The expected value with original information {-}
+### The expected value with original information {-}
 
-The expected value with original information, EVWOI, is the maximum expected value if no additional information is gathered before a decision is made (see Box 1). In the case of spatial conservation planning, EVWOI is the default. Typically, a conservation plan maximizes the expected value using the information at hand. For example, species occurrence data (point locations of places where each species of concern has been observed) is used to build a set of species habitat suitability maps, with a species distribution modelling algorithm such as MaxEnt [@Phillips2006]. A second algorithm, such as Zonation [@Moilanen2009] or Marxan [@Ball2009], is used to construct a plan that maximizes (or approximately maximizes) the expected outcome with respect to some objective/target. The key, is that in the default case, there is only one map used per species. The one-per-species map set represents the expected outcome under the present degree of uncertainty. In effect averages of the uncertain species distributions are used, resulting in a conservation plan that represents the expected value with original information.
+The expected value with original information, EVWOI, is the maximum expected value if no additional information is gathered before a decision is made (see Box 1).
 
-#### The expected value with perfect information {-}
+### The expected value with perfect information {-}
 
 Having perfect information is to have complete knowledge---no uncertainty. While in practice this is unlikely to ever occur, the expected value __with__ perfect information (EVWPI, see Box 1 for a formal definition) is a useful construct as it allows the calculation of the expected value __of__ information.
 
-#### The expected value of perfect information {-}
+### The expected value of perfect information {-}
 
 The expected value __of__ perfect information (EVPI) is the difference between EVWPI and EVWOI. If the conservation planner can estimate the value of perfect information, that is, knowing what it is worth to resolve all uncertainty before enacting a conservation plan, then they will have an idea of the upper bound on what they should be willing to do to reduce uncertainty. If the expected value of perfect information is relatively small, then it is less likely to be worth resolving uncertainty than if the value of perfect information was relatively large.
 
-## Box 1: A simple example: value of information for a plan to protect one species given two properties {-}
+# Box 1: A simple example: value of information for a plan to protect one species given two properties {-}
 
-A conservation planner can afford to protect a property to help save an endangered species from extinction. Two properties are available. The planner's aim is to maximise the area of habitat protected for the endangered species. The planner is uncertain about each property's __habitat suitability__. A property's habitat suitability can be either one (suitable) or zero (unsuitable). The first property has a 50% chance of being suitable (a 50% chance that habitat suitability is one, and a 50% chance that it is zero). But the planner knows that the second property has a slightly better chance (60%) of being suitable (i.e., a 40% chance it's unsuitable). The properties are identical in all other ways. A property can be protected __with original information__ (i.e., choosing a property while still ignorant of the habitat suitabilities) or __with perfect information__ (i.e., knowing the actual habitat suitabilities of each property in advance). The __value__ of protecting a property is its habitat suitability (i.e., the value can be zero or one). Regardless of the habitat suitability, an unprotected property has no value to the planner. The conservation planner must decide which property to protect.
+A conservation planner can afford to protect a property to help save an endangered species from extinction. Two properties are available. The planner's aim is to maximize the area of habitat protected for the endangered species. The planner is uncertain about each property's __habitat suitability__. A property's habitat suitability can be either one (suitable) or zero (unsuitable). The first property has a 50% chance of being suitable (a 50% chance that habitat suitability is one, and a 50% chance that it is zero). But the planner knows that the second property has a slightly better chance (60%) of being suitable (i.e., a 40% chance it is unsuitable). The properties are identical in all other ways. A property can be protected __with original information__ (i.e., choosing a property while still ignorant of the habitat suitabilities) or __with perfect information__ (i.e., knowing the actual habitat suitabilities of each property in advance). The __value__ of protecting a property is its habitat suitability (i.e., the value can be zero or one). Regardless of the habitat suitability, an unprotected property has no value to the planner. The conservation planner must decide which property to protect.
 
-### Expected value {-}
+## Expected value {-}
 
-The __expected value__ (EV) is the value the planner expects (but not necessarily what they get), given the outcome of their decision is uncertain. An __expected value__ is a value weighted (multiplied) by a probability (or, in the case of a random variable, a probability distribution function). Before they make a decision, the planner can work out the __expected value with original information__ (EVWOI) and the __expected value with perfect information__ (EVWPI). The __expected value of perfect information__ (EVPI) is the difference between the EVWPI and the EVWOI. If the EVPI is positive, it means it is worth (up to a point) learning before making a decision. For this example, if the EVPI is large enough, it is worth the planner working out what the habitat suitabilities of the two properties are, before they decide which one to protect. But if the EVPI is too low (when there is little difference between EVWOI and EVWPI) they should just decide which one to protect straightaway. Whether it is worth finding out the habitat suitabilities in advance will also depend on how much it costs to aquire the knowledge.
+The __expected value__ (EV) is the value the planner expects (but not necessarily what they get), given the outcome of their decision is uncertain. An __expected value__ is a value weighted (multiplied) by a probability (or, in the case of a random variable, a probability distribution function). Before they make a decision, the planner can work out the __expected value with original information__ (EVWOI) and the __expected value with perfect information__ (EVWPI). The __expected value of perfect information__ (EVPI) is the difference between the EVWPI and the EVWOI. If the EVPI is positive, it means it is worth (up to a point) learning before making a decision. For this example, if the EVPI is large enough, it is worth the planner working out what the habitat suitabilities of the two properties are, before they decide which one to protect. But if the EVPI is too low (when there is little difference between EVWOI and EVWPI) they should just decide which one to protect straightaway. Whether it is worth finding out the habitat suitabilities in advance will also depend on how much it costs to acquire the knowledge.
 
-### Expected value with original information {-}
+## Expected value with original information {-}
 
 The EVWOI is the highest value the planner expects they could get, on average (the __maximum expected value__), by protecting a property with only the information they have on habitat suitability at hand. To work out the expected value of protecting a property, the planner weights (i.e., multiplies) the values that are possible by their probabilities and adds them together.
 
@@ -390,17 +398,17 @@ rm(i)
 In this case, protecting the first property has a $0.5$ probability of having a value of $1$, and a $1 - 0.5 = 0.5$ probability of having a value of $0$. So, the expected value is: $$1 \times 0.5 + 0 \times (1 - 0.5) = 0.5.$$ The calculation for the second property is: $$1 \times 0.6 + 0 \times (1 - 0.6) = 0.6,$$ meaning the maximum expected value, EVWOI, is also $\mathbf{0.6}$. The calculation can be expressed as:
 
 \begin{equation}
-\mathrm{EVWOI} = Max_{a}[Mean_{s}(Value)]
+\mathrm{EVWOI} = Max_{a}[\mathrm{E}_{s}(Value)]
 (\#eq:box1evwoi)
 \end{equation}
 
-Where $a$ represents the __action__ taken by the conservation planner, $s$ represents a __state__ (or scenario) (i.e., in this case it describes the information the planner has on the properties' habitat suitabilities). Taking the mean (average) for the states gives us the expected values.
+Where $a$ represents the __action__ taken by the conservation planner, $s$ represents a __state__ (or scenario) (i.e., in this case it describes the information the planner has on the properties' habitat suitabilities). Taking the weighted mean (average) for the states gives us the expected values.
 
-### Expected value with perfect information {-}
+## Expected value with perfect information {-}
 
 The EVWPI is the value the planner expects if they knew the properties' habitat suitabilities before deciding which one to protect.
 
-(ref:plotEvwpiBinExample) How to calculate EVWPI. First work out the scenarios that are possible. Then choose the property to protect in each possible scenario. When the properties have equal value, it doesn't matter which one is selected (e.g., in scenarios 3 & 4). Next calculate the probability that the scenario occurs, by multiplying the probabilities of the property habitat suitabilities (e.g., for scenario 1, the probability is $0.5 \times 0.6 = 0.3$, see the rightmost arrows). Next multiply the scenario probabilties by the value of the properties selected in each scenario. Finally, sum the weighted scenario values (rightmost values). In this case the EVWPI is **0.8**.
+(ref:plotEvwpiBinExample) How to calculate EVWPI. First work out the scenarios that are possible. Then choose the property to protect in each possible scenario. When the properties have equal value, it doesn't matter which one is selected (e.g., in scenarios 3 & 4). Next calculate the probability that the scenario occurs, by multiplying the probabilities of the property habitat suitabilities (e.g., for scenario 1, the probability is $0.5 \times 0.6 = 0.3$, see the rightmost arrows). Next multiply the scenario probabilities by the value of the properties selected in each scenario. Finally, sum the weighted scenario values (rightmost values). In this case the EVWPI is **0.8**.
 
 ```{r plotEvwpiBinExample, fig.cap = '(ref:plotEvwpiBinExample)'}
 par(mfrow = c(1, 2), mar = c(0, 1, 3, 1), oma = c(15, 4, 0, 9), lwd = 2,
@@ -493,13 +501,13 @@ Because the planner is only protecting one property, the value the planner gets 
 The EVWPI is the sum of these weighted values, $0.3 + 0.2 + 0.3 + 0 = \mathbf{0.8}.$ In mathematical notation this can be expressed as:
 
 \begin{equation}
-\mathrm{EVWPI} = Mean_{s}[Max_{a}(Value)]
+\mathrm{EVWPI} = \mathrm{E}_{s}[Max_{a}(Value)]
 (\#eq:box1evwpi)
 \end{equation}
 
-Here the symbols have the same meaning as in equation \@ref(eq:box1evwoi). But notice that instead of calculating the __action that maximises the expected value__ as in EVWOI, EVWPI is the __expected maximum value of action__. In other words, the order of maximisation and expectation has been reversed.
+Here the symbols have the same meaning as in equation \@ref(eq:box1evwoi). But notice that instead of calculating the __action that maximises the expected value__ as in EVWOI, EVWPI is the __expected maximum value of action__. In other words, the order of maximization and expectation has been reversed.
 
-### Expected value of perfect information  {-}
+## Expected value of perfect information  {-}
 
 As noted above, the expected value of perfect information (EVPI) is the difference between the EVWPI and the EVWOI. Combining equations \@ref(eq:box1evwoi) and \@ref(eq:box1evwpi), the EVPI can be expressed as:
 
@@ -510,13 +518,17 @@ As noted above, the expected value of perfect information (EVPI) is the differen
 
 In the conservation planner's case, EVPI is $0.8 - 0.6 = \mathbf{0.2}$, meaning that they should be willing to spend up to 20% of the price of a property, but no more, on learning about habitat suitability, before they decide what to protect, because beyond that, the expense of gathering the information is greater than the expected benefit from acting on the accumulated information (new information plus original). We do not mean to imply that this is a generalization. In this particular contrived example the specific cost of investing in a single property is irrelevant.
 
-As indicated above, spatial conservation planners rarely explicitly address uncertainty in state variables. This presents a problem, as without measuring uncertainty a conservation planner cannot know whether uncertainty is worth addressing. Without doubt there is a motive to reduce uncertainty in general, as decisions made with less uncertainty, all else being equal, will be better ones than decisions made with relatively more uncertainty [@Reckhow1994]. In light of these facts we propose that the field of spatial conservation planning should absorb the decision theoretic tools of value of information analyses. However, introducing a new tool into to an established framework is by no means trivial. As such, here we seek to incorporate the concepts of value of information in harmony with the norms of systematic spatial conservation planning. In doing so, we outline what we think is the first example of a robust and comprehensive method of calculating the value of information for a spatial conservation plan for the first time. Our approach in the following work has been to balance simplicity with realism. While our central case study is somewhat contrived, it uses real (not simulated) data in a plan to protect species of conservation concern in a region in need of systematic planning [@Whitehead2014; @Kujala2015]. To perform our analysis we combine the use of established software packages MaxEnt [@Phillips2006; @Phillips2008] and Zonation [@Moilanen2009], which are well known to conservation planners, with Monte Carlo resampling methods and a value of information analysis.
+---
 
-The rest of this work is organized as follows. We introduce the case study briefly and then demonstrate how, within the context of spatial conservation planning, the value of information can be calculated using Monte Carlo methods. To aid understanding we interweave the case study with toy, low resolution examples (such as Box 1 above) so that the reader may gain a deeper understanding of the method we are proposing.
+END BOX 1
 
-## Box 2: A slightly less simple example: value of information for a plan to protect one species from two properties with continuous uncertainty {-}
+---
 
-In Box 1 we demonstrated how to calculate the value of information when the uncertainty in value was discrete (the value of a property could be zero or one because the value was derived from the species being present or absent). In the following example we increase the complexity slightly and demonstrate how to calculate EVPI when uncertainty is continuous. In all other aspects, the problem remains the same. A planner has the budget to protect one property for the conservation of an endangered species and there are two properties available.
+As indicated above, conservation planners rarely explicitly address uncertainty in state variables. This presents a problem, as without measuring uncertainty a conservation planner cannot know whether uncertainty is worth addressing. Without doubt there is a motive to reduce uncertainty in general, as decisions made with less uncertainty, all else being equal, will be better ones than decisions made with relatively more uncertainty [@Reckhow1994]. In light of these facts we propose that the field of conservation planning should absorb the decision theoretic tools of value of information analyses. However, introducing a new tool into to an established framework is by no means trivial. As such, here we seek to incorporate the concepts of value of information in harmony with the norms of systematic conservation planning. Our approach in the following work has been to balance simplicity with realism. While our central case study is somewhat contrived, it uses real (not simulated) data in a plan to protect species of conservation concern in a region in need of systematic planning [@Whitehead2014; @Kujala2015]. To perform our analysis we combine the use of established software packages MaxEnt [@Phillips2006; @Phillips2008] and Zonation [@Moilanen2009], which are well known to conservation planners, with classical bootstrap resampling methods and a value of information analysis.
+
+# Box 2: A slightly less simple example: value of information for a plan to protect one species from two properties with Monte Carlo integration {-}
+
+In Box 1 we demonstrated how to calculate the value of information when the uncertainty in value was described with a discrete probability density function (PDF) (i.e., the value of a property could be zero or one because the value was derived from the species being present or absent). In the following example we increase the complexity slightly and demonstrate how to calculate EVPI when uncertainty is described by a continuous PDF. In all other aspects, the problem remains the same. A planner has the budget to protect one property for the conservation of an endangered species and there are two properties available.
 
 ```{r box2_data}
 nsims <- 5
@@ -536,7 +548,7 @@ cEVWPI <- round(mean(msim), 2)
 cEVPI  <- cEVWPI - cEVWOI
 ```
 
-(ref:plotEvwoiContExample) How to calculate EVWOI with continuous uncertainty using Monte Carlo integration. Like in Figure \@ref(fig:plotEvwoiBinExample), EVWOI is the maximum expected value of the two properties. To calculate these expected values we generate samples from the respective PDFs and divide by the number of samples. Here, the PDFs are beta distributions with shape parameters (2, 2) and (2.4, 1.6) respectively. By generating samples, with probability according to their PDFs, as the number of samples increases the estimate of expected value increases in accuracy. With `r nsims` samples the estimates are `r round(musim[[1]], 2)` and `r round(musim[[2]], 2)` (note that for property 2, which has an asymmetrical probability distribution, the expected value, its mean, is a little lower than its most probable value, the mode). Therefore the estimate of EVWOI is `r cEVWOI`, the greater of the two.
+(ref:plotEvwoiContExample) How to calculate EVWOI with using Monte Carlo integration. Like in Figure \@ref(fig:plotEvwoiBinExample), EVWOI is the maximum expected value of the two properties. To calculate these expected values we generate samples from the respective PDFs sum them and divide by the number of samples. Here, the PDFs are beta distributions with shape parameters (2, 2) and (2.4, 1.6) respectively. By generating samples, with probabilities according to their PDFs, as the number of samples increases the estimate of expected value increases in accuracy. With `r nsims` samples the estimates are `r round(musim[[1]], 2)` and `r round(musim[[2]], 2)` (note that for property 2, which has an asymmetrical probability distribution, the expected value, its mean, is a little lower than its most probable value, the mode). Therefore the estimate of EVWOI is `r cEVWOI`, the greater of the two.
 
 ```{r plotEvwoiContExample, fig.cap = "(ref:plotEvwoiContExample)"}
 par(mfrow = c(1, 2), mar = c(0, 1, 3, 3), oma = c(15, 4, 0, 0), lwd = 2, ps = 12)
@@ -613,15 +625,15 @@ mtext(
 )
 ```
 
-Again, the planner's aim is to maximise the area of habitat protected. And again, the planner is uncertain about the habitat suitability of both properties. This time however, the true value and uncertainty of habitat suitability is continuous. Now the planner thinks that the habitat suitability of both properties can be __any value__ between zero and one, whereas before the planner thought the value could be __either__ zero or one. For the continuous case the habitat suitability can be described by a continuous probability distribution function (PDF). The planner uses a different PDF to describe the uncertainty in each property's value (Figure \@ref(fig:plotEvwoiContExample)). For property 1, the PDF is symmetrical indicating that planner thinks it is equally probable that the value is less than .5 as it is probable that the value is greater than .5. In contrast, the planner believes that property 2 has a value that is more likely to be greater than .5 than not. Therefore, the PDF describing the value of property 2 is shifted to the right, having a greater mass over values between .5 and 1 than over values between 0 and .5.
+Again, the planner's aim is to maximize the area of habitat protected. And again, the planner is uncertain about the habitat suitability of both properties. This time however, the true value and uncertainty of habitat suitability is described with a continuous PDF. Now the planner thinks that the habitat suitability of both properties can be __any value__ between zero and one, whereas before the planner thought the value could be __either__ zero or one. For the continuous case the habitat suitability can be described by a continuous PDF. The planner uses a different PDF to describe the uncertainty in each property's value (Figure \@ref(fig:plotEvwoiContExample)). For property 1, the PDF is symmetrical indicating that planner thinks it is equally probable that the value is less than .5 as it is probable that the value is greater than .5. In contrast, the planner believes that property 2 has a value that is more likely to be greater than .5 than not. Therefore, the PDF describing the value of property 2 is shifted to the right, having a greater mass over values between .5 and 1 than over values between 0 and .5.
 
-### Expected value with original information {-}
+## Expected value with original information {-}
 
-With these two PDFs, in this case beta distributions with shape parameters (2,2) and (2.4, 1.6) respectively, the planner can calculate the EVWOI. Again the planner needs to find the expected value of purchasing each property. The greater of the two, the maximum expected value, is the EVWOI. To find the expected value of a property's PDF the planner must integrate the PDF over the range of possible values. In Figure \@ref(fig:plotEvwoiContExample) we demonstrate how this is done using Monte Carlo integration. For many probability distributions, including the beta distributions we use here, there are closed form solutions to the EVWOI utilising integral calculus. However, here we focus on the Monte Carlo integration in order to equip the reader for the methods we below in our main case-study, to which the closed-form solutions do not apply. Here we perform the Monte Carlo integration by sampling from the two beta PDFs using the method described by @Cheng1978. The method one would need to use to do such sampling will differ according to the particular form of the PDF in question. Monte Carlo integration of the PDFs yields expected values of .52 and .62 for properties 1 and 2 respectively. Applying equation \@ref(eq:box1evwoi), as in Box 1, we estimate the EVWOI is .62 and the optimal action for the planner would be to purchase and protect property 2.
+With these two PDFs, in this case beta distributions with shape parameters (2,2) and (2.4, 1.6) respectively, the planner can calculate the EVWOI. Again the planner needs to find the expected value of purchasing each property. The greater of the two, the maximum expected value, is the EVWOI. To find the expected value of a property's PDF the planner must integrate the PDF over the range of possible values. In Figure \@ref(fig:plotEvwoiContExample) we demonstrate how this is done using Monte Carlo integration. For many probability distributions, including the beta distributions we use here, there are closed form solutions to the EVWOI utilizing integral calculus. However, here we focus on the Monte Carlo integration in order to equip the reader for the methods we use below in our main case-study, to which the closed-form solutions do not apply. Here we perform the Monte Carlo integration by sampling from the two beta PDFs using the method described by @Cheng1978. The method one would need to use to do such sampling will differ according to the particular form of the PDF in question. Note that for illustrative purposes  we only use a small number of Monte Carlo samples. Typically Monte Carlo methods require a far larger sample-size as estimation error approaches zero asymptotically. Monte Carlo integration of the PDFs yields expected values of .52 and .62 for properties 1 and 2 respectively. Applying equation \@ref(eq:box1evwoi), as in Box 1, we estimate the EVWOI is .62 and the optimal action for the planner would be to purchase and protect property 2. 
 
-### Expected value with perfect information {-}
+## Expected value with perfect information {-}
 
-(ref:plotEvwpiContExample) How to calculate EVWPI with Monte Carlo integration. For continuous uncertainty, unlike discrete uncertainty, the number of possible outcomes/scenarios are infinite; they can be any combination of values between 0 and 1 for each property (though some values are more likely than others). As in Figure \@ref(fig:plotEvwoiContExample), a convienent solution is to use Monte Carlo integration. We can estimate EVWPI by generating random samples in pairs, one sample from each of the property value PDFs, selecting the maximum sample in each pair (samples in black text) and then averaging, by dividing by the number of samples generated. By selecting each pair in proportion to the probability distribution functions (PDFs), as we take more Monte Carlo samples the estimate of EVWPI approaches its true value. With the `r nsims` samples above we estimate an EVWPI of `r cEVWPI` (which is close to the true value of .69, which is what we would get if we used a large number of samples).
+(ref:plotEvwpiContExample) How to calculate EVWPI with Monte Carlo integration. For continuous uncertainty, unlike discrete uncertainty, the number of possible outcomes/scenarios are infinite; they can be any combination of values between 0 and 1 for each property (though some values are more likely than others). As in Figure \@ref(fig:plotEvwoiContExample), a convenient solution is to use Monte Carlo integration. We can estimate EVWPI by generating random samples in pairs, one sample from each of the property value PDFs, selecting the maximum sample in each pair (samples in black text) and then averaging, by dividing by the number of samples generated. By selecting each pair in proportion to the probability distribution functions (PDFs), as we take more Monte Carlo samples the estimate of EVWPI approaches its true value. With the `r nsims` samples above we estimate an EVWPI of `r cEVWPI` (which is close to the true value of .69, which is what we would get if we used a large number of samples).
 
 ```{r plotEvwpiContExample, fig.cap = "(ref:plotEvwpiContExample)"}
 par(mfrow = c(1, 2), mar = c(0, 1, 3, 3), oma = c(15, 4, 0, 0), lwd = 2, ps = 12)
@@ -696,19 +708,29 @@ mtext(
 )
 ```
 
-Figure \@ref(fig:plotEvwpiContExample) demonstrates the application of Monte Carlo integration to calculating EVWPI. Here the samples generated are the same as in figure \@ref(fig:plotEvwoiContExample) (but they need not be). However this time we generate them as pairs and as in the calculation of EVWPI in Box 1, we maximise first on each pair and then take the average (mean) at the end to arrive at the expected value, which is our estimate of EVWPI. In essence to calculate EVWPI when uncertainty is continuous the planner can calculate the expected values of sets (in this case pairs) of Monte Carlo samples from the probability distributions characterising uncertainty and then average them much like they do the "scenarios" of the discrete example in Box 1. Again, there is a closed-form solution to the EVWPI when uncertainty is descrivbed by beta distributions, but for the current purpose we simply focus on the Monte Carlo solution.
+Figure \@ref(fig:plotEvwpiContExample) demonstrates the application of Monte Carlo integration to calculating EVWPI. Here the samples generated are the same as in figure \@ref(fig:plotEvwoiContExample) (but they need not be). However this time we generate them as pairs and as in the calculation of EVWPI in Box 1, we maximize first on each pair and then take the average (mean) at the end to arrive at the expected value, which is our estimate of EVWPI. In essence to calculate EVWPI when uncertainty is continuous the planner can calculate the expected values of sets (in this case pairs) of Monte Carlo samples from the probability distributions characterizing uncertainty and then average them much like they do the "scenarios" of the discrete example in Box 1. Again, there is a closed-form solution to the EVWPI when uncertainty is described by beta distributions, but for the current illustrative example we simply focus on the Monte Carlo solution.
 
-### Expected value of perfect information {-}
+## Expected value of perfect information {-}
 
 Once again we use equation \@ref(eq:box1evpi) to calculate EVPI. In this case EVPI is $`r cEVWPI` - `r cEVWOI` = \mathbf{`r  cEVPI`}$. And again, as in Box 1 in this particular scenario, the planner should be willing to spend up to 9% of the price of a property on gathering new information.
 
-## Box 3: A simple example of calculating the value of information for a conservation plan using Zonation {-}
+---
 
-In Box 2 we demonstrated how to calculate EVPI for a two site conservation plan with continuous uncertainty. Here we extend that problem to 25 sites and two species to illustrate how the problem can be solved using a spatial conservation planning tool such as Zonation (see section "the Zonation algorithm" for detail), and nonparametric bootstrapping (see section "the boostrap" for more details on this aspect) of species distributions. The same method we apply here can be used for a much larger numbers of sites and species and is only limited by computing resources. Here we demonstrate the method using only two bootstrapped samples, but in less illustrative practice (as in the case study that follows) a far larger number samples would be normally be required.
+END BOX 2
 
-(ref:plotSimpleZonation) How to calculate the value of information for a conservation plan for 2 species, 25 cells and a budget large enough to protect 1 cell. First, for each set of bootstrapped species carrying capacity maps, $k_1$ and $k_2$, we rank each cell and calculate the mean proportion of carrying capacity remaining. EVWOI is the maximum average of the mean proportion of carry capactity remaining when we choose either top ranked cell. In this case the expected performance when the highest ranked cell in the top panel is chosen (top equation). The EVWPI is the average of the mean proportion of carrying capacity remaining when the top ranked cell is chosen for each bootstrap sample, $k_1$ and $k_2$, seperately (middle equation). Finally EVPI is the difference between the EVWOI and EVWPI (bottom equation).
+---
 
-```{r plotSimpleZonation, fig.cap = "(ref:plotSimpleZonation)"}
+# Box 3: A simple example of calculating the value of information for a conservation plan {-}
+
+In Box 2 we demonstrated how to calculate EVPI for a two site conservation plan with continuous uncertainty. Here we extend that problem to 25 sites and two species to illustrate how the problem can be solved using a conservation planning tool such as Zonation (see section "the Zonation algorithm" for detail), and nonparametric bootstrapping (see section "the bootstrap" for more details on this aspect) of species distributions. The same method we apply here can be used for a much larger numbers of sites and species and is only limited by computing resources. Here we demonstrate the method using only two bootstrapped samples, but ordinarily (as in the case study that follows) a far larger number samples would be required.
+
+(ref:plotSimpleZonation) How to calculate the value of information for a conservation plan for 2 species, 25 cells and a budget large enough to protect 1 cell. First, for each set of bootstrapped species carrying capacity maps, $k_1$ and $k_2$, we rank each cell and calculate the mean proportion of carrying capacity remaining. EVWOI is the maximum average of the mean proportion of carry capacity remaining when we choose either top ranked cell. In this case the expected performance when the highest ranked cell in the top panel is chosen (top equation). The EVWPI is the average of the mean proportion of carrying capacity remaining when the top ranked cell is chosen for each bootstrap sample, $k_1$ and $k_2$, separately (middle equation). Finally EVPI is the difference between the EVWOI and EVWPI (bottom equation).
+
+```{r plotSimpleZonationCached, fig.cap = "(ref:plotSimpleZonation)", results = "markup"}
+knitr::include_graphics("cache/plotSimpleZonation-1.pdf")
+```
+
+```{r plotSimpleZonation, fig.cap = "(ref:plotSimpleZonation)", eval = FALSE}
 local(
   {
     build_raster <-
@@ -962,33 +984,39 @@ local(
 )
 ```
 
-Here again, like in Boxes 1 and 2, the planner's aim is to maximise the quality of habitat protected given a limited budget that is large enough to purchase a single property. This time however, there are 25 properties to chose from and two endangered species the planner is entrusted to protect. The planner's aim is to maximise the average (over the two species) proportion of habitat quality remaining after a site has been protected and the remaining 24 have been lost. 
+Here again, like in Boxes 1 and 2, the planner's aim is to maximize the quality of habitat protected given a limited budget that is large enough to purchase a single property. This time however, there are 25 properties to chose from and two endangered species the planner is entrusted to protect. The planner's aim is to maximize the average (over the two species) proportion of habitat quality remaining after a site has been protected and the other 24 have been lost. 
 
 As before, the planner is uncertain about the habitat quality of the 25 sites, and in this case they are uncertain about the habitat quality for both species. The uncertainty in site habitat quality is continuous as in Box 2, though here the uncertainty consists of two discrete realizations that represents an underlying continuous uncertainty. Habitat quality is measured as the percentage of maximum achievable carrying capacity at a site. For both species the maximum carry capacity of a site is 100, meaning that a site can at most accommodate 100 individuals and a site where the habitat quality is 50% could sustain 50 individuals.
 
-The planner has models that predict habitat quality for both species. With their model and they bootstrap the input data to produce samples ($k_1$ and $k_2$) of each species modelled habitat maps. These bootstrapped maps represent the planner's uncertainty about the system state (Figure \@ref(fig:plotSimpleZonation), four leftmost panels) and with them they can calculate the EVPI.
+The planner has models that predict habitat quality for both species. With their model and their input data theyproduce two bootstrap samples ($k_1$ and $k_2$) of each species modeled habitat maps. These bootstrapped maps represent the planner's uncertainty about the system state (Figure \@ref(fig:plotSimpleZonationCached), four leftmost panels) and with them they can calculate the EVPI.
 
-### Expected value with original information {-}
+## Expected value with original information {-}
 
-First the planner ranks each cell to find the top ranked cell for each bootstrap sample (Figure \@ref(fig:plotSimpleZonation), two rightmost panels). To calculate EVWOI the planner must calculate the expected value (the average of the proportion of total carrying capacity of each species remaining after the chosen cell is protected) for each bootstrap map set ($k_1$ and $k_2$) having each top ranked cell chosen. That is, having the top ranked cell given $k_1$ protected for both $k_1$ and $k_2$ and having the top ranked cell given $k_2$ protected for both bootstrap map sets also. Then the performance of each choice of protected cell is averaged across the bootstrap map sets, and the maximum of these average performances is the EVWOI. It is important to note here that though it may seem tempting and simpler to first average the habitat suitabilities or even dispense with the bootstrapping altogether this would not yield a correct value for EVWOI. The expectation must be taken over the performance of plan not over the inputs to the planning algorithm. In this case the EVWOI is 0.06, that is, relying on the original information alone, the planner would protect the middle cell and expect to preserve an average of 6% of the initial carrying capacity of the two species.
+First the planner ranks each cell to find the top ranked cell for each bootstrap sample (Figure \@ref(fig:plotSimpleZonationCached), two rightmost panels). To calculate EVWOI the planner must calculate the expected value (the average of the proportion of total carrying capacity of each species remaining after the chosen cell is protected) for each bootstrap map set ($k_1$ and $k_2$) having each top ranked cell chosen. That is, having the top ranked cell given $k_1$ protected for both $k_1$ and $k_2$ and having the top ranked cell given $k_2$ protected for both bootstrap map sets also. Then the performance of each choice of protected cell is averaged across the bootstrap map sets, and the maximum of these average performances is the EVWOI. It is important to note here that though it may seem tempting and simpler to first average the habitat suitabilities or even dispense with the bootstrapping altogether this would not yield a correct value for EVWOI. The expectation must be taken over the performance of plan not over the inputs to the planning algorithm. In this case the EVWOI is 0.06, that is, relying on the original information alone, the planner would protect the middle cell and expect to preserve an average of 6% of the initial carrying capacity of the two species.
 
-### Expected value with perfect information {-}
+## Expected value with perfect information {-}
 
-As in Box 2, the planner can apply the same method to the bootstrap maps they generated here. Again the process of taking the mean (averaging) and maximising (using Zonation) is reversed when calculating the EVWPI as opposed to EVWOI. This time the planner takes the two conservation plans, one for each set of bootstrap sample maps. Each ranking gives the planner an average proportion of total carrying capacity remaining and the average of the two gives an EVWPI of 0.07.
+As in Box 2, the planner can apply the same method to the bootstrap maps they generated here. Again the process of taking the expectation and maximizing is reversed when calculating the EVWPI as opposed to EVWOI. This time the planner takes the two conservation plans, one for each set of bootstrap sample maps. Each ranking gives the planner an average proportion of total carrying capacity remaining and the average of the two gives an EVWPI of 0.07.
 
-### Expected value of perfect information {-}
+## Expected value of perfect information {-}
 
 As in Boxes 1 and 2 the EVPI is the difference between EVWPI and the EVWOI, in this case a value of 0.01. This means that the planner would expect, on average, to increase the average proportion of carrying capacity remaining by 17% if they resolved all their initial uncertainty in their knowledge of habitat suitability of the two species across the 25 sites.
 
-## Case study: a spatial conservation plan for the Hunter region, NSW, Australia {-}
+---
 
-To demonstrate how to incorporate the value of information in a systematic spatial conservation plan, we now turn to a case study on prioritizing the Hunter region for the conservation of threatened plants and animals. For the case study we make the simplifying assumptions that the entire region is an original position where no area is protected but the entire region is available for protection in a conservation plan. While this is entirely unrealistic, it would be unnecessary to complicate the demonstration with a more realistic scenario as the results are no less general having simplified the problem and added detail would only serve to distract the reader from the key components of the method we outline here.
+END BOX 3
 
-### Study area {-}
+---
+
+# Case study: a conservation plan for the Hunter region, NSW, Australia {-}
+
+To demonstrate how to incorporate the value of information in a systematic conservation plan, we now turn to a case study on prioritizing the Hunter region, New South Wales, Australia, for the conservation of threatened plants and animals. For the case study we make the simplifying assumptions that the entire region is an original position where no area is protected but the entire region is available for protection in a conservation plan. While this is entirely unrealistic, it would be unnecessary to complicate the demonstration with a more realistic scenario as the results are no less general having simplified the problem and added detail would only serve to distract the reader from the key components of the method we outline here.
+
+## Study area {-}
 
 The Hunter is a biodiverse region of north-eastern New South Wales, Australia. The region is home to many threatened species of plants and animals. There are multiple threats to biodiversity in the region. The Hunter is under active development and the area's land users utilize it's resources for mining, agriculture, transport, urban infrastructure and conservation [@Whitehead2014]. For the analyses we present here, we consider the Hunter region to include the local government areas of Cessnock, Dungog, Gloucester, Gosford, Greater Taree, Great Lakes, Lake Macquarie, Maitland, Musselbrook, Newcastle, Port Macquarie-Hastings, Port Stephens, Singleton, Upper Hunter and Wyong, an area of `r fmt(raster::cellStats(!is.na(predictors[[1]]), sum))` km$^2$.
 
-### Study species {-}
+## Study species {-}
 
 The Hunter region is home to many species of national conservation significance. Here we consider six species: two birds, two mammals and two plants. For the following analyses we build conservation plans that aim to maximize the average relative carrying capacity of these six species across the hunter region. Table 1 outlines these six species and an estimate of their maximum carrying capacity (see supplement for more details) as well as their conservation status according to the _NSW Threatened Species Conservation Act 1995_ (TSC), _Commonwealth Environment Protection and Biodiversity Conservation Act 1999_ (EPBC) and the IUCN Red list (IUCN).
 
@@ -1022,7 +1050,7 @@ print(include.rownames = FALSE, comment = FALSE, sanitize.text.function = I)
 ```
 
 <!---
-## Approximate maximum carrying capacity of the Hunter region
+# Approximate maximum carrying capacity of the Hunter region
 
 Powerful Owl home range is [1e4 to 5e4 hectares](http://www.publish.csiro.au/paper/MU06055.htm). Maximum Carrying capacity is probably something > .001 birds per hectare.
 
@@ -1038,25 +1066,25 @@ Angophora inopina: to [this](http://www.publish.csiro.au/paper/BT03058.htm) 1100
 Acacia bynoeana: [1600 plants](https://www.environment.gov.au/cgi-bin/sprat/public/publicspecies.pl?taxon_id=8575) / [650ha](http://www.environment.nsw.gov.au/resources/parks/PoMLakeMacquarieSCAPulbahIslandNRMoonIslandNR.pdf)So approximately plants per 2.5 plants per hectare.
 --->
 
-### Input data for the conservation plan {-}
+## Input data for the conservation plan {-}
 
-#### Predictors of species distributions {-}
+### Predictors of species distributions {-}
 
 We summarized the environment of the Hunter region with six data layers: annual mean solar radiation, annual mean temperature, annual precipitation, precipitation seasonality (coefficient of variation), inherent soil fertility, and topographic wetness index. Each layer is a `r nrow(predictors)` by `r ncol(predictors)` grid of 1 km$^2$ cells. We chose this set of variables as they are publicly available (see supplement for sources), are biologically plausible drivers of the distribution of many taxa, have previously been shown to predict the distributions of the study species in the region [@Kujala2015] and are relatively uncorrelated with one another (maximum Pearson correlation coefficient = `r  fmt(max(abs(sort(raster::layerStats(predictors, "pearson", na.rm = TRUE)[[1]], TRUE)[-1:-raster::nlayers(predictors)])), 2)`).
 
-### Modelling species distributions using MaxEnt {-}
+## Modelling species distributions using MaxEnt {-}
 
 We used the software MaxEnt [@Phillips2006; @Phillips2008] to create species distribution maps on which to base the conservation plan. MaxEnt can be used to describe the potential distribution of species with occurrence records alone. The algorithm does this by comparing the distribution of occurrence records in covariate space to the distribution of covariate space as a whole, also known as the background (see below). We fitted MaxEnt models to each species with only linear and quadratic features enabled.
 
-#### Species occurence data {-}
+### Species occurence data {-}
 
 We obtained 30 occurrence records chosen at random within the boundaries of the Hunter region (as defined above) and collected within the date range, January 1, 1996 to May 1, 2016, for each of the six study species from the Atlas of Living Australia database [@ALA2016]. We chose this relatively low sample-size subset to ensure that subsequent modelling would have an initial level of uncertainty large enough for us to demonstrate how to calculate the value of information.
 
-#### Background geographic data {-}
+### Background geographic data {-}
 
 To fit species distribution models with the occurrence records and environmental covariates, we used a set of background points selected so as to minimize sampling bias in the occurrence points [@Phillips2009]. For each higher taxonomic group (birds, mammals and plants), the background points were selected by randomly sampling 10,000 occurrence records of all taxa belonging to each group from the Atlas of Living Australia database for the same spatial and temporal extent indicated above.
 
-(ref:plotHunterModels) Distribution of study species in the Hunter region. Maps show the relative carrying capacity (logistic output) of each species estimated by fitting Maxent models.
+(ref:plotHunterModels) Distribution of study species in the Hunter region. Maps show the relative carrying capacity (logistic output) of each species estimated by fitting MaxEnt models.
 
 ```{r plotHunterModels, fig.cap = "(ref:plotHunterModels)"}
 gg_raster(models, spp_of_interest, 2) +
@@ -1069,39 +1097,39 @@ theme(
 )
 ```
 
-#### Intepreting the output of MaxEnt {-}
+### Intepreting the output of MaxEnt {-}
 
-Interpreting MaxEnt output in both it's native formats (raw and logistic) has, in the past, proved problematic and controversial. It has been shown that it while it is equally problematic to interpret MaxEnt output as either relative occurrence rate or probability of presence, it is legitimate to interpret MaxEnt output as an indicator of relative habitat suitability [@Merow2013]. Here we chose to interpret the logistic output of MaxEnt as a rough indicator of relative carrying capacity. Where the logistic output is zero, the carrying capacity should be zero (or close to zero) and where the output is one, the carrying capacity should be close to the maximum attainable for the species. When the output is some fraction of one, then we assume the carrying capacity is that fraction of the maximum. The important caveat here is that the relationship between MaxEnt logistic output and carrying capacity is assumed linear. As this case study serves as an illustration, we use linearity as our initial assumption, in the absence of information to the contrary. In any case, any conceivable deviation from linearity should not matter too much here, as the species of interest have carrying capacities that vary over many orders of magnitude (Table \@ref(speciesTable)). If a non-linear relationship was known to occur then the MaxEnt output could be appropriately transformed before being used as input in the spatial plan. The benefit of interpreting the MaxEnt output in such a way is that we can use the modeled species distribution maps to calculate an estimate of the total potential population size for each species. And subsequently once we have a conservation plan, we can calculate the potential impact on that population size of the plan, or other competing plans. By using MaxEnt in the way have here makes some implicit assumptions that have to be acknowledged. First we are implicitly assuming that the probability of detection is the same across space, and does not depend on any of the explanatory variables we include in the model. And second we assume that all the species are at equilibrium with respect to the carrying capacity across their range. In reality, neither assumption may in fact hold, and may affect the results depending on the degree of violation.
+Interpreting MaxEnt output in both its native formats (raw and logistic) has, in the past, proved problematic and controversial. It has been shown that it while it is equally problematic to interpret MaxEnt output as either relative occurrence rate or probability of presence, it is legitimate to interpret MaxEnt output as an indicator of relative habitat suitability [@Merow2013]. Here we chose to interpret the logistic output of MaxEnt as a rough indicator of relative carrying capacity. Where the logistic output is zero, the carrying capacity should be zero (or close to zero) and where the output is one, the carrying capacity should be close to the maximum attainable for the species. When the output is some fraction of one, then we assume the carrying capacity is that fraction of the maximum. The important caveat here is that the relationship between MaxEnt logistic output and carrying capacity is assumed linear. As this case study serves as an illustration, we use linearity as our initial assumption, in the absence of information to the contrary. In any case, any conceivable deviation from linearity should not matter too much here, as the species of interest have carrying capacities that vary over many orders of magnitude (Table \@ref(speciesTable)). If a non-linear relationship was known to occur then the MaxEnt output could be appropriately transformed before being used as input in the spatial plan. The benefit of interpreting the MaxEnt output in such a way is that we can use the modeled species distribution maps to calculate an estimate of the total potential population size for each species. And subsequently once we have a conservation plan, we can calculate the potential impact on that population size of the plan, or other competing plans. By using MaxEnt in the way have here makes some implicit assumptions that have to be acknowledged. First we are implicitly assuming that the probability of detection is the same across space, and does not depend on any of the explanatory variables we include in the model. And second we assume that all the species are at equilibrium with respect to the carrying capacity across their range. In reality, neither assumption may in fact hold, and may affect the results depending on the degree of violation.
 
-### Incorporating uncertainty {-}
+## Incorporating uncertainty {-}
 
-To calculate the value of information requires some means of quantifying the level of uncertainty in a prediction of the system state. One way to express the uncertainty in species distributions is to consider a set of speices distribution maps where each map is equally likely to represent the true species distribution, instead having a single map that (alone) describes the distribution of a species. The multi-map description of species distributions acknowledges that species distributions are modeled based on a sample of points and those points are used to estimate the species relationship to the environment. As the points are a sample, the estimated relationship will be inherently uncertain.
+To calculate the value of information requires some means of quantifying the level of uncertainty in a prediction of the system state. One way to express the uncertainty in species distributions is to consider a set of species distribution maps where each map is equally likely to represent the true species distribution, instead having a single map that (alone) describes the distribution of a species. The multi-map description of species distributions acknowledges that species distributions are modeled based on a sample of points and those points are used to estimate the species relationship to the environment. As the points are a sample, the estimated relationship will be inherently uncertain.
 
-#### Uncertainty and MaxEnt {-}
+### Uncertainty and MaxEnt {-}
 
 Fitting a MaxEnt model with a set of occurrence points does not by itself account for uncertainty in a species' distribution. It provides a single possible realization (even if it is a likely, or the most likely one) of a species distribution and does not account for the fact that the species distribution was estimated from a sample of occurrence points and is therefore inherently uncertain. MaxEnt does not natively account for uncertainty. That is, at the time of writing, the MaxEnt software does not provide a means of quantifying uncertainty in its output, and only provides a single map for a single sample of species occurrence points and background dataset.
 
-#### The bootstrap {-}
+### The bootstrap {-}
 
-The classial non-parametric bootstrap is a simple technique that can be used to describe uncertainty in quantities that have been generated by a model [@Efron1986]. In essence the bootstrap quantifies uncertainty by refitting a model to a dataset that has been resampled with replacement. For example, if we fit a model to a dataset consisting of three data-points labelled A, B and C (note for the purposes of the bootstrap it is unimportant how many variables they consists of and what value(s) the data-points take), there are ten bootstrap samples to fit models to (AAA, AAB, AAC, ABC, ABB, ACC, BBB, BBC, BCC and CCC), and ten possible outputs that describe the uncertainty of the model fitted to the data-set. However, as the sample-size increases the number of possible bootstrap samples increases rapidly (e.g., for the sample-size of only 30 used in this case study there are almost $6\times10^{16}$ different possible bootstrap samples) so in practice a random (or Monte Carlo) set of $n$ bootstrap samples is used to estimate the bootstrap quantities' uncertainty. The bootstrap can be thought of as an approximation of a Bayesian posterior probability distribution [@Hastuie2001]. We use this property of the bootstrap to approxiate a fully Bayesian calculation of the VOI.
+The non-parametric bootstrap is a simple technique that can be used to describe uncertainty in quantities that have been generated by a model [@Efron1986]. In essence the bootstrap quantifies uncertainty by refitting a model to a dataset that has been resampled with replacement. For example, if we fit a model to a dataset consisting of three data-points labelled A, B and C, there are ten bootstrap samples to fit models to (AAA, AAB, AAC, ABC, ABB, ACC, BBB, BBC, BCC and CCC), and ten possible outputs that describe the uncertainty of the model fitted to the data-set. However, as the sample-size increases the number of possible bootstrap samples increases rapidly (e.g., for the sample-size of only 30 used in this case study there are almost $6\times10^{16}$ different possible bootstrap samples) so in practice a random (or Monte Carlo) set of $n$ bootstrap samples is used to estimate the bootstrap quantities' uncertainty. The bootstrap can be thought of as an approximation of a Bayesian posterior probability distribution [@Hastie2001]. We use this property of the bootstrap to approximate a fully Bayesian calculation of the VOI.
 
 To bootstrap a species distribution model using MaxEnt we resampled the 30 occurrence points 1000 times with replacement and ran the MaxEnt algorithm on each set to produce 1000 species distribution maps. We performed this bootstrap analysis on a MaxEnt model for each of the six focal species, to produce a total 6000 species distribution maps (6 times 1000).
 
-### Prioritizing with Zonation {-}
+## Prioritizing with Zonation {-}
 
 We used the spatial planning software Zonation [@Moilanen2009] to make a conservation plan for the Hunter region. The conservation plan we implemented had a budget large enough to protect 20% of the Hunter region (with the simplifying assumptions that all of the Hunter is available to be protected, and that any 20% of region will have a cost equal to the budget). The objective of the conservation plan was to minimize the average proportional loss (maximize the average proportion remaining) of the total carrying capacity of the six species of interest. We gave equal weight to each species (no species was preferred over any other).
 
-#### The Zonation algorithm {-}
+### The Zonation algorithm {-}
 
-The Zonation software uses a greedy algorithm to rank grid cells in order of priority such that preserving the highest ranked 20% of grid cells is the approximately maximal solution to the objective above. The Zonation algorithm works by iteratively removing grid cells that contribute the least to the objective. The removal process is repeated until all cells have been removed and the order of removal constitutes the ranking of the cells (the last cell to be removed being the highest ranked and the first cell removed is the lowest ranked). Zonation provides a number of implementations of its greedy algorithm that differ by the way they calculate the contribution of each cell to the objective (the basis on which cell removal is determined). Here we use Zonation's "additive benefit" cell removal rule, whereby cells that contribute the least to the sum of the proportion of value remaining, are removed first.
+The Zonation software uses a maximum-utility type algorithm to rank grid cells in order of priority such that preserving the highest ranked 20% of grid cells is the approximately maximal solution to the objective above. The Zonation algorithm works by iteratively removing grid cells that contribute the least to the objective. The removal process is repeated until all cells have been removed and the order of removal constitutes the ranking of the cells (the last cell to be removed being the highest ranked and the first cell removed is the lowest ranked). Zonation provides a number of implementations of its algorithm that differ by the way they calculate the contribution of each cell to the objective (the basis on which cell removal is determined). Here we use Zonation's "additive benefit" cell removal rule, whereby cells that contribute the least to the sum of the proportion of value remaining, are removed first [@Moilanen2007].
 
-### The expected value of information for the Hunter conservation plan {-}
+## The expected value of information for the Hunter conservation plan {-}
 
-Using the methods outlined in Boxes 1 to 3 and the data highlighted above, we calculated EVPI and it's components (EVWOI and EVWPI) for our conservation plan for the Hunter region. In Box 3 the example used had only 25 cells and a budget large enough to protect one of them. For the Hunter region at the 1km grain size there are almost 40,000 cells and we assume a budget large enought to protect 20% of them. Yet, the technique used in Box 3 is used in the larger scale example in much the same way.
+Using the methods outlined in Boxes 1 to 3 and the data highlighted above, we calculated EVPI and it's components (EVWOI and EVWPI) for our conservation plan for the Hunter region. In Box 3 the example used had only 25 cells and a budget large enough to protect one of them. For the Hunter region at the 1km grain size there are almost 40,000 cells and we assume a budget large enough to protect 20% of them. Yet, the technique used in Box 3 is used in the larger scale example in much the same way.
 
-#### The expected value with original information {-}
+### The expected value with original information {-}
 
-(ref:plotHunterPlan) Priority map for the Hunter region. Grid cells have been ranked from lowest priority (blue) to highest priority (yellow) using the Zonation greedy algorithm. Grid cells ranked in the top 20% have been highlighted. The additive benefit function was used to iteratively remove cells with the lowest marginal benefit. In calculating marginal benefit, each species was weighted equally.
+(ref:plotHunterPlan) Priority map for the Hunter region given uncertainty (bootstrap sample map with maximum expected performance). Grid cells have been ranked from lowest priority (blue) to highest priority (yellow) using the Zonation algorithm. Grid cells ranked in the top 20% have been highlighted. The additive benefit function was used to iteratively remove cells with the lowest marginal benefit. In calculating marginal benefit, each species was weighted equally.
 
 ```{r plotHunterPlan, fig.cap = "(ref:plotHunterPlan)"}
 gg_raster(plans_boot_max, highlight = c(prop_loss, 1)) +
@@ -1112,7 +1140,7 @@ theme(axis.text = element_blank(), axis.title = element_blank())
 
 First we calculated the EVWOI, that is, how well do we expect the conservation plan to perform (on average) when basing it only on the 30 observations per species. To calculate EVWOI we first bootstrapped the species distributions to produce multiple maps per species, as described above. We applied the Zonation algorithm to these 1000 map sets to rank the grid cells of the Hunter region in order of priority 1000 times. Then we applied each of these rankings to every bootstrapped species distribution map set to calculate the value of protecting the top 20%. Then for each of the 1000 rankings we averaged the values to arrive at the expected value. The ranking with highest expected value is the ranking that would be used in face of uncertainty (Figure \@ref(fig:plotHunterPlan)) and its expected value is the EVWOI. In our case the EVWOI was `r fmt(evwoi * 100, 1)`%.
 
-#### The expected value with perfect information {-}
+### The expected value with perfect information {-}
 
 (ref:plotPlanUncert) Uncertainty in grid cell ranks. In the left pane, grid cells have been ordered along the x-axis by the mean of their bootstrapped rankings. The colored bars indicate the range of bootstrapped rankings (along the y-axis). The black horizontal line marks the top 20$^{th}$ percentile. Cells represented by bars that span this line are shaded green. The right panel shows the same map displayed in Figure \@ref(fig:plotHunterPlan) however this time the cells that have bootstrap ranks spanning the top 20$^{th}$ percentile have been highlighted.
 
@@ -1148,9 +1176,9 @@ grid.arrange(
 )
 ```
 
-To calculate the EVWPI we applied the method outlined in Box 3 reversing the two steps of averaging and maximisation. We again used the same applications of the Zonation algorithm to each set of bootstrap species distribution maps. Figure \@ref(fig:plotPlanUncert) shows the range of rankings each grid cell has across the bootstrapped conservation plans and highlights those grid cells that are ranked in the top 20% at least once in the bootstrapped plans. For each bootstrapped conservation plan we calculated the average proportion of total carrying capacity remaining after protecting the top 20% of cells. These 1000 values are the expected values if we were certain of the distribution of the six species across the Hunter (with each set of bootstrapped maps and plan representing a separate realization of that certainty). Averaging these 1000 values is the final step and gives the EVWPI or the performance we would expect to conservation plan to achieve, on average, if we had no uncertainty about the distribution of each of the six species. In this case the EVWPI is `r fmt(evwpi * 100, 1)`%.
+To calculate the EVWPI we applied the method outlined in Box 3 reversing the two steps of averaging and maximization. We again used the same applications of the Zonation algorithm to each set of bootstrap species distribution maps. Figure \@ref(fig:plotPlanUncert) shows the range of rankings each grid cell has across the bootstrapped conservation plans and highlights those grid cells that are ranked in the top 20% at least once in the bootstrapped plans. For each bootstrapped conservation plan we calculated the average proportion of total carrying capacity remaining after protecting the top 20% of cells. These 1000 values are the expected values if we were certain of the distribution of the six species across the Hunter (with each set of bootstrapped maps and plan representing a separate realization of that certainty). Averaging these 1000 values is the final step and gives the EVWPI or the performance we would expect to conservation plan to achieve, on average, if we had no uncertainty about the distribution of each of the six species. In this case the EVWPI is `r fmt(evwpi * 100, 1)`%.
 
-#### The expected value of perfect information {-}
+### The expected value of perfect information {-}
 
 Finally we arrive at the EVPI, which is simply the difference between EVWPI and EVWOI. Here EVPI is `r fmt((evwpi - evwoi) * 100, 1)`%. This is the increase in performance we would expect to see on average, if we learned everything there was to know about the distribution of the species of conservation concern in our conservation plan. To express this value in different terms, if we consider a species with a carrying capacity of 1 individual per km$^2$, and that species had a total carrying capacity in the Hunter of 10,000 individuals, enacting a conservation plan with the information initially at hand, we would expect (on average) to preserve enough habitat to accommodate `r fmt(evwoi * 10000)` individuals. Were we to then enact a plan with complete certainty, we would expect to preserve enough habitat to accommodate `r fmt((evwpi - evwoi) * 10000)` more individuals.
 
@@ -1167,7 +1195,7 @@ bind_rows(
              EVPI = evwpi * 100 - evwoi * 100)
 ) %>%
 xtable(
-  caption = "The expected value of perfect information and its components for a conservation plan for the Hunter region. The Zonation algorithm is programmed to maximise the average proportion of the species distributions remaining. As a result, the expected performance gain from new information (EVPI) varies among the species included in the conservation plan. Some species may even have a reduced level of protection (on average) when more information is included in the plan (e.g., \\emph{Acacia bynoeana}), as the extra information allows losses in such species to be traded off against greater gains in others.",
+  caption = "The expected value of perfect information and its components for a conservation plan for the Hunter region. The Zonation algorithm maximises the average proportion of the species carrying capacity. As a result, the expected performance gain from new information (EVPI) varies among the species included in the conservation plan. Some species may even have a reduced level of protection (on average) when more information is included in the plan (e.g., \\emph{Acacia bynoeana}), as the extra information allows losses in such species to be traded off against greater gains in others.",
   label = "evi_table",
   align = "llrrr",
   digits = 1
@@ -1181,19 +1209,15 @@ print(include.rownames = FALSE,
 
 ## Discussion {-}
 
-This case study represents a template for incorporating a VOI analysis into spatial conservation planning. Here we have shown that resolving uncertainty could lead to an expected gain in the average carrying capacity of a set of species of conservation concern. The results we obtained now beg the question of how learning in a conservation plan should be targeted. For instance, what are the best locations (spatially) for learning. Figure 8 indicates there is a band of areas in the east where the most critical uncertainty in conservation value lies. Sites in the far west appear to have the lowest value and according to the analyses have little chance of being of high enough value to warrant inclusion in a conservation plan that can only afford to protect 20% of the landscape. Conversely, there are areas in the central hinterland that are of such consistently high value that they need not be investigated further either. The remaining patches in the north and on the central and southern coasts however, are those that are probably the most beneficial to learn more about, in terms of their conservation value. These areas, are those that knowing more about, would make the most difference to the outcome of a conservation plan, despite the fact that many would probably have marginal (if any) value.
+Here we have presented a template for incorporating a VOI analysis in conservation planning. We have shown that resolving uncertainty could lead to an expected gain in the average carrying capacity of a set of species of conservation concern. The results we obtained now beg the question of how learning in a conservation plan should be targeted. For instance, what are the best locations (spatially) for learning. Figure 8 indicates there is a band of areas in the east where the most critical uncertainty in conservation value lies. Sites in the far west appear to have the lowest value and according to the analyses have little chance of being of high enough value to warrant inclusion in a conservation plan that can only afford to protect 20% of the landscape. Conversely, there are areas in the central hinterland that are of such consistently high value that they need not be investigated further either. The remaining patches in the north and on the central and southern coasts however, are those that are probably the most beneficial to learn more about, in terms of their conservation value. These areas, are those that knowing more about, would make the most difference to the outcome of a conservation plan, despite the fact that many would probably have marginal (if any) value.
 
-Given the above, why do a value of information analysis at all? How would this change the outcome of a conservation plan? While the gains to a conservation plan of a value of information analysis may necessarily be modest, they will indeed be real gains. The VOI analysis gives the planner the ability to discriminate between three zones of certainty. Those are that should see no investment, those which must only be invested in with actual conservation dollars as they are of high and certain benefit. And finally, those areas which need more research to decide whether further investment is warranted. The areas in the third category will almost by definition yield modest gains for the ultimate conservation plan, as these sites are the ones with the most marginal benefits. How modest a gain this will be, is in proportion to the amount of knowledge that is held initially, with additional knowledge being of diminishing returns. The other major benefit of incorporating VOI analysis with conservation planning is that it allows the planner to evaluate the importance of uncertainty to the outcome of the plan with this importance expressed in the same currency as the performance measure of their objective function.
+Given the above, why do a value of information analysis at all? How would this change the outcome of a conservation plan? While the gains to a conservation plan of a value of information analysis may necessarily be modest, they will indeed be real gains. The VOI analysis gives the planner the ability to discriminate between three zones of certainty. Those that should see no investment, those which must only be invested in with actual conservation dollars as they are of high and certain benefit. And finally, those areas which need more research to decide whether further investment is warranted. The areas in the third category will almost by definition yield modest gains for the ultimate conservation plan, as these sites are the ones with the most marginal benefits. How modest a gain this will be, is in proportion to the amount of knowledge that is held initially, with additional knowledge being of diminishing returns. The other major benefit of incorporating VOI analysis with conservation planning is that it allows the planner to evaluate the importance of uncertainty to the outcome of the plan with this importance expressed in the same currency as the performance measure of their objective function.
 
-In the past conservation planners have tended to focus on model accuracy and are concerned that their plans reflect the true distribution of the features they seek to protect [@Stockwell2002]. Planners often agonize about the information content of their species distribution models and are unwilling to commit to a spatial plan when they are uncertain [@Tulloch2017]. A VOI analysis has the potential to characterize how much inaccuracy might mean for the objective at hand and even if it is important at all.
+In the past, conservation planners have tended to focus on model accuracy and are concerned that their plans reflect the true distribution of the features they seek to protect [@Stockwell2002]. Planners often agonize about the information content of their species distribution models and are unwilling to commit to a spatial plan when they are uncertain [@Tulloch2017]. A VOI analysis has the potential to characterize how much inaccuracy might mean for the objective at hand and even if it is important at all.
 
-There is also a question of how performance is defined. If the performance of the conservation plan is not defined intrinsically (i.e., defined in terms of some aspect of species distributions), as is the usually case, but in terms of the actually conservation outcome that a plan yields (e.g., some aspect of the species populations; declines, increases, etc.) then the value of information may increase as this additional layer of uncertainty is introduced.
+Here we have chosen to use the Zonation algorithm objective function known as additive benefit. Many conservation plans would instead use the core-area functions. However, core-area only has a heuristic definition of its objective function [@Moilanen2014]. Additive benefit on the other hand is known to maximize the average benefit to all features the conservation plan is being made for and it is for this reason we use it to undertake our value of information analyses.
 
-Here we have chosen to use the Zonation algorithm objective function known as additive benefit. Many conservation plans would instead use the core-area function as it is believed to have better ecological properties. Core-area Zonation ranks cells in reverse order by picking the cell that makes the least contribution to the most valuable species or biodiversity feature. However, core-area only has a heuristic definition of its objective function [@Moilanen2014]. Additive benefit on the other hand is known to maximize the average benefit to all features the conservation plan is being made for and it is for this reason we use it to undertake our value of information analyses.
-
-An important point to note is that use of bootstrap sampling has the potentialy overlooked side-effect of preserving any correlation structure that be present in the uncertainty across the grid cells. One could take a different approach and estimate the uncertainty for each grid cell and sample from each independently. This may produce misleading or incorrect results. By bootstraping the entire estimation process, the samples retain any potentially important correlations.
-
-### The ingredients of a value of information analyses for a spatial conservation plan {-}
+## The ingredients of a value of information analyses for a conservation plan {-}
 
 To undertake a VOI analyses like the case study outlined here requires three key ingredients:
 
@@ -1203,6 +1227,4 @@ To undertake a VOI analyses like the case study outlined here requires three key
 
 * A way to express uncertainty in the performance of the alternative actions. The planner must be able to express uncertainty in such a way that they can estimate the range of outcomes that are possible given the actions available to meet their objectives.
 
-### Conclusion {-}
-
-Here we have combined the established methods of spatial conservation planning and value of information analyses. The value of information is an important concept in decision analyses that the conservation planning community has yet to fully embrace. The work above is just one example of how VOI might be applied to a spatial conservation plan and only one example of the resulting value of information one might be likely to observe. Many more examples will be needed to be performed before we can comment on any general trends in VOI analyses for spatial conservation planning. 
+Here we have combined the established methods of conservation planning and value of information analyses. The value of information is an important concept in decision analyses that the conservation planning community has yet to fully embrace. The work above is just one example of how VOI might be applied to a conservation plan and only one example of the resulting value of information one might be likely to observe. Many more examples will be needed to be performed before we can comment on any general trends in VOI analyses for conservation planning. 
