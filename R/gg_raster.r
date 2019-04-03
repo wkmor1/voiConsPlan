@@ -35,7 +35,7 @@ gg_raster_ <-
              (value > quantile(value, highlight[1]) &
               value < quantile(value, highlight[2])) == !invert)
     }
-    levels(data[, "variable"]) <- sort(labels)
+    levels(data[, "variable"]) <- labels
     data[, "variable"] <- factor(data[, "variable"], levels = labels)
 
     ggplot(data, aes_string("x", "y")) + theme_bw() + coord_equal() +

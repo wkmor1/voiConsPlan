@@ -29,6 +29,8 @@ header-includes:
 subparagraph: true
 biblio-style: voiConsPlan.bst
 bibliography: voiConsPlan.bib
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, echo = FALSE}
