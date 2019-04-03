@@ -4,6 +4,7 @@
 voiConsPlan.Rdata
 .DS_Store
 build/*
+cache/*
 voiConsPlan_cache/*
 voiConsPlan_files/*
 voiConsPlan.tex
